@@ -2,28 +2,23 @@ syntax = "proto3";
 
 option go_package = "./pb";
 
-import "pb/other.proto";
+import "pb/permissions.proto";
 
-service Test {
-  rpc TestMethod (TestReq) returns (TestRes);
+service PermissionPanther {
+  // Checks whether a permission exists, and at what recursion level. If there is an explicit `deny` permission then group checking will be aborted.
+  rpc CheckDirectPermission (CheckDirectReq) returns (CheckDirectRes);
+
+  // Lists all the permissions an entity has, optionally specify permissions to filter on
+  rpc ListEntityRelations (ListEntityRelationsReq) returns (RelationsResponse);
+
+  // List all relations for an object, optoinally specify permissions to filter on
+  rpc ListObjectRelations (ListObjectRelationsReq) returns (RelationsResponse);
+
+  // Will set a permission for an entity on an object. If the permission already exists it is a no-op.
+  rpc SetPermission (CheckDirectReq) returns (NoContent);
+
+  // Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
+  rpc RemovePermission (CheckDirectReq) returns (NoContent);
 }
 
-message TestReq {
-  optional string msg = 1;
-  optional string altmsg = 20;
-  enum Corpus {
-    UNIVERSAL = 0;
-    WEB = 1;
-    IMAGES = 2;
-    LOCAL = 3;
-    NEWS = 4;
-    PRODUCTS = 5;
-    VIDEO = 6;
-  }
-  Corpus corpus = 4;
-}
-
-message TestRes {
-  optional string msg = 1;
-  optional string altmsg = 20;
-}
+message NoContent {}
