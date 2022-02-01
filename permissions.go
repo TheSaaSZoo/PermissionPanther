@@ -74,7 +74,11 @@ func CheckPermissionDirect(c chan bool, ns, obj, permission, entity string) {
 	})
 	logger.Debug("Direct Query: %v", q.Query)
 	err := q.SelectRelease(&edges)
-	HandleError(err)
+	if err != nil {
+		logger.Error("Error checking direct permissions")
+		logger.Error(err.Error())
+		c <- false
+	}
 
 	c <- len(edges) > 0
 }
@@ -98,7 +102,11 @@ func GetPermissionGroups(c chan []scylla.Edge, ns, obj, permission string) {
 	})
 	logger.Debug("Group Query: %v", q.Query)
 	err := q.SelectRelease(&edges)
-	HandleError(err)
+	if err != nil {
+		logger.Error("Error checking group permissions")
+		logger.Error(err.Error())
+		c <- []scylla.Edge{}
+	}
 
 	if len(edges) == 0 {
 		logger.Debug("Did not find any group lookups")
