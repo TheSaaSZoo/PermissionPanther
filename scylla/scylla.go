@@ -2,6 +2,8 @@ package scylla
 
 import (
 	"log"
+	"os"
+	"time"
 
 	"github.com/gocql/gocql"
 	"github.com/scylladb/gocqlx/v2"
@@ -38,6 +40,12 @@ type Edge struct {
 func DBConnect() {
 	// Create gocql cluster.
 	cluster := gocql.NewCluster("localhost:9042")
+
+	// Increase timeout if testing
+	if os.Getenv("TEST_MODE") == "true" {
+		cluster.Timeout = 1 * time.Second
+	}
+
 	// Wrap session on creation, gocqlx session embeds gocql.Session pointer.
 	session, err := gocqlx.WrapSession(cluster.CreateSession())
 	if err != nil {
@@ -50,6 +58,12 @@ func DBConnectWithKeyspace() {
 	// Create gocql cluster.
 	cluster := gocql.NewCluster("localhost:9042")
 	cluster.Keyspace = "access_kspc"
+
+	// Increase timeout if testing
+	if os.Getenv("TEST_MODE") == "true" {
+		cluster.Timeout = 1 * time.Second
+	}
+
 	// Wrap session on creation, gocqlx session embeds gocql.Session pointer.
 	session, err := gocqlx.WrapSession(cluster.CreateSession())
 	if err != nil {
@@ -76,29 +90,6 @@ func DBTestKeyspaceSetup() {
 	// Create NS
 	err = CQLSession.ExecStmt("CREATE KEYSPACE IF NOT EXISTS access_kspc WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}")
 	HandleError(err)
-
-	// Create Tables
-	HandleError(CQLSession.ExecStmt(`
-	CREATE TABLE IF NOT EXISTS edge (
-		obj TEXT,
-		entity TEXT,
-		permission TEXT,
-		ns TEXT,
-		PRIMARY KEY ((ns, obj), permission, entity)
-	)
-	`))
-
-	// Walk backward by entity
-	// Could also call reverse_edge
-	HandleError(CQLSession.ExecStmt(`
-	CREATE MATERIALIZED VIEW IF NOT EXISTS entity_permission AS
-		SELECT * FROM edge
-		WHERE ns IS NOT NULL
-			AND entity IS NOT NULL
-			AND permission IS NOT NULL
-			AND obj IS NOT NULL
-		PRIMARY KEY((ns, entity), permission, obj)
-	`))
 }
 
 func DBTestSetup() {

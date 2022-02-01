@@ -11,7 +11,7 @@ import (
 // Finds at what recursion level a permission exists
 //
 // Returns -1 if permission is not found
-func CheckPermissions(ns, obj, permission, entity string, currentRecursion, maxRecursion int) int {
+func CheckPermissions(ns, object, permission, entity string, currentRecursion, maxRecursion int) int {
 	if currentRecursion > maxRecursion {
 		logger.Debug("Aborting nested group checks, exceeded %d recursions!", maxRecursion)
 		// Fail fast
@@ -21,12 +21,12 @@ func CheckPermissions(ns, obj, permission, entity string, currentRecursion, maxR
 
 	// First check for direct access
 	directChan := make(chan bool)
-	go CheckPermissionDirect(directChan, ns, obj, permission, entity)
+	go CheckPermissionDirect(directChan, ns, object, permission, entity)
 
 	// Then check for groups with this permission
-	logger.Debug("Getting groups with ", permission, " on ", obj)
+	logger.Debug("Getting groups with ", permission, " on ", object)
 	groupsChan := make(chan []scylla.Edge)
-	go GetPermissionGroups(groupsChan, ns, obj, permission)
+	go GetPermissionGroups(groupsChan, ns, object, permission)
 
 	// Might be able to further optimize this with
 	// select or with processing inside the goroutine

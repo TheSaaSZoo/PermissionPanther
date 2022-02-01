@@ -7,6 +7,7 @@ import (
 
 func main() {
 	logger.ConfigureLogger()
+
 	scylla.DBConfig()
 	scylla.DBConnectWithKeyspace()
 }

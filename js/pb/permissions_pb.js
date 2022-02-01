@@ -399,8 +399,8 @@ proto.CheckDirectRes.prototype.toObject = function(opt_includeInstance) {
  */
 proto.CheckDirectRes.toObject = function(includeInstance, msg) {
   var f, obj = {
-    key: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    valid: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
+    valid: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
+    recursion: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -438,12 +438,12 @@ proto.CheckDirectRes.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setKey(value);
-      break;
-    case 2:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setValid(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setRecursion(value);
       break;
     default:
       reader.skipField();
@@ -474,16 +474,16 @@ proto.CheckDirectRes.prototype.serializeBinary = function() {
  */
 proto.CheckDirectRes.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getKey();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getValid();
+  if (f) {
+    writer.writeBool(
       1,
       f
     );
   }
-  f = message.getValid();
-  if (f) {
-    writer.writeBool(
+  f = message.getRecursion();
+  if (f !== 0) {
+    writer.writeInt32(
       2,
       f
     );
@@ -492,29 +492,11 @@ proto.CheckDirectRes.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string key = 1;
- * @return {string}
- */
-proto.CheckDirectRes.prototype.getKey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.CheckDirectRes} returns this
- */
-proto.CheckDirectRes.prototype.setKey = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bool valid = 2;
+ * optional bool valid = 1;
  * @return {boolean}
  */
 proto.CheckDirectRes.prototype.getValid = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1, false));
 };
 
 
@@ -523,7 +505,25 @@ proto.CheckDirectRes.prototype.getValid = function() {
  * @return {!proto.CheckDirectRes} returns this
  */
 proto.CheckDirectRes.prototype.setValid = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 2, value);
+  return jspb.Message.setProto3BooleanField(this, 1, value);
+};
+
+
+/**
+ * optional int32 recursion = 2;
+ * @return {number}
+ */
+proto.CheckDirectRes.prototype.getRecursion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.CheckDirectRes} returns this
+ */
+proto.CheckDirectRes.prototype.setRecursion = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 

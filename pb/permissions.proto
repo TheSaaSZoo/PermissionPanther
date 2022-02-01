@@ -10,9 +10,11 @@ message CheckDirectReq {
 }
 
 message CheckDirectRes {
-  string key = 1;
+  // Whether the permission is valid
+  bool valid = 1;
 
-  bool valid = 2;
+  // How many recusrsion levels down did we find the object at
+  int32 recursion = 2;
 }
 
 message ListEntityRelationsReq {
