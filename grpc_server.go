@@ -44,7 +44,9 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 	// TEMP AUTH
 	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
 		err = status.Error(codes.PermissionDenied, "Permission denied")
+		return
 	}
+	out = &pb.CheckDirectRes{}
 
 	foundAt := CheckPermissions("nspc", in.Object, in.Permission, in.Entity, 0, 5)
 	if foundAt >= 0 {
