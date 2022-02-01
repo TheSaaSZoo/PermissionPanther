@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+import "pb/other.proto";
+
+service Test {
+  rpc TestMethod (TestReq) returns (TestRes);
+}
+
+message TestReq {
+  optional string msg = 1;
+  optional string altmsg = 20;
+  enum Corpus {
+    UNIVERSAL = 0;
+    WEB = 1;
+    IMAGES = 2;
+    LOCAL = 3;
+    NEWS = 4;
+    PRODUCTS = 5;
+    VIDEO = 6;
+  }
+  Corpus corpus = 4;
+}
+
+message TestRes {
+  optional string msg = 1;
+  optional string altmsg = 20;
+}
