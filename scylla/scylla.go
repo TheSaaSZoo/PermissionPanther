@@ -24,10 +24,18 @@ var (
 		SortKey: []string{"permission", "entity"},
 	}
 
+	EntityMetadata = &table.Metadata{
+		Name:    "entity_permission",
+		Columns: []string{"obj", "ns", "entity", "permission"},
+		PartKey: []string{"ns", "entity"},
+		SortKey: []string{"permission", "obj"},
+	}
+
 	// ---------------------------------------------------------------------------
 	// DB Tables
 	// ---------------------------------------------------------------------------
-	EdgeTable *table.Table
+	EdgeTable   *table.Table
+	EntityIndex *table.Table
 )
 
 type Edge struct {
@@ -74,6 +82,7 @@ func DBConnectWithKeyspace() {
 
 func DBConfig() {
 	EdgeTable = table.New(*EdgeMetadata)
+	EntityIndex = table.New(*EntityMetadata)
 }
 
 func HandleError(err error) {

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/danthegoodman1/PermissionPanther/logger"
+	"github.com/danthegoodman1/PermissionPanther/pb"
 	"github.com/danthegoodman1/PermissionPanther/scylla"
 	"github.com/scylladb/gocqlx/v2/qb"
 )
@@ -114,4 +115,80 @@ func GetPermissionGroups(c chan []scylla.Edge, ns, obj, permission string) {
 		logger.Debug("Found group lookup!")
 	}
 	c <- edges
+}
+
+func ListEntityPermissions(ns, entity string, permission *string) (relations []pb.Relation, err error) {
+	var edges []scylla.Edge
+
+	queryBuilder := qb.Select(scylla.EntityMetadata.Name).
+		Columns("*").
+		Where(qb.Eq("entity")).
+		Where(qb.Eq("ns"))
+
+	edge := scylla.Edge{
+		Ns:     ns,
+		Entity: entity,
+	}
+
+	if permission != nil {
+		queryBuilder = queryBuilder.Where(qb.Eq("permission"))
+		edge.Permission = *permission
+	}
+
+	query, names := queryBuilder.ToCql()
+
+	q := scylla.CQLSession.Query(query, names).BindStruct(edge)
+	logger.Debug("Direct Query: %v", q.Query)
+	err = q.SelectRelease(&edges)
+	if err != nil {
+		logger.Error("Error listing entity permissions")
+		return
+	}
+
+	for _, e := range edges {
+		relations = append(relations, pb.Relation{
+			Entity:     e.Entity,
+			Permission: e.Permission,
+			Object:     e.Obj,
+		})
+	}
+	return
+}
+
+func ListObjectPermissions(ns, object string, permission *string) (relations []pb.Relation, err error) {
+	var edges []scylla.Edge
+
+	queryBuilder := qb.Select(scylla.EdgeMetadata.Name).
+		Columns("*").
+		Where(qb.Eq("obj")).
+		Where(qb.Eq("ns"))
+
+	edge := scylla.Edge{
+		Ns:  ns,
+		Obj: object,
+	}
+
+	if permission != nil {
+		queryBuilder = queryBuilder.Where(qb.Eq("permission"))
+		edge.Permission = *permission
+	}
+
+	query, names := queryBuilder.ToCql()
+
+	q := scylla.CQLSession.Query(query, names).BindStruct(edge)
+	logger.Debug("Direct Query: %v", q.Query)
+	err = q.SelectRelease(&edges)
+	if err != nil {
+		logger.Error("Error listing object permissions")
+		return
+	}
+
+	for _, e := range edges {
+		relations = append(relations, pb.Relation{
+			Entity:     e.Entity,
+			Permission: e.Permission,
+			Object:     e.Obj,
+		})
+	}
+	return
 }
