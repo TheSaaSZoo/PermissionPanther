@@ -6,6 +6,7 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/pb"
 	"github.com/danthegoodman1/PermissionPanther/scylla"
+	"github.com/gocql/gocql"
 	"github.com/scylladb/gocqlx/v2/qb"
 )
 
@@ -190,5 +191,31 @@ func ListObjectPermissions(ns, object string, permission *string) (relations []p
 			Object:     e.Obj,
 		})
 	}
+	return
+}
+
+func UpsertRelation(ns, obj, permission, entity string) (err error) {
+	q := scylla.CQLSession.Query(scylla.EdgeTable.Insert()).BindStruct(scylla.Edge{
+		Obj:        obj,
+		Ns:         ns,
+		Entity:     entity,
+		Permission: permission,
+	})
+	// Enable consistent reads
+	q = q.Consistency(gocql.All)
+	err = q.ExecRelease()
+	return
+}
+
+func DeleteRelation(ns, obj, permission, entity string) (err error) {
+	q := scylla.CQLSession.Query(scylla.EdgeTable.Delete()).BindStruct(scylla.Edge{
+		Obj:        obj,
+		Ns:         ns,
+		Entity:     entity,
+		Permission: permission,
+	})
+	// Enable consistent reads
+	q = q.Consistency(gocql.All)
+	err = q.ExecRelease()
 	return
 }
