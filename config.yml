@@ -1,0 +1,6 @@
+ingress:
+  - hostname: gitlab.widgetcorp.tech
+    service: http://localhost:80
+  - hostname: gitlab-ssh.widgetcorp.tech
+    service: ssh://localhost:22
+  - service: http_status:404

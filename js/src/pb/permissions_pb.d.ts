@@ -15,6 +15,10 @@ export class CheckDirectReq extends jspb.Message {
     setPermission(value: string): CheckDirectReq;
     getObject(): string;
     setObject(value: string): CheckDirectReq;
+    getRecursive(): boolean;
+    setRecursive(value: boolean): CheckDirectReq;
+    getDenypermission(): string;
+    setDenypermission(value: string): CheckDirectReq;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CheckDirectReq.AsObject;
@@ -32,6 +36,8 @@ export namespace CheckDirectReq {
         entity: string,
         permission: string,
         object: string,
+        recursive: boolean,
+        denypermission: string,
     }
 }
 
@@ -65,6 +71,8 @@ export class ListEntityRelationsReq extends jspb.Message {
     setEntity(value: string): ListEntityRelationsReq;
     getPermission(): string;
     setPermission(value: string): ListEntityRelationsReq;
+    getOffset(): string;
+    setOffset(value: string): ListEntityRelationsReq;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListEntityRelationsReq.AsObject;
@@ -81,6 +89,7 @@ export namespace ListEntityRelationsReq {
         key: string,
         entity: string,
         permission: string,
+        offset: string,
     }
 }
 
@@ -91,6 +100,8 @@ export class ListObjectRelationsReq extends jspb.Message {
     setObject(value: string): ListObjectRelationsReq;
     getPermission(): string;
     setPermission(value: string): ListObjectRelationsReq;
+    getOffset(): string;
+    setOffset(value: string): ListObjectRelationsReq;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListObjectRelationsReq.AsObject;
@@ -107,6 +118,7 @@ export namespace ListObjectRelationsReq {
         key: string,
         object: string,
         permission: string,
+        offset: string,
     }
 }
 

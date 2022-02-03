@@ -7,6 +7,9 @@ message CheckDirectReq {
   string entity = 2;
   string permission = 3;
   string object = 4;
+  bool recursive = 5;
+
+  string denyPermission = 6;
 }
 
 message CheckDirectRes {
@@ -21,14 +24,21 @@ message ListEntityRelationsReq {
   string key = 1;
 
   string entity = 2;
+  // Optional, if not provided then we will list all permissions
   string permission = 3;
+
+  // Base64 encoded scylla offset
+  string offset = 4;
 }
 
 message ListObjectRelationsReq {
   string key = 1;
 
   string object = 2;
+  // Optional, if not provided then we will list all permissions
   string permission = 3;
+  // Base64 encoded scylla offset
+  string offset = 4;
 }
 
 message RelationsResponse {

@@ -182,7 +182,9 @@ proto.CheckDirectReq.toObject = function(includeInstance, msg) {
     key: jspb.Message.getFieldWithDefault(msg, 1, ""),
     entity: jspb.Message.getFieldWithDefault(msg, 2, ""),
     permission: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    object: jspb.Message.getFieldWithDefault(msg, 4, "")
+    object: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    recursive: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    denypermission: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -234,6 +236,14 @@ proto.CheckDirectReq.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setObject(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRecursive(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDenypermission(value);
       break;
     default:
       reader.skipField();
@@ -289,6 +299,20 @@ proto.CheckDirectReq.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getRecursive();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = message.getDenypermission();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -364,6 +388,42 @@ proto.CheckDirectReq.prototype.getObject = function() {
  */
 proto.CheckDirectReq.prototype.setObject = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional bool recursive = 5;
+ * @return {boolean}
+ */
+proto.CheckDirectReq.prototype.getRecursive = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.CheckDirectReq} returns this
+ */
+proto.CheckDirectReq.prototype.setRecursive = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * optional string denyPermission = 6;
+ * @return {string}
+ */
+proto.CheckDirectReq.prototype.getDenypermission = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.CheckDirectReq} returns this
+ */
+proto.CheckDirectReq.prototype.setDenypermission = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
@@ -561,7 +621,8 @@ proto.ListEntityRelationsReq.toObject = function(includeInstance, msg) {
   var f, obj = {
     key: jspb.Message.getFieldWithDefault(msg, 1, ""),
     entity: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    permission: jspb.Message.getFieldWithDefault(msg, 3, "")
+    permission: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    offset: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -610,6 +671,10 @@ proto.ListEntityRelationsReq.deserializeBinaryFromReader = function(msg, reader)
       var value = /** @type {string} */ (reader.readString());
       msg.setPermission(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOffset(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -657,6 +722,13 @@ proto.ListEntityRelationsReq.serializeBinaryToWriter = function(message, writer)
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getOffset();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -717,6 +789,24 @@ proto.ListEntityRelationsReq.prototype.setPermission = function(value) {
 };
 
 
+/**
+ * optional string offset = 4;
+ * @return {string}
+ */
+proto.ListEntityRelationsReq.prototype.getOffset = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ListEntityRelationsReq} returns this
+ */
+proto.ListEntityRelationsReq.prototype.setOffset = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
 
 
 
@@ -751,7 +841,8 @@ proto.ListObjectRelationsReq.toObject = function(includeInstance, msg) {
   var f, obj = {
     key: jspb.Message.getFieldWithDefault(msg, 1, ""),
     object: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    permission: jspb.Message.getFieldWithDefault(msg, 3, "")
+    permission: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    offset: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -800,6 +891,10 @@ proto.ListObjectRelationsReq.deserializeBinaryFromReader = function(msg, reader)
       var value = /** @type {string} */ (reader.readString());
       msg.setPermission(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setOffset(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -847,6 +942,13 @@ proto.ListObjectRelationsReq.serializeBinaryToWriter = function(message, writer)
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getOffset();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -904,6 +1006,24 @@ proto.ListObjectRelationsReq.prototype.getPermission = function() {
  */
 proto.ListObjectRelationsReq.prototype.setPermission = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string offset = 4;
+ * @return {string}
+ */
+proto.ListObjectRelationsReq.prototype.getOffset = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ListObjectRelationsReq} returns this
+ */
+proto.ListObjectRelationsReq.prototype.setOffset = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
