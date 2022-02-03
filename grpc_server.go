@@ -40,21 +40,40 @@ func StartGRPCServer(port string) {
 }
 
 func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) (out *pb.CheckDirectRes, err error) {
+	out = &pb.CheckDirectRes{}
 	// TODO: Intercepted auth
 	// TEMP AUTH
 	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
 		err = status.Error(codes.PermissionDenied, "Permission denied")
 		return
 	}
-	out = &pb.CheckDirectRes{}
 
-	foundAt := CheckPermissions("nspc", in.Object, in.Permission, in.Entity, 0, 5)
-	if foundAt >= 0 {
-		out.Valid = true
-		out.Recursion = int32(foundAt)
+	// First check explicit deny if provided
+	if in.DenyPermission != "" {
+		directChan := make(chan bool)
+		go CheckPermissionDirect(directChan, "nspc", in.Object, in.DenyPermission, in.Entity)
+		if <-directChan {
+			out.Valid = false
+			out.Recursion = 0
+			return
+		}
+	}
+
+	if in.Recursive {
+		foundAt := CheckPermissions("nspc", in.Object, in.Permission, in.Entity, 0, MAX_RECURSIONS)
+		if foundAt >= 0 {
+			out.Valid = true
+			out.Recursion = int32(foundAt)
+		} else {
+			out.Valid = false
+			out.Recursion = -1
+		}
 	} else {
-		out.Valid = false
-		out.Recursion = -1
+		directChan := make(chan bool)
+		go CheckPermissionDirect(directChan, "nspc", in.Object, in.Permission, in.Entity)
+		isValid := <-directChan
+		out.Valid = isValid
+		out.Recursion = 0
 	}
 	return
 }

@@ -9,6 +9,10 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/scylla"
 )
 
+var (
+	MAX_RECURSIONS = 5
+)
+
 func main() {
 	logger.ConfigureLogger()
 
