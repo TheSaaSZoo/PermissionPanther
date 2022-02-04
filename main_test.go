@@ -5,19 +5,20 @@ import (
 	"os"
 	"testing"
 
+	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/scylla"
 	"github.com/sirupsen/logrus"
 )
 
 func TestMain(m *testing.M) {
 	logger.Logger.SetLevel(logrus.DebugLevel)
 
-	scylla.DBConfig()
-	scylla.DBConnect()
-	scylla.DBTestKeyspaceSetup()
-	scylla.DBConnectWithKeyspace()
-	scylla.DBTestSetup()
+	if err := crdb.ConnectToDB(); err != nil {
+		logger.Error("Error connecting to crdb on start:")
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+	// TODO: Setup test items
 
 	exitVal := m.Run()
 
@@ -29,5 +30,6 @@ func TestMain(m *testing.M) {
 		log.Println("PERSIST_DB=true, keeping DB contents")
 	} else {
 		log.Println("Unknown exit, keeping db contents")
+		// TODO: Clear DB
 	}
 }

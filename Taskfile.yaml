@@ -2,10 +2,20 @@
 
 version: '3'
 
-vars:
-  GREETING: Hello, World!
+env:
+  GOMAXPROCS: "1"
+
+dotenv: ['.env']
 
 tasks:
+  default:
+    cmds:
+      - go run .
+  sqlc:
+    cmds:
+      - node makeSqlcSchema.js
+      - sqlc generate
+    silent: true
   proto:
     cmds:
        - protoc --go_out=. --go_opt=paths=source_relative
