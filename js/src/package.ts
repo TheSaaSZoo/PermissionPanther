@@ -1,8 +1,8 @@
 import * as grpc from '@grpc/grpc-js'
 
-import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListEntityRelationsResponse, PantherConfig, Relationship } from "./types";
+import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListEntityRelationsResponse, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb'
-import { CheckDirectReq, CheckDirectRes, ListEntityRelationsReq } from './pb/permissions_pb'
+import { CheckDirectReq, CheckDirectRes, ListEntityRelationsReq, ListObjectRelationsReq } from './pb/permissions_pb'
 import { promisify } from "util"
 import { PermissionDenied } from "./errors";
 
@@ -53,9 +53,9 @@ export default class PermissionPanther {
   }
 
   /**
-   * Lists an entity's relations to find what objects they have permission on. Optionally specify a `permission` to filter results.
+   * Lists an entity's relations to find what objects they have permission on. Optionally specify a `permission` to look for objects that the entity has a specific permission on.
    */
-  async ListEntityRelations(input: ListEntityRelationsInput): Promise<ListEntityRelationsResponse> {
+  async ListEntityRelations(input: ListEntityRelationsInput): Promise<ListRelationsResponse> {
     return new Promise((resolve, reject) => {
       const req = new ListEntityRelationsReq()
       req.setKey(this.key)
@@ -64,6 +64,42 @@ export default class PermissionPanther {
         req.setPermission(input.permission)
       }
       this.client.listEntityRelations(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+          const rel: Relationship[] = []
+          for (const r of res.getRelationsList()) {
+            rel.push({
+              entity: r.getEntity(),
+              object: r.getObject(),
+              permission: r.getPermission()
+            })
+          }
+          resolve({
+            offset: "",
+            relations: rel
+          })
+        }
+      })
+    })
+  }
+
+  /**
+   * Lists an object's relations to find what entities have permission on it. Optionally specify a `permission` to look for entities who have a specific permission on the object.
+   */
+  async ListObjectRelations(input: ListObjectRelationsInput): Promise<ListRelationsResponse> {
+    return new Promise((resolve, reject) => {
+      const req = new ListObjectRelationsReq()
+      req.setKey(this.key)
+      req.setObject(input.object)
+      if (input.permission) {
+        req.setPermission(input.permission)
+      }
+      this.client.listObjectRelations(req, (err, res) => {
         if (err) {
           switch (err.code) {
             case grpc.status.PERMISSION_DENIED:

@@ -59,7 +59,21 @@ export interface ListEntityRelationsInput {
   offset?: string
 }
 
-export interface ListEntityRelationsResponse {
+export interface ListObjectRelationsInput {
+  object: string
+
+  /**
+   * Optional filter of results, will only check for relationships with this permission.
+   */
+  permission?: string
+
+  /**
+   * NOT IMPLEMENTED - Pagination offset, use the previous result's `offset` to continue paginating.
+   */
+  offset?: string
+}
+
+export interface ListRelationsResponse {
   relations: Relationship[]
 
   /**
