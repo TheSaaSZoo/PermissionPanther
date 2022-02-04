@@ -118,7 +118,7 @@ func GetPermissionGroups(c chan []scylla.Edge, ns, obj, permission string) {
 	c <- edges
 }
 
-func ListEntityPermissions(ns, entity string, permission *string) (relations []pb.Relation, err error) {
+func ListEntityPermissions(ns, entity string, permission *string) (relations []*pb.Relation, err error) {
 	var edges []scylla.Edge
 
 	queryBuilder := qb.Select(scylla.EntityMetadata.Name).
@@ -147,7 +147,7 @@ func ListEntityPermissions(ns, entity string, permission *string) (relations []p
 	}
 
 	for _, e := range edges {
-		relations = append(relations, pb.Relation{
+		relations = append(relations, &pb.Relation{
 			Entity:     e.Entity,
 			Permission: e.Permission,
 			Object:     e.Obj,

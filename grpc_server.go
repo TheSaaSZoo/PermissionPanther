@@ -77,3 +77,47 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 	}
 	return
 }
+
+func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelationsReq) (out *pb.RelationsResponse, err error) {
+	out = &pb.RelationsResponse{}
+
+	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
+		err = status.Error(codes.PermissionDenied, "Permission denied")
+		return
+	}
+
+	var permissionFilter string
+	if in.Permission != "" {
+		permissionFilter = in.Permission
+	}
+	out.Relations, err = ListEntityPermissions("nspc", in.Entity, &permissionFilter)
+	if err != nil {
+		logger.Error("Error listing entity permissions")
+		logger.Error(err.Error())
+		err = status.Errorf(codes.Internal, "Internal error")
+	}
+
+	return
+}
+
+func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelationsReq) (out *pb.RelationsResponse, err error) {
+	out = &pb.RelationsResponse{}
+
+	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
+		err = status.Error(codes.PermissionDenied, "Permission denied")
+		return
+	}
+
+	var permissionFilter string
+	if in.Permission != "" {
+		permissionFilter = in.Permission
+	}
+	out.Relations, err = ListEntityPermissions("nspc", in.Object, &permissionFilter)
+	if err != nil {
+		logger.Error("Error listing object permissions")
+		logger.Error(err.Error())
+		err = status.Errorf(codes.Internal, "Internal error")
+	}
+
+	return
+}
