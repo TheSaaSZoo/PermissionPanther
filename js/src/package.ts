@@ -17,7 +17,7 @@ export default class PermissionPanther {
   }
 
   /**
-   * Check permission
+   * Checks whether an entity has a permission on an object. Optionally specify explicity deny permission, and group inheritance checks.
    */
   async CheckPermission(input: CheckPermissionInput): Promise<CheckPermissionResponse> {
     return new Promise((resolve, reject) => {
@@ -26,6 +26,14 @@ export default class PermissionPanther {
       req.setEntity(input.entity)
       req.setPermission(input.permission)
       req.setObject(input.object)
+      if (input.denyPermission) {
+        req.setDenypermission(input.denyPermission)
+      }
+      if (input.inheritance === false) {
+        req.setRecursive(false)
+      } else {
+        req.setRecursive(true)
+      }
       this.client.checkDirectPermission(req, (err, res) => {
         if (err) {
           switch (err.code) {

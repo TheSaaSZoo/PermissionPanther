@@ -30,7 +30,7 @@ export interface CheckPermissionInput {
   /**
    * Whether to look through group inheritance relationships, up to the server set max recursion. Setting to false will only look for direct relationships. Default `true`.
    */
-  recursive?: boolean
+  inheritance?: boolean
 }
 
 export interface CheckPermissionResponse {
