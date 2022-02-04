@@ -1,0 +1,10 @@
+development:
+  dialect: postgres
+  datasource: ${CRDB_DSN}
+  dir: migrations
+  table: migrations
+# production:
+#   dialect: postgres
+#   datasource: dbname=myapp sslmode=disable
+#   dir: migrations
+#   table: migrations

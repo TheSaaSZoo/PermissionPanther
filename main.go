@@ -5,8 +5,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/scylla"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -14,10 +15,17 @@ var (
 )
 
 func main() {
-	logger.ConfigureLogger()
+	if os.Getenv("TEST_MODE") == "true" {
+		logger.Logger.SetLevel(logrus.DebugLevel)
+	} else {
+		logger.ConfigureLogger()
+	}
 
-	scylla.DBConfig()
-	scylla.DBConnectWithKeyspace()
+	if err := crdb.ConnectToDB(); err != nil {
+		logger.Error("Error connecting to crdb on start:")
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
 
 	go StartGRPCServer("8080")
 
