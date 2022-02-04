@@ -44,3 +44,32 @@ export interface CheckPermissionResponse {
    */
   recursion: number
 }
+
+export interface ListEntityRelationsInput {
+  entity: string
+
+  /**
+   * Optional filter of results, will only check for relationships with this permission.
+   */
+  permission?: string
+
+  /**
+   * NOT IMPLEMENTED - Pagination offset, use the previous result's `offset` to continue paginating.
+   */
+  offset?: string
+}
+
+export interface ListEntityRelationsResponse {
+  relations: Relationship[]
+
+  /**
+   * NOT IMPLEMENTED - Pagination offset, set in the next request to get the next page of results.
+   */
+  offset: string
+}
+
+export interface Relationship {
+  entity: string
+  permission: string
+  object: string
+}
