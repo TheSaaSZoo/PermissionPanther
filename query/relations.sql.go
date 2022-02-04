@@ -8,7 +8,7 @@ import (
 )
 
 const checkRelationDirect = `-- name: CheckRelationDirect :one
-SELECT object, entity, permission, ns
+SELECT 1
 FROM relations
 WHERE ns = $1
 AND entity = $2
@@ -23,39 +23,40 @@ type CheckRelationDirectParams struct {
 	Object     string
 }
 
-func (q *Queries) CheckRelationDirect(ctx context.Context, arg CheckRelationDirectParams) (Relation, error) {
+func (q *Queries) CheckRelationDirect(ctx context.Context, arg CheckRelationDirectParams) (interface{}, error) {
 	row := q.db.QueryRow(ctx, checkRelationDirect,
 		arg.Ns,
 		arg.Entity,
 		arg.Permission,
 		arg.Object,
 	)
-	var i Relation
-	err := row.Scan(
-		&i.Object,
-		&i.Entity,
-		&i.Permission,
-		&i.Ns,
-	)
-	return i, err
+	var column_1 interface{}
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const deleteRelation = `-- name: DeleteRelation :exec
 DELETE FROM relations
 WHERE ns = $1
-AND entity > '~'
-AND permission = $2
-AND object = $3
+AND entity = $2
+AND permission = $3
+AND object = $4
 `
 
 type DeleteRelationParams struct {
 	Ns         string
+	Entity     string
 	Permission string
 	Object     string
 }
 
 func (q *Queries) DeleteRelation(ctx context.Context, arg DeleteRelationParams) error {
-	_, err := q.db.Exec(ctx, deleteRelation, arg.Ns, arg.Permission, arg.Object)
+	_, err := q.db.Exec(ctx, deleteRelation,
+		arg.Ns,
+		arg.Entity,
+		arg.Permission,
+		arg.Object,
+	)
 	return err
 }
 

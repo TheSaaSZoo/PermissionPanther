@@ -1,13 +1,19 @@
 package main
 
 import (
+	"context"
 	"strings"
+	"time"
 
+	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/pb"
-	"github.com/danthegoodman1/PermissionPanther/scylla"
-	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx/v2/qb"
+	"github.com/danthegoodman1/PermissionPanther/query"
+	"github.com/jackc/pgx/v4"
+)
+
+const (
+	QueryTimeout = 10 * time.Second
 )
 
 // Finds at what recursion level a permission exists
@@ -27,7 +33,7 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 
 	// Then check for groups with this permission
 	logger.Debug("Getting groups with ", permission, " on ", object)
-	groupsChan := make(chan []scylla.Edge)
+	groupsChan := make(chan []query.Relation)
 	go GetPermissionGroups(groupsChan, ns, object, permission)
 
 	// Might be able to further optimize this with
@@ -58,164 +64,174 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 
 // Checks whether there is the direct permission mapping from an entity to an object
 func CheckPermissionDirect(c chan bool, ns, obj, permission, entity string) {
-	logger.Debug("Running permission direct check")
-	var edges []scylla.Edge
-
-	query, names := qb.Select(scylla.EdgeMetadata.Name).
-		Columns("*").
-		Where(qb.Eq("entity")).
-		Where(qb.Eq("obj")).
-		Where(qb.Eq("ns")).
-		Where(qb.Eq("permission")).ToCql()
-
-	q := scylla.CQLSession.Query(query, names).BindStruct(scylla.Edge{
-		Obj:        obj,
-		Ns:         ns,
-		Entity:     entity,
-		Permission: permission,
-	})
-	logger.Debug("Direct Query: %v", q.Query)
-	err := q.SelectRelease(&edges)
+	conn, err := crdb.PGPool.Acquire(context.Background())
 	if err != nil {
-		logger.Error("Error checking direct permissions")
+		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
 		c <- false
-	}
-
-	c <- len(edges) > 0
-}
-
-// Returns array of groups that have this permission
-func GetPermissionGroups(c chan []scylla.Edge, ns, obj, permission string) {
-	var edges []scylla.Edge
-
-	query, names := qb.Select(scylla.EdgeMetadata.Name).
-		Columns("*").
-		Where(qb.Gt("entity")).
-		Where(qb.Eq("obj")).
-		Where(qb.Eq("ns")).
-		Where(qb.Eq("permission")).ToCql()
-
-	q := scylla.CQLSession.Query(query, names).BindStruct(scylla.Edge{
-		Obj:        obj,
-		Ns:         ns,
-		Entity:     "~",
-		Permission: permission,
-	})
-	logger.Debug("Group Query: %v", q.Query)
-	err := q.SelectRelease(&edges)
-	if err != nil {
-		logger.Error("Error checking group permissions")
-		logger.Error(err.Error())
-		c <- []scylla.Edge{}
-	}
-
-	if len(edges) == 0 {
-		logger.Debug("Did not find any group lookups")
-	} else {
-		logger.Debug("Found group lookup!")
-	}
-	c <- edges
-}
-
-func ListEntityPermissions(ns, entity string, permission *string) (relations []*pb.Relation, err error) {
-	var edges []scylla.Edge
-
-	queryBuilder := qb.Select(scylla.EntityMetadata.Name).
-		Columns("*").
-		Where(qb.Eq("entity")).
-		Where(qb.Eq("ns"))
-
-	edge := scylla.Edge{
-		Ns:     ns,
-		Entity: entity,
-	}
-
-	if permission != nil {
-		queryBuilder = queryBuilder.Where(qb.Eq("permission"))
-		edge.Permission = *permission
-	}
-
-	query, names := queryBuilder.ToCql()
-
-	q := scylla.CQLSession.Query(query, names).BindStruct(edge)
-	logger.Debug("Direct Query: %v", q.Query)
-	err = q.SelectRelease(&edges)
-	if err != nil {
-		logger.Error("Error listing entity permissions")
 		return
 	}
 
-	for _, e := range edges {
+	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
+	defer cancelFunc()
+
+	params := query.CheckRelationDirectParams{
+		Ns:         ns,
+		Object:     obj,
+		Permission: permission,
+	}
+
+	_, err = query.New(conn).CheckRelationDirect(ctx, params)
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			c <- false
+		default:
+			logger.Error("Error getting direct relation %+v", params)
+			logger.Error(err.Error())
+			c <- false
+		}
+		return
+	}
+
+	c <- true
+}
+
+// Returns array of groups that have this permission
+func GetPermissionGroups(c chan []query.Relation, ns, obj, permission string) {
+	conn, err := crdb.PGPool.Acquire(context.Background())
+	if err != nil {
+		logger.Error("Error acquiring pool connection")
+		logger.Error(err.Error())
+		c <- []query.Relation{}
+		return
+	}
+
+	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
+	defer cancelFunc()
+
+	params := query.GetGroupRelationsParams{
+		Ns:         ns,
+		Object:     obj,
+		Permission: permission,
+	}
+
+	r, err := query.New(conn).GetGroupRelations(ctx, params)
+	if err != nil {
+		logger.Error("Error getting group relations %+v", params)
+		logger.Error(err.Error())
+		c <- []query.Relation{}
+		return
+	}
+	c <- r
+
+	return
+}
+
+func ListEntityPermissions(ns, entity string, permission *string) (relations []*pb.Relation, err error) {
+	conn, err := crdb.PGPool.Acquire(context.Background())
+	if err != nil {
+		logger.Error("Error acquiring pool connection")
+		logger.Error(err.Error())
+		return []*pb.Relation{}, err
+	}
+
+	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
+	defer cancelFunc()
+
+	var r []query.Relation
+
+	if permission != nil {
+		r, err = query.New(conn).ListEntityRelations(ctx, query.ListEntityRelationsParams{
+			Ns:     ns,
+			Entity: entity,
+		})
+	} else {
+		r, err = query.New(conn).ListEntityRelationsWithPermission(ctx, query.ListEntityRelationsWithPermissionParams{
+			Ns:         ns,
+			Entity:     entity,
+			Permission: *permission,
+		})
+	}
+
+	for _, e := range r {
 		relations = append(relations, &pb.Relation{
 			Entity:     e.Entity,
 			Permission: e.Permission,
-			Object:     e.Obj,
+			Object:     e.Object,
 		})
 	}
 	return
 }
 
-func ListObjectPermissions(ns, object string, permission *string) (relations []pb.Relation, err error) {
-	var edges []scylla.Edge
-
-	queryBuilder := qb.Select(scylla.EdgeMetadata.Name).
-		Columns("*").
-		Where(qb.Eq("obj")).
-		Where(qb.Eq("ns"))
-
-	edge := scylla.Edge{
-		Ns:  ns,
-		Obj: object,
+func ListObjectPermissions(ns, object string, permission *string) (relations []*pb.Relation, err error) {
+	conn, err := crdb.PGPool.Acquire(context.Background())
+	if err != nil {
+		logger.Error("Error acquiring pool connection")
+		logger.Error(err.Error())
+		return []*pb.Relation{}, err
 	}
+
+	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
+	defer cancelFunc()
+
+	var r []query.Relation
 
 	if permission != nil {
-		queryBuilder = queryBuilder.Where(qb.Eq("permission"))
-		edge.Permission = *permission
+		r, err = query.New(conn).ListObjectRelations(ctx, query.ListObjectRelationsParams{
+			Ns:     ns,
+			Object: object,
+		})
+	} else {
+		r, err = query.New(conn).ListObjectRelationsWithPermission(ctx, query.ListObjectRelationsWithPermissionParams{
+			Ns:         ns,
+			Object:     object,
+			Permission: *permission,
+		})
 	}
 
-	query, names := queryBuilder.ToCql()
-
-	q := scylla.CQLSession.Query(query, names).BindStruct(edge)
-	logger.Debug("Direct Query: %v", q.Query)
-	err = q.SelectRelease(&edges)
-	if err != nil {
-		logger.Error("Error listing object permissions")
-		return
-	}
-
-	for _, e := range edges {
-		relations = append(relations, pb.Relation{
+	for _, e := range r {
+		relations = append(relations, &pb.Relation{
 			Entity:     e.Entity,
 			Permission: e.Permission,
-			Object:     e.Obj,
+			Object:     e.Object,
 		})
 	}
 	return
 }
 
 func UpsertRelation(ns, obj, permission, entity string) (err error) {
-	q := scylla.CQLSession.Query(scylla.EdgeTable.Insert()).BindStruct(scylla.Edge{
-		Obj:        obj,
+	conn, err := crdb.PGPool.Acquire(context.Background())
+	if err != nil {
+		logger.Error("Error acquiring pool connection")
+		logger.Error(err.Error())
+		return err
+	}
+	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
+	defer cancelFunc()
+	err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
 		Ns:         ns,
-		Entity:     entity,
 		Permission: permission,
+		Object:     obj,
+		Entity:     entity,
 	})
-	// Enable consistent reads
-	q = q.Consistency(gocql.All)
-	err = q.ExecRelease()
 	return
 }
 
 func DeleteRelation(ns, obj, permission, entity string) (err error) {
-	q := scylla.CQLSession.Query(scylla.EdgeTable.Delete()).BindStruct(scylla.Edge{
-		Obj:        obj,
+	conn, err := crdb.PGPool.Acquire(context.Background())
+	if err != nil {
+		logger.Error("Error acquiring pool connection")
+		logger.Error(err.Error())
+		return err
+	}
+	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
+	defer cancelFunc()
+	err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
 		Ns:         ns,
-		Entity:     entity,
 		Permission: permission,
+		Object:     obj,
+		Entity:     entity,
 	})
-	// Enable consistent reads
-	q = q.Consistency(gocql.All)
-	err = q.ExecRelease()
 	return
 }
