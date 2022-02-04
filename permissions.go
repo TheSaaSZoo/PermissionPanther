@@ -32,7 +32,7 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 	go CheckPermissionDirect(directChan, ns, object, permission, entity)
 
 	// Then check for groups with this permission
-	logger.Debug("Getting groups with ", permission, " on ", object)
+	logger.Debug("Getting groups with '%+v' on '%+v'", permission, object)
 	groupsChan := make(chan []query.Relation)
 	go GetPermissionGroups(groupsChan, ns, object, permission)
 
@@ -65,6 +65,7 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 // Checks whether there is the direct permission mapping from an entity to an object
 func CheckPermissionDirect(c chan bool, ns, obj, permission, entity string) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
+	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
@@ -79,6 +80,7 @@ func CheckPermissionDirect(c chan bool, ns, obj, permission, entity string) {
 		Ns:         ns,
 		Object:     obj,
 		Permission: permission,
+		Entity:     entity,
 	}
 
 	_, err = query.New(conn).CheckRelationDirect(ctx, params)
@@ -100,6 +102,7 @@ func CheckPermissionDirect(c chan bool, ns, obj, permission, entity string) {
 // Returns array of groups that have this permission
 func GetPermissionGroups(c chan []query.Relation, ns, obj, permission string) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
+	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
@@ -124,12 +127,11 @@ func GetPermissionGroups(c chan []query.Relation, ns, obj, permission string) {
 		return
 	}
 	c <- r
-
-	return
 }
 
 func ListEntityPermissions(ns, entity string, permission *string) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
+	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
@@ -141,7 +143,7 @@ func ListEntityPermissions(ns, entity string, permission *string) (relations []*
 
 	var r []query.Relation
 
-	if permission != nil {
+	if permission == nil {
 		r, err = query.New(conn).ListEntityRelations(ctx, query.ListEntityRelationsParams{
 			Ns:     ns,
 			Entity: entity,
@@ -166,6 +168,7 @@ func ListEntityPermissions(ns, entity string, permission *string) (relations []*
 
 func ListObjectPermissions(ns, object string, permission *string) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
+	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
@@ -177,7 +180,7 @@ func ListObjectPermissions(ns, object string, permission *string) (relations []*
 
 	var r []query.Relation
 
-	if permission != nil {
+	if permission == nil {
 		r, err = query.New(conn).ListObjectRelations(ctx, query.ListObjectRelationsParams{
 			Ns:     ns,
 			Object: object,
@@ -202,6 +205,7 @@ func ListObjectPermissions(ns, object string, permission *string) (relations []*
 
 func UpsertRelation(ns, obj, permission, entity string) (err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
+	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
@@ -220,6 +224,7 @@ func UpsertRelation(ns, obj, permission, entity string) (err error) {
 
 func DeleteRelation(ns, obj, permission, entity string) (err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
+	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
