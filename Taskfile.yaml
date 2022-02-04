@@ -15,7 +15,6 @@ tasks:
     cmds:
       - node makeSqlcSchema.js
       - sqlc generate
-    silent: true
   proto:
     cmds:
        - protoc --go_out=. --go_opt=paths=source_relative
