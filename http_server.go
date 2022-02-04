@@ -39,7 +39,7 @@ func StartHTTPServer(port string) {
 
 	// Count requests
 	Server.Echo.GET("/metrics", wrapPromHandler)
-	metrics.SetupMetrics()
+	SetupMetrics()
 
 	logger.Info("Starting Permission Panther HTTP API on port ", port)
 	server := &http2.Server{}
