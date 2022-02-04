@@ -43,21 +43,21 @@ interface IPermissionPantherService_IListObjectRelations extends grpc.MethodDefi
     responseSerialize: grpc.serialize<pb_permissions_pb.RelationsResponse>;
     responseDeserialize: grpc.deserialize<pb_permissions_pb.RelationsResponse>;
 }
-interface IPermissionPantherService_ISetPermission extends grpc.MethodDefinition<pb_permissions_pb.CheckDirectReq, pb_main_pb.NoContent> {
+interface IPermissionPantherService_ISetPermission extends grpc.MethodDefinition<pb_permissions_pb.RelationReq, pb_main_pb.NoContent> {
     path: "/PermissionPanther/SetPermission";
     requestStream: false;
     responseStream: false;
-    requestSerialize: grpc.serialize<pb_permissions_pb.CheckDirectReq>;
-    requestDeserialize: grpc.deserialize<pb_permissions_pb.CheckDirectReq>;
+    requestSerialize: grpc.serialize<pb_permissions_pb.RelationReq>;
+    requestDeserialize: grpc.deserialize<pb_permissions_pb.RelationReq>;
     responseSerialize: grpc.serialize<pb_main_pb.NoContent>;
     responseDeserialize: grpc.deserialize<pb_main_pb.NoContent>;
 }
-interface IPermissionPantherService_IRemovePermission extends grpc.MethodDefinition<pb_permissions_pb.CheckDirectReq, pb_main_pb.NoContent> {
+interface IPermissionPantherService_IRemovePermission extends grpc.MethodDefinition<pb_permissions_pb.RelationReq, pb_main_pb.NoContent> {
     path: "/PermissionPanther/RemovePermission";
     requestStream: false;
     responseStream: false;
-    requestSerialize: grpc.serialize<pb_permissions_pb.CheckDirectReq>;
-    requestDeserialize: grpc.deserialize<pb_permissions_pb.CheckDirectReq>;
+    requestSerialize: grpc.serialize<pb_permissions_pb.RelationReq>;
+    requestDeserialize: grpc.deserialize<pb_permissions_pb.RelationReq>;
     responseSerialize: grpc.serialize<pb_main_pb.NoContent>;
     responseDeserialize: grpc.deserialize<pb_main_pb.NoContent>;
 }
@@ -68,8 +68,8 @@ export interface IPermissionPantherServer {
     checkDirectPermission: grpc.handleUnaryCall<pb_permissions_pb.CheckDirectReq, pb_permissions_pb.CheckDirectRes>;
     listEntityRelations: grpc.handleUnaryCall<pb_permissions_pb.ListEntityRelationsReq, pb_permissions_pb.RelationsResponse>;
     listObjectRelations: grpc.handleUnaryCall<pb_permissions_pb.ListObjectRelationsReq, pb_permissions_pb.RelationsResponse>;
-    setPermission: grpc.handleUnaryCall<pb_permissions_pb.CheckDirectReq, pb_main_pb.NoContent>;
-    removePermission: grpc.handleUnaryCall<pb_permissions_pb.CheckDirectReq, pb_main_pb.NoContent>;
+    setPermission: grpc.handleUnaryCall<pb_permissions_pb.RelationReq, pb_main_pb.NoContent>;
+    removePermission: grpc.handleUnaryCall<pb_permissions_pb.RelationReq, pb_main_pb.NoContent>;
 }
 
 export interface IPermissionPantherClient {
@@ -82,12 +82,12 @@ export interface IPermissionPantherClient {
     listObjectRelations(request: pb_permissions_pb.ListObjectRelationsReq, callback: (error: grpc.ServiceError | null, response: pb_permissions_pb.RelationsResponse) => void): grpc.ClientUnaryCall;
     listObjectRelations(request: pb_permissions_pb.ListObjectRelationsReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_permissions_pb.RelationsResponse) => void): grpc.ClientUnaryCall;
     listObjectRelations(request: pb_permissions_pb.ListObjectRelationsReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_permissions_pb.RelationsResponse) => void): grpc.ClientUnaryCall;
-    setPermission(request: pb_permissions_pb.CheckDirectReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    setPermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    setPermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    removePermission(request: pb_permissions_pb.CheckDirectReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    removePermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    removePermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    setPermission(request: pb_permissions_pb.RelationReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    setPermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    setPermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    removePermission(request: pb_permissions_pb.RelationReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
 }
 
 export class PermissionPantherClient extends grpc.Client implements IPermissionPantherClient {
@@ -101,10 +101,10 @@ export class PermissionPantherClient extends grpc.Client implements IPermissionP
     public listObjectRelations(request: pb_permissions_pb.ListObjectRelationsReq, callback: (error: grpc.ServiceError | null, response: pb_permissions_pb.RelationsResponse) => void): grpc.ClientUnaryCall;
     public listObjectRelations(request: pb_permissions_pb.ListObjectRelationsReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_permissions_pb.RelationsResponse) => void): grpc.ClientUnaryCall;
     public listObjectRelations(request: pb_permissions_pb.ListObjectRelationsReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_permissions_pb.RelationsResponse) => void): grpc.ClientUnaryCall;
-    public setPermission(request: pb_permissions_pb.CheckDirectReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    public setPermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    public setPermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    public removePermission(request: pb_permissions_pb.CheckDirectReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    public removePermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
-    public removePermission(request: pb_permissions_pb.CheckDirectReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    public setPermission(request: pb_permissions_pb.RelationReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    public setPermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    public setPermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    public removePermission(request: pb_permissions_pb.RelationReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    public removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
+    public removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.NoContent) => void): grpc.ClientUnaryCall;
 }

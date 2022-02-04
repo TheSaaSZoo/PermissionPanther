@@ -50,3 +50,11 @@ message Relation {
   string permission = 2;
   string object = 3;
 }
+
+message RelationReq {
+  string key = 1;
+
+  string entity = 2;
+  string permission = 3;
+  string object = 4;
+}

@@ -169,3 +169,32 @@ export namespace Relation {
         object: string,
     }
 }
+
+export class RelationReq extends jspb.Message { 
+    getKey(): string;
+    setKey(value: string): RelationReq;
+    getEntity(): string;
+    setEntity(value: string): RelationReq;
+    getPermission(): string;
+    setPermission(value: string): RelationReq;
+    getObject(): string;
+    setObject(value: string): RelationReq;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): RelationReq.AsObject;
+    static toObject(includeInstance: boolean, msg: RelationReq): RelationReq.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: RelationReq, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): RelationReq;
+    static deserializeBinaryFromReader(message: RelationReq, reader: jspb.BinaryReader): RelationReq;
+}
+
+export namespace RelationReq {
+    export type AsObject = {
+        key: string,
+        entity: string,
+        permission: string,
+        object: string,
+    }
+}

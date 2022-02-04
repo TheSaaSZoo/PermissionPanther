@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js'
 
 import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb'
-import { CheckDirectReq, ListEntityRelationsReq, ListObjectRelationsReq } from './pb/permissions_pb'
+import { CheckDirectReq, ListEntityRelationsReq, ListObjectRelationsReq, RelationReq } from './pb/permissions_pb'
 import { PermissionDenied } from "./errors";
 
 export default class PermissionPanther {
@@ -70,19 +70,19 @@ export default class PermissionPanther {
             default:
               reject(err)
           }
-          const rel: Relationship[] = []
-          for (const r of res.getRelationsList()) {
-            rel.push({
-              entity: r.getEntity(),
-              object: r.getObject(),
-              permission: r.getPermission()
-            })
-          }
-          resolve({
-            offset: "",
-            relations: rel
+        }
+        const rel: Relationship[] = []
+        for (const r of res.getRelationsList()) {
+          rel.push({
+            entity: r.getEntity(),
+            object: r.getObject(),
+            permission: r.getPermission()
           })
         }
+        resolve({
+          offset: "",
+          relations: rel
+        })
       })
     })
   }
@@ -106,19 +106,67 @@ export default class PermissionPanther {
             default:
               reject(err)
           }
-          const rel: Relationship[] = []
-          for (const r of res.getRelationsList()) {
-            rel.push({
-              entity: r.getEntity(),
-              object: r.getObject(),
-              permission: r.getPermission()
-            })
-          }
-          resolve({
-            offset: "",
-            relations: rel
+        }
+        const rel: Relationship[] = []
+        for (const r of res.getRelationsList()) {
+          rel.push({
+            entity: r.getEntity(),
+            object: r.getObject(),
+            permission: r.getPermission()
           })
         }
+        resolve({
+          offset: "",
+          relations: rel
+        })
+      })
+    })
+  }
+
+  /**
+   * Sets a permission. Is a no-op if the permission already exists.
+   */
+  async SetPermission(input: Relationship) {
+    return new Promise((resolve, reject) => {
+      const req = new RelationReq()
+      req.setEntity(input.entity)
+      req.setKey(this.key)
+      req.setObject(input.object)
+      req.setPermission(input.permission)
+      this.client.setPermission(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+        }
+        resolve(undefined)
+      })
+    })
+  }
+
+  /**
+   * Removes a permission. Is a no-op if the permission does not exist.
+   */
+  async RemovePermission(input: Relationship) {
+    return new Promise((resolve, reject) => {
+      const req = new RelationReq()
+      req.setEntity(input.entity)
+      req.setKey(this.key)
+      req.setObject(input.object)
+      req.setPermission(input.permission)
+      this.client.removePermission(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+        }
+        resolve(undefined)
       })
     })
   }

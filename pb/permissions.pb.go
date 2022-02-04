@@ -420,6 +420,77 @@ func (x *Relation) GetObject() string {
 	return ""
 }
 
+type RelationReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Key        string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Entity     string `protobuf:"bytes,2,opt,name=entity,proto3" json:"entity,omitempty"`
+	Permission string `protobuf:"bytes,3,opt,name=permission,proto3" json:"permission,omitempty"`
+	Object     string `protobuf:"bytes,4,opt,name=object,proto3" json:"object,omitempty"`
+}
+
+func (x *RelationReq) Reset() {
+	*x = RelationReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_permissions_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RelationReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RelationReq) ProtoMessage() {}
+
+func (x *RelationReq) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_permissions_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RelationReq.ProtoReflect.Descriptor instead.
+func (*RelationReq) Descriptor() ([]byte, []int) {
+	return file_pb_permissions_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RelationReq) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *RelationReq) GetEntity() string {
+	if x != nil {
+		return x.Entity
+	}
+	return ""
+}
+
+func (x *RelationReq) GetPermission() string {
+	if x != nil {
+		return x.Permission
+	}
+	return ""
+}
+
+func (x *RelationReq) GetObject() string {
+	if x != nil {
+		return x.Object
+	}
+	return ""
+}
+
 var File_pb_permissions_proto protoreflect.FileDescriptor
 
 var file_pb_permissions_proto_rawDesc = []byte{
@@ -465,8 +536,15 @@ var file_pb_permissions_proto_rawDesc = []byte{
 	0x79, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18,
 	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
 	0x6e, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x09, 0x52, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x6f, 0x0a, 0x0b, 0x52, 0x65, 0x6c,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x6e,
+	0x74, 0x69, 0x74, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x65, 0x6e, 0x74, 0x69,
+	0x74, 0x79, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f,
+	0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -481,7 +559,7 @@ func file_pb_permissions_proto_rawDescGZIP() []byte {
 	return file_pb_permissions_proto_rawDescData
 }
 
-var file_pb_permissions_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_pb_permissions_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_pb_permissions_proto_goTypes = []interface{}{
 	(*CheckDirectReq)(nil),         // 0: CheckDirectReq
 	(*CheckDirectRes)(nil),         // 1: CheckDirectRes
@@ -489,6 +567,7 @@ var file_pb_permissions_proto_goTypes = []interface{}{
 	(*ListObjectRelationsReq)(nil), // 3: ListObjectRelationsReq
 	(*RelationsResponse)(nil),      // 4: RelationsResponse
 	(*Relation)(nil),               // 5: Relation
+	(*RelationReq)(nil),            // 6: RelationReq
 }
 var file_pb_permissions_proto_depIdxs = []int32{
 	5, // 0: RelationsResponse.relations:type_name -> Relation
@@ -577,6 +656,18 @@ func file_pb_permissions_proto_init() {
 				return nil
 			}
 		}
+		file_pb_permissions_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RelationReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -584,7 +675,7 @@ func file_pb_permissions_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pb_permissions_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

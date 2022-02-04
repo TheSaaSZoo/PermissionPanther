@@ -15,10 +15,10 @@ service PermissionPanther {
   rpc ListObjectRelations (ListObjectRelationsReq) returns (RelationsResponse);
 
   // Will set a permission for an entity on an object. If the permission already exists it is a no-op.
-  rpc SetPermission (CheckDirectReq) returns (NoContent);
+  rpc SetPermission (RelationReq) returns (NoContent);
 
   // Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
-  rpc RemovePermission (CheckDirectReq) returns (NoContent);
+  rpc RemovePermission (RelationReq) returns (NoContent);
 }
 
 message NoContent {}
