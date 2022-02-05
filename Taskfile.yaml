@@ -32,5 +32,5 @@ tasks:
   docker:
     cmds:
       - docker build . -t us-east1-docker.pkg.dev/billabull/permissionpanther/api:latest
-      - gcloud auth configure-docker us-east1-docker.pkg.dev --account=xxdanthegoodmanxx@gmail.com
+      - gcloud auth configure-docker us-east1-docker.pkg.dev --account=$GCP_ACCOUNT
       - docker push us-east1-docker.pkg.dev/billabull/permissionpanther/api:latest
