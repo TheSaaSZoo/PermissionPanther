@@ -1,10 +1,30 @@
 -- name: CheckRelationDirect :one
 SELECT 1
-FROM relations
-WHERE ns = $1
-AND entity IN ($2, '*')
-AND permission = $3
-AND object IN ($4, '*');
+WHERE EXISTS (
+    SELECT 1 FROM relations
+    WHERE relations.ns = $1
+    AND relations.entity = $2
+    AND relations.permission = $3
+    AND relations.object = $4
+) OR EXISTS (
+    SELECT 1 FROM relations
+    WHERE relations.ns = $1
+    AND relations.entity = '*'
+    AND relations.permission = $3
+    AND relations.object = $4
+) OR EXISTS (
+    SELECT 1 FROM relations
+    WHERE relations.ns = $1
+    AND relations.entity = $2
+    AND relations.permission = $3
+    AND relations.object = '*'
+) OR EXISTS (
+    SELECT 1 FROM relations
+    WHERE relations.ns = $1
+    AND relations.entity = $2
+    AND relations.permission = '*'
+    AND relations.object = $4
+);
 
 -- name: GetGroupRelations :many
 SELECT *
