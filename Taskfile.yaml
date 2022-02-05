@@ -11,6 +11,9 @@ tasks:
   default:
     cmds:
       - go run .
+  test:
+    cmds:
+      - go test . -count=1 -v
   sqlc:
     cmds:
       - node makeSqlcSchema.js
