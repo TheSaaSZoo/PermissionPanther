@@ -29,3 +29,8 @@ tasks:
         --ts_out=./js/src
         pb/*.proto
     silent: true
+  docker:
+    cmds:
+      - docker build . -t us-east1-docker.pkg.dev/billabull/permissionpanther/api:latest
+      - gcloud auth configure-docker us-east1-docker.pkg.dev --account=xxdanthegoodmanxx@gmail.com
+      - docker push us-east1-docker.pkg.dev/billabull/permissionpanther/api:latest

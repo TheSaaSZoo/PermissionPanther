@@ -7,6 +7,7 @@ import (
 
 	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/logger"
+	"github.com/danthegoodman1/PermissionPanther/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	go StartGRPCServer("8080")
+	go StartGRPCServer(utils.GetEnvOrDefault("PORT", "8080"))
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
