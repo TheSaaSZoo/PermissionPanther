@@ -18,7 +18,7 @@ const (
 
 // Finds at what recursion level a permission exists
 //
-// Returns -1 if permission is not found
+// Returns -1 if permission is not found or invalid
 func CheckPermissions(ns, object, permission, entity string, currentRecursion, maxRecursion int) int {
 	if currentRecursion > maxRecursion {
 		logger.Debug("Aborting nested group checks, exceeded %d recursions!", maxRecursion)

@@ -136,4 +136,40 @@ func TestPermissions(t *testing.T) {
 			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
 		}
 	})
+
+	t.Run("wildcard relation", func(t *testing.T) {
+		log.Println("\n\n\n### test wildcard relation")
+		err := UpsertRelation("nspc", "t2obj", "t2perm", "*")
+		utils.HandleTestError(t, err)
+
+		// Validate
+		found := CheckPermissions("nspc", "t2obj", "t2perm", "user1", 0, 4)
+		log.Println("Found wildcard relation at recursion", found)
+		if found == -1 {
+			panic("Not found!")
+		}
+
+		// Delete
+		err = DeleteRelation("nspc", "t2obj", "t2perm", "*")
+		utils.HandleTestError(t, err)
+
+		// Check again
+		found = CheckPermissions("nspc", "t2obj", "t2perm", "user1", 0, 4)
+		log.Println("Found wildcard relation at recursion", found)
+		if found != -1 {
+			panic("Not found!")
+		}
+	})
+
+	t.Run("explicit deny", func(t *testing.T) {
+		log.Println("\n\n\n### test explicit deny")
+		err := UpsertRelation("nspc", "t2obj", "deny", "user1")
+		utils.HandleTestError(t, err)
+
+		// Validate
+		found := CheckPermissions("nspc", "t2obj", "deny", "user1", 0, 4)
+		if found == -1 {
+			panic("Not found!")
+		}
+	})
 }
