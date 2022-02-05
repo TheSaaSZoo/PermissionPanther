@@ -17,6 +17,7 @@ var (
 func GetEnvOrDefault(env, defaultVal string) string {
 	e := os.Getenv(env)
 	if e == "" {
+		logger.Debug("Using default value for env var ", env)
 		return defaultVal
 	} else {
 		return e

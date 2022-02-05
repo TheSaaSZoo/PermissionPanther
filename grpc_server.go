@@ -31,7 +31,7 @@ func StartGRPCServer(port string) {
 
 	GRPCServer = grpc.NewServer(opts...)
 	pb.RegisterPermissionPantherServer(GRPCServer, &server{})
-	logger.Info("Starting BILLABULL gRPC Server on port %s", port)
+	logger.Info("Starting Permission Panther gRPC Server on port %s", port)
 	err = GRPCServer.Serve(lis)
 	if err != nil {
 		logger.Error("Error closing grpc server:")
