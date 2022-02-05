@@ -12,7 +12,7 @@ export default class PermissionPanther {
   constructor(config: PantherConfig) {
     this.key = config.key
     this.target = config.endpoint
-    this.client = new PermissionPantherClient(this.target, grpc.credentials.createInsecure())
+    this.client = new PermissionPantherClient(this.target, grpc.credentials.createSsl())
   }
 
   /**

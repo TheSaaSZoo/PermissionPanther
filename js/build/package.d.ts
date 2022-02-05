@@ -1,4 +1,4 @@
-import { CheckPermissionInput, CheckPermissionResponse, PantherConfig } from "./types";
+import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb';
 export default class PermissionPanther {
     key: string;
@@ -6,7 +6,23 @@ export default class PermissionPanther {
     client: PermissionPantherClient;
     constructor(config: PantherConfig);
     /**
-     * Check permission
+     * Checks whether an entity has a permission on an object. Optionally specify explicity deny permission, and group inheritance checks.
      */
     CheckPermission(input: CheckPermissionInput): Promise<CheckPermissionResponse>;
+    /**
+     * Lists an entity's relations to find what objects they have permission on. Optionally specify a `permission` to look for objects that the entity has a specific permission on.
+     */
+    ListEntityRelations(input: ListEntityRelationsInput): Promise<ListRelationsResponse>;
+    /**
+     * Lists an object's relations to find what entities have permission on it. Optionally specify a `permission` to look for entities who have a specific permission on the object.
+     */
+    ListObjectRelations(input: ListObjectRelationsInput): Promise<ListRelationsResponse>;
+    /**
+     * Sets a permission. Is a no-op if the permission already exists.
+     */
+    SetPermission(input: Relationship): Promise<unknown>;
+    /**
+     * Removes a permission. Is a no-op if the permission does not exist.
+     */
+    RemovePermission(input: Relationship): Promise<unknown>;
 }

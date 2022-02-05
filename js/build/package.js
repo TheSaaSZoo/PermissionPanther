@@ -27,10 +27,10 @@ class PermissionPanther {
     constructor(config) {
         this.key = config.key;
         this.target = config.endpoint;
-        this.client = new main_grpc_pb_1.PermissionPantherClient(this.target, grpc.credentials.createInsecure());
+        this.client = new main_grpc_pb_1.PermissionPantherClient(this.target, grpc.credentials.createSsl());
     }
     /**
-     * Check permission
+     * Checks whether an entity has a permission on an object. Optionally specify explicity deny permission, and group inheritance checks.
      */
     async CheckPermission(input) {
         return new Promise((resolve, reject) => {
@@ -39,6 +39,15 @@ class PermissionPanther {
             req.setEntity(input.entity);
             req.setPermission(input.permission);
             req.setObject(input.object);
+            if (input.denyPermission) {
+                req.setDenypermission(input.denyPermission);
+            }
+            if (input.inheritance === false) {
+                req.setRecursive(false);
+            }
+            else {
+                req.setRecursive(true);
+            }
             this.client.checkDirectPermission(req, (err, res) => {
                 if (err) {
                     switch (err.code) {
@@ -53,6 +62,122 @@ class PermissionPanther {
                     recursion: res.getRecursion(),
                     valid: res.getValid()
                 });
+            });
+        });
+    }
+    /**
+     * Lists an entity's relations to find what objects they have permission on. Optionally specify a `permission` to look for objects that the entity has a specific permission on.
+     */
+    async ListEntityRelations(input) {
+        return new Promise((resolve, reject) => {
+            const req = new permissions_pb_1.ListEntityRelationsReq();
+            req.setKey(this.key);
+            req.setEntity(input.entity);
+            if (input.permission) {
+                req.setPermission(input.permission);
+            }
+            this.client.listEntityRelations(req, (err, res) => {
+                if (err) {
+                    switch (err.code) {
+                        case grpc.status.PERMISSION_DENIED:
+                            reject(new errors_1.PermissionDenied());
+                        default:
+                            reject(err);
+                    }
+                }
+                const rel = [];
+                for (const r of res.getRelationsList()) {
+                    rel.push({
+                        entity: r.getEntity(),
+                        object: r.getObject(),
+                        permission: r.getPermission()
+                    });
+                }
+                resolve({
+                    offset: "",
+                    relations: rel
+                });
+            });
+        });
+    }
+    /**
+     * Lists an object's relations to find what entities have permission on it. Optionally specify a `permission` to look for entities who have a specific permission on the object.
+     */
+    async ListObjectRelations(input) {
+        return new Promise((resolve, reject) => {
+            const req = new permissions_pb_1.ListObjectRelationsReq();
+            req.setKey(this.key);
+            req.setObject(input.object);
+            if (input.permission) {
+                req.setPermission(input.permission);
+            }
+            this.client.listObjectRelations(req, (err, res) => {
+                if (err) {
+                    switch (err.code) {
+                        case grpc.status.PERMISSION_DENIED:
+                            reject(new errors_1.PermissionDenied());
+                        default:
+                            reject(err);
+                    }
+                }
+                const rel = [];
+                for (const r of res.getRelationsList()) {
+                    rel.push({
+                        entity: r.getEntity(),
+                        object: r.getObject(),
+                        permission: r.getPermission()
+                    });
+                }
+                resolve({
+                    offset: "",
+                    relations: rel
+                });
+            });
+        });
+    }
+    /**
+     * Sets a permission. Is a no-op if the permission already exists.
+     */
+    async SetPermission(input) {
+        return new Promise((resolve, reject) => {
+            const req = new permissions_pb_1.RelationReq();
+            req.setEntity(input.entity);
+            req.setKey(this.key);
+            req.setObject(input.object);
+            req.setPermission(input.permission);
+            this.client.setPermission(req, (err, res) => {
+                if (err) {
+                    switch (err.code) {
+                        case grpc.status.PERMISSION_DENIED:
+                            reject(new errors_1.PermissionDenied());
+                        default:
+                            reject(err);
+                    }
+                }
+                resolve(undefined);
+            });
+        });
+    }
+    /**
+     * Removes a permission. Is a no-op if the permission does not exist.
+     */
+    async RemovePermission(input) {
+        return new Promise((resolve, reject) => {
+            const req = new permissions_pb_1.RelationReq();
+            req.setEntity(input.entity);
+            req.setKey(this.key);
+            req.setObject(input.object);
+            req.setPermission(input.permission);
+            this.client.removePermission(req, (err, res) => {
+                if (err) {
+                    switch (err.code) {
+                        case grpc.status.PERMISSION_DENIED:
+                            reject(new errors_1.PermissionDenied());
+                        default:
+                            reject(err);
+                    }
+                }
+                resolve(undefined);
             });
         });
     }

@@ -49,12 +49,12 @@ export namespace PermissionPantherService {
         export { requestStream_3 as requestStream };
         const responseStream_3: boolean;
         export { responseStream_3 as responseStream };
-        const requestType_3: typeof pb_permissions_pb.CheckDirectReq;
+        const requestType_3: typeof pb_permissions_pb.RelationReq;
         export { requestType_3 as requestType };
         const responseType_3: typeof pb_main_pb.NoContent;
         export { responseType_3 as responseType };
-        export { serialize_CheckDirectReq as requestSerialize };
-        export { deserialize_CheckDirectReq as requestDeserialize };
+        export { serialize_RelationReq as requestSerialize };
+        export { deserialize_RelationReq as requestDeserialize };
         export { serialize_NoContent as responseSerialize };
         export { deserialize_NoContent as responseDeserialize };
     }
@@ -65,12 +65,12 @@ export namespace PermissionPantherService {
         export { requestStream_4 as requestStream };
         const responseStream_4: boolean;
         export { responseStream_4 as responseStream };
-        const requestType_4: typeof pb_permissions_pb.CheckDirectReq;
+        const requestType_4: typeof pb_permissions_pb.RelationReq;
         export { requestType_4 as requestType };
         const responseType_4: typeof pb_main_pb.NoContent;
         export { responseType_4 as responseType };
-        export { serialize_CheckDirectReq as requestSerialize };
-        export { deserialize_CheckDirectReq as requestDeserialize };
+        export { serialize_RelationReq as requestSerialize };
+        export { deserialize_RelationReq as requestDeserialize };
         export { serialize_NoContent as responseSerialize };
         export { deserialize_NoContent as responseDeserialize };
     }
@@ -88,6 +88,8 @@ declare function deserialize_RelationsResponse(buffer_arg: any): pb_permissions_
 declare function serialize_ListObjectRelationsReq(arg: any): Buffer;
 declare function deserialize_ListObjectRelationsReq(buffer_arg: any): pb_permissions_pb.ListObjectRelationsReq;
 import pb_main_pb = require("../pb/main_pb.js");
+declare function serialize_RelationReq(arg: any): Buffer;
+declare function deserialize_RelationReq(buffer_arg: any): pb_permissions_pb.RelationReq;
 declare function serialize_NoContent(arg: any): Buffer;
 declare function deserialize_NoContent(buffer_arg: any): pb_main_pb.NoContent;
 import grpc = require("@grpc/grpc-js");

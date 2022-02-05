@@ -48,6 +48,15 @@ function serialize_NoContent(arg) {
 function deserialize_NoContent(buffer_arg) {
     return pb_main_pb.NoContent.deserializeBinary(new Uint8Array(buffer_arg));
 }
+function serialize_RelationReq(arg) {
+    if (!(arg instanceof pb_permissions_pb.RelationReq)) {
+        throw new Error('Expected argument of type RelationReq');
+    }
+    return Buffer.from(arg.serializeBinary());
+}
+function deserialize_RelationReq(buffer_arg) {
+    return pb_permissions_pb.RelationReq.deserializeBinary(new Uint8Array(buffer_arg));
+}
 function serialize_RelationsResponse(arg) {
     if (!(arg instanceof pb_permissions_pb.RelationsResponse)) {
         throw new Error('Expected argument of type RelationsResponse');
@@ -99,10 +108,10 @@ var PermissionPantherService = exports.PermissionPantherService = {
         path: '/PermissionPanther/SetPermission',
         requestStream: false,
         responseStream: false,
-        requestType: pb_permissions_pb.CheckDirectReq,
+        requestType: pb_permissions_pb.RelationReq,
         responseType: pb_main_pb.NoContent,
-        requestSerialize: serialize_CheckDirectReq,
-        requestDeserialize: deserialize_CheckDirectReq,
+        requestSerialize: serialize_RelationReq,
+        requestDeserialize: deserialize_RelationReq,
         responseSerialize: serialize_NoContent,
         responseDeserialize: deserialize_NoContent,
     },
@@ -111,10 +120,10 @@ var PermissionPantherService = exports.PermissionPantherService = {
         path: '/PermissionPanther/RemovePermission',
         requestStream: false,
         responseStream: false,
-        requestType: pb_permissions_pb.CheckDirectReq,
+        requestType: pb_permissions_pb.RelationReq,
         responseType: pb_main_pb.NoContent,
-        requestSerialize: serialize_CheckDirectReq,
-        requestDeserialize: deserialize_CheckDirectReq,
+        requestSerialize: serialize_RelationReq,
+        requestDeserialize: deserialize_RelationReq,
         responseSerialize: serialize_NoContent,
         responseDeserialize: deserialize_NoContent,
     },
