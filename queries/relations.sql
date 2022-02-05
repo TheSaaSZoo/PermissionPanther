@@ -4,7 +4,7 @@ FROM relations
 WHERE ns = $1
 AND entity IN ($2, '*')
 AND permission = $3
-AND object = $4;
+AND object IN ($4, '*');
 
 -- name: GetGroupRelations :many
 SELECT *

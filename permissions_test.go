@@ -137,14 +137,14 @@ func TestPermissions(t *testing.T) {
 		}
 	})
 
-	t.Run("wildcard relation", func(t *testing.T) {
-		log.Println("\n\n\n### test wildcard relation")
+	t.Run("wildcard entity relation", func(t *testing.T) {
+		log.Println("\n\n\n### test wildcard entity relation")
 		err := UpsertRelation("nspc", "t2obj", "t2perm", "*")
 		utils.HandleTestError(t, err)
 
 		// Validate
 		found := CheckPermissions("nspc", "t2obj", "t2perm", "user1", 0, 4)
-		log.Println("Found wildcard relation at recursion", found)
+		log.Println("Found wildcard entity relation at recursion", found)
 		if found == -1 {
 			panic("Not found!")
 		}
@@ -169,6 +169,30 @@ func TestPermissions(t *testing.T) {
 		// Validate
 		found := CheckPermissions("nspc", "t2obj", "deny", "user1", 0, 4)
 		if found == -1 {
+			panic("Not found!")
+		}
+	})
+
+	t.Run("wildcard object relation", func(t *testing.T) {
+		log.Println("\n\n\n### test wildcard object relation")
+		err := UpsertRelation("nspc", "*", "t2perm", "u2")
+		utils.HandleTestError(t, err)
+
+		// Validate
+		found := CheckPermissions("nspc", "yeye", "t2perm", "u2", 0, 4)
+		log.Println("Found wildcard object relation at recursion", found)
+		if found == -1 {
+			panic("Not found!")
+		}
+
+		// Delete
+		err = DeleteRelation("nspc", "*", "t2perm", "u2")
+		utils.HandleTestError(t, err)
+
+		// Check again
+		found = CheckPermissions("nspc", "yeye", "t2perm", "u2", 0, 4)
+		log.Println("Found wildcard relation at recursion", found)
+		if found != -1 {
 			panic("Not found!")
 		}
 	})
