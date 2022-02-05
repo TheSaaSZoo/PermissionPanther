@@ -9,6 +9,34 @@ import (
 
 const checkRelationDirect = `-- name: CheckRelationDirect :one
 SELECT 1
+FROM relations
+WHERE ns = $1
+AND entity = $2
+AND permission = $3
+AND object = $4
+`
+
+type CheckRelationDirectParams struct {
+	Ns         string
+	Entity     string
+	Permission string
+	Object     string
+}
+
+func (q *Queries) CheckRelationDirect(ctx context.Context, arg CheckRelationDirectParams) (interface{}, error) {
+	row := q.db.QueryRow(ctx, checkRelationDirect,
+		arg.Ns,
+		arg.Entity,
+		arg.Permission,
+		arg.Object,
+	)
+	var column_1 interface{}
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const checkRelationWildcard = `-- name: CheckRelationWildcard :one
+SELECT 1
 WHERE EXISTS (
     SELECT 1 FROM relations
     WHERE relations.ns = $1
@@ -36,15 +64,15 @@ WHERE EXISTS (
 )
 `
 
-type CheckRelationDirectParams struct {
+type CheckRelationWildcardParams struct {
 	Ns         string
 	Entity     string
 	Permission string
 	Object     string
 }
 
-func (q *Queries) CheckRelationDirect(ctx context.Context, arg CheckRelationDirectParams) (interface{}, error) {
-	row := q.db.QueryRow(ctx, checkRelationDirect,
+func (q *Queries) CheckRelationWildcard(ctx context.Context, arg CheckRelationWildcardParams) (interface{}, error) {
+	row := q.db.QueryRow(ctx, checkRelationWildcard,
 		arg.Ns,
 		arg.Entity,
 		arg.Permission,

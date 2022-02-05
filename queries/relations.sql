@@ -1,5 +1,13 @@
 -- name: CheckRelationDirect :one
 SELECT 1
+FROM relations
+WHERE ns = $1
+AND entity = $2
+AND permission = $3
+AND object = $4;
+
+-- name: CheckRelationWildcard :one
+SELECT 1
 WHERE EXISTS (
     SELECT 1 FROM relations
     WHERE relations.ns = $1
