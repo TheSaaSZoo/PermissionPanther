@@ -104,7 +104,7 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 		return
 	}
 
-	out.Relations, err = ListEntityPermissions("nspc", in.Object, in.Permission)
+	out.Relations, err = ListObjectPermissions("nspc", in.Object, in.Permission)
 	if err != nil {
 		logger.Error("Error listing object permissions")
 		logger.Error(err.Error())
