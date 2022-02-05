@@ -34,3 +34,6 @@ tasks:
       - docker build . -t us-east1-docker.pkg.dev/billabull/permissionpanther/api:latest
       - gcloud auth configure-docker us-east1-docker.pkg.dev --account=$GCP_ACCOUNT
       - docker push us-east1-docker.pkg.dev/billabull/permissionpanther/api:latest
+  # cloudrun:
+  #   cmds:
+  #     - gcloud run deploy $GCP_CR_SERVICE --acount=$GCP_ACCOUNT --image=us-east1-docker.pkg.dev/billabull/permissionpanther/api:latest
