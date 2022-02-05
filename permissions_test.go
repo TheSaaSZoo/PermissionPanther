@@ -59,7 +59,7 @@ func TestPermissions(t *testing.T) {
 
 	t.Run("list entity permission success", func(t *testing.T) {
 		log.Println("\n\n\n### list entity permission success")
-		relations, err := ListEntityPermissions("nspc", "user1", nil)
+		relations, err := ListEntityPermissions("nspc", "user1", "")
 		utils.HandleTestError(t, err)
 		if len(relations) < 1 {
 			utils.HandleTestError(t, fmt.Errorf("failed to list entity permission"))
@@ -70,7 +70,7 @@ func TestPermissions(t *testing.T) {
 	t.Run("list entity permission success with filter", func(t *testing.T) {
 		log.Println("\n\n\n### list entity permission success with filter")
 		perm := "access"
-		relations, err := ListEntityPermissions("nspc", "user1", &perm)
+		relations, err := ListEntityPermissions("nspc", "user1", perm)
 		utils.HandleTestError(t, err)
 		if len(relations) < 1 {
 			utils.HandleTestError(t, fmt.Errorf("failed to list entity permission"))
@@ -80,7 +80,7 @@ func TestPermissions(t *testing.T) {
 
 	t.Run("list object permission success", func(t *testing.T) {
 		log.Println("\n\n\n### list object permission success")
-		relations, err := ListObjectPermissions("nspc", "obj1", nil)
+		relations, err := ListObjectPermissions("nspc", "obj1", "")
 		utils.HandleTestError(t, err)
 		if len(relations) < 1 {
 			utils.HandleTestError(t, fmt.Errorf("failed to list object permission"))
@@ -91,7 +91,7 @@ func TestPermissions(t *testing.T) {
 	t.Run("list object permission success with filter", func(t *testing.T) {
 		log.Println("\n\n\n### list object permission success with filter")
 		perm := "access"
-		relations, err := ListObjectPermissions("nspc", "obj1", &perm)
+		relations, err := ListObjectPermissions("nspc", "obj1", perm)
 		utils.HandleTestError(t, err)
 		if len(relations) < 1 {
 			utils.HandleTestError(t, fmt.Errorf("failed to list object permission"))
@@ -102,7 +102,7 @@ func TestPermissions(t *testing.T) {
 	t.Run("list object permission empty with filter", func(t *testing.T) {
 		log.Println("\n\n\n### list object permission success with filter")
 		perm := "accesseeeee"
-		relations, err := ListObjectPermissions("nspc", "obj1", &perm)
+		relations, err := ListObjectPermissions("nspc", "obj1", perm)
 		utils.HandleTestError(t, err)
 		if len(relations) != 0 {
 			utils.HandleTestError(t, fmt.Errorf("failed to list object permission"))
@@ -117,7 +117,7 @@ func TestPermissions(t *testing.T) {
 
 		// Get it to validate
 		perm := "tperm"
-		relations, err := ListEntityPermissions("nspc", "tuser", &perm)
+		relations, err := ListEntityPermissions("nspc", "tuser", perm)
 		utils.HandleTestError(t, err)
 		if len(relations) != 1 {
 			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
@@ -130,7 +130,7 @@ func TestPermissions(t *testing.T) {
 		utils.HandleTestError(t, err)
 
 		// Get it to validate
-		relations, err := ListEntityPermissions("nspc", "tuser", nil)
+		relations, err := ListEntityPermissions("nspc", "tuser", "")
 		utils.HandleTestError(t, err)
 		if len(relations) != 0 {
 			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))

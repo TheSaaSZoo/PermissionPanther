@@ -86,11 +86,7 @@ func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelation
 		return
 	}
 
-	var permissionFilter string
-	if in.Permission != "" {
-		permissionFilter = in.Permission
-	}
-	out.Relations, err = ListEntityPermissions("nspc", in.Entity, &permissionFilter)
+	out.Relations, err = ListEntityPermissions("nspc", in.Entity, in.Permission)
 	if err != nil {
 		logger.Error("Error listing entity permissions")
 		logger.Error(err.Error())
@@ -108,11 +104,7 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 		return
 	}
 
-	var permissionFilter string
-	if in.Permission != "" {
-		permissionFilter = in.Permission
-	}
-	out.Relations, err = ListEntityPermissions("nspc", in.Object, &permissionFilter)
+	out.Relations, err = ListEntityPermissions("nspc", in.Object, in.Permission)
 	if err != nil {
 		logger.Error("Error listing object permissions")
 		logger.Error(err.Error())

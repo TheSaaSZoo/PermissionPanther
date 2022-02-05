@@ -129,7 +129,7 @@ func GetPermissionGroups(c chan []query.Relation, ns, obj, permission string) {
 	c <- r
 }
 
-func ListEntityPermissions(ns, entity string, permission *string) (relations []*pb.Relation, err error) {
+func ListEntityPermissions(ns, entity string, permission string) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -143,7 +143,7 @@ func ListEntityPermissions(ns, entity string, permission *string) (relations []*
 
 	var r []query.Relation
 
-	if permission == nil {
+	if permission == "" {
 		r, err = query.New(conn).ListEntityRelations(ctx, query.ListEntityRelationsParams{
 			Ns:     ns,
 			Entity: entity,
@@ -152,7 +152,7 @@ func ListEntityPermissions(ns, entity string, permission *string) (relations []*
 		r, err = query.New(conn).ListEntityRelationsWithPermission(ctx, query.ListEntityRelationsWithPermissionParams{
 			Ns:         ns,
 			Entity:     entity,
-			Permission: *permission,
+			Permission: permission,
 		})
 	}
 
@@ -166,7 +166,7 @@ func ListEntityPermissions(ns, entity string, permission *string) (relations []*
 	return
 }
 
-func ListObjectPermissions(ns, object string, permission *string) (relations []*pb.Relation, err error) {
+func ListObjectPermissions(ns, object string, permission string) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -180,7 +180,7 @@ func ListObjectPermissions(ns, object string, permission *string) (relations []*
 
 	var r []query.Relation
 
-	if permission == nil {
+	if permission == "" {
 		r, err = query.New(conn).ListObjectRelations(ctx, query.ListObjectRelationsParams{
 			Ns:     ns,
 			Object: object,
@@ -189,7 +189,7 @@ func ListObjectPermissions(ns, object string, permission *string) (relations []*
 		r, err = query.New(conn).ListObjectRelationsWithPermission(ctx, query.ListObjectRelationsWithPermissionParams{
 			Ns:         ns,
 			Object:     object,
-			Permission: *permission,
+			Permission: permission,
 		})
 	}
 
