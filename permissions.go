@@ -10,6 +10,7 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/pb"
 	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/jackc/pgx/v4"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -25,7 +26,6 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 		// Fail fast
 		return -1, nil
 	}
-	// TODO: Make permission check count log
 	logger.Debug("Running permission check, recursion: %d/%d", currentRecursion, maxRecursion)
 
 	// First check for direct access
@@ -97,6 +97,11 @@ func CheckPermissionDirect(ns, obj, permission, entity string) (bool, error) {
 		}
 	}
 
+	logger.Logger.WithFields(logrus.Fields{
+		"ns":     ns,
+		"action": "check_direct",
+	}).Info()
+
 	return true, nil
 }
 
@@ -124,6 +129,13 @@ func GetPermissionGroups(ns, obj, permission string) ([]query.Relation, error) {
 		logger.Error(err.Error())
 		return []query.Relation{}, nil
 	}
+
+	logger.Logger.WithFields(logrus.Fields{
+		"ns":     ns,
+		"action": "check_groups",
+		"length": len(r),
+	}).Info()
+
 	return r, nil
 }
 
@@ -161,6 +173,13 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 			Object:     e.Object,
 		})
 	}
+
+	logger.Logger.WithFields(logrus.Fields{
+		"ns":     ns,
+		"action": "list_entity",
+		"length": len(r),
+	}).Info()
+
 	return
 }
 
@@ -198,6 +217,13 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 			Object:     e.Object,
 		})
 	}
+
+	logger.Logger.WithFields(logrus.Fields{
+		"ns":     ns,
+		"action": "list_object",
+		"length": len(r),
+	}).Info()
+
 	return
 }
 
@@ -217,6 +243,14 @@ func UpsertRelation(ns, obj, permission, entity string) (err error) {
 		Object:     obj,
 		Entity:     entity,
 	})
+
+	if err != nil {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "upsert_relation",
+		}).Info()
+	}
+
 	return
 }
 
@@ -236,5 +270,13 @@ func DeleteRelation(ns, obj, permission, entity string) (err error) {
 		Object:     obj,
 		Entity:     entity,
 	})
+
+	if err != nil {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "delete_relation",
+		}).Info()
+	}
+
 	return
 }
