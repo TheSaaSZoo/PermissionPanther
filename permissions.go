@@ -19,34 +19,39 @@ const (
 // Finds at what recursion level a permission exists
 //
 // Returns -1 if permission is not found or invalid
-func CheckPermissions(ns, object, permission, entity string, currentRecursion, maxRecursion int) int {
+func CheckPermissions(ns, object, permission, entity string, currentRecursion, maxRecursion int) (int, error) {
 	if currentRecursion > maxRecursion {
 		logger.Debug("Aborting nested group checks, exceeded %d recursions!", maxRecursion)
 		// Fail fast
-		return -1
+		return -1, nil
 	}
+	// TODO: Make permission check count log
 	logger.Debug("Running permission check, recursion: %d/%d", currentRecursion, maxRecursion)
 
 	// First check for direct access
-	directChan := make(chan bool)
-	go CheckPermissionDirect(directChan, ns, object, permission, entity)
+	found, err := CheckPermissionDirect(ns, object, permission, entity)
+	if err != nil {
+		logger.Error("Error checking permission direct for check permission")
+		return -1, err
+	}
 
 	// Then check for groups with this permission
 	logger.Debug("Getting groups with '%+v' on '%+v'", permission, object)
-	groupsChan := make(chan []query.Relation)
-	go GetPermissionGroups(groupsChan, ns, object, permission)
+	groups, err := GetPermissionGroups(ns, object, permission)
+	if err != nil {
+		logger.Error("Error getting permission groups for check permission")
+		return -1, err
+	}
 
 	// Might be able to further optimize this with
 	// select or with processing inside the goroutine
 	// But that would only squeeze maybe a ms or so at 5+ recursions
 	// And would require significant rework of this functionality
-	directPerms := <-directChan
-	groups := <-groupsChan
 
 	// Check direct permission check results
-	if directPerms {
+	if found {
 		logger.Debug("Found access with recursion %d/%d", currentRecursion, maxRecursion)
-		return currentRecursion
+		return currentRecursion, nil
 	}
 
 	// Check group results
@@ -59,18 +64,16 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 		newObject := break2[1]
 		return CheckPermissions(ns, newObject, newPermission, entity, currentRecursion+1, maxRecursion)
 	}
-	return -1
+	return -1, nil
 }
 
 // Checks whether there is the direct permission mapping from an entity to an object
-func CheckPermissionDirect(c chan bool, ns, obj, permission, entity string) {
+func CheckPermissionDirect(ns, obj, permission, entity string) (bool, error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
-		logger.Error(err.Error())
-		c <- false
-		return
+		return false, err
 	}
 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
@@ -87,27 +90,23 @@ func CheckPermissionDirect(c chan bool, ns, obj, permission, entity string) {
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
-			c <- false
+			return false, nil
 		default:
 			logger.Error("Error getting direct relation %+v", params)
-			logger.Error(err.Error())
-			c <- false
+			return false, err
 		}
-		return
 	}
 
-	c <- true
+	return true, nil
 }
 
 // Returns array of groups that have this permission
-func GetPermissionGroups(c chan []query.Relation, ns, obj, permission string) {
+func GetPermissionGroups(ns, obj, permission string) ([]query.Relation, error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
-		logger.Error(err.Error())
-		c <- []query.Relation{}
-		return
+		return []query.Relation{}, err
 	}
 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
@@ -123,10 +122,9 @@ func GetPermissionGroups(c chan []query.Relation, ns, obj, permission string) {
 	if err != nil {
 		logger.Error("Error getting group relations %+v", params)
 		logger.Error(err.Error())
-		c <- []query.Relation{}
-		return
+		return []query.Relation{}, nil
 	}
-	c <- r
+	return r, nil
 }
 
 func ListEntityPermissions(ns, entity string, permission string) (relations []*pb.Relation, err error) {

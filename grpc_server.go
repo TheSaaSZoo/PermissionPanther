@@ -49,18 +49,31 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 	}
 
 	// First check explicit deny if provided
+	var found bool
 	if in.DenyPermission != "" {
-		directChan := make(chan bool)
-		go CheckPermissionDirect(directChan, "nspc", in.Object, in.DenyPermission, in.Entity)
-		if <-directChan {
+		found, err = CheckPermissionDirect("nspc", in.Object, in.DenyPermission, in.Entity)
+		if err != nil {
+			logger.Error("Error checking permission direct for deny check")
+			logger.Error(err.Error())
+			err = status.Errorf(codes.Internal, "Internal error")
+			return
+		}
+		if found {
 			out.Valid = false
 			out.Recursion = 0
 			return
 		}
 	}
 
+	var foundAt int
 	if in.Recursive {
-		foundAt := CheckPermissions("nspc", in.Object, in.Permission, in.Entity, 0, MAX_RECURSIONS)
+		foundAt, err = CheckPermissions("nspc", in.Object, in.Permission, in.Entity, 0, MAX_RECURSIONS)
+		if err != nil {
+			logger.Error("Error checking permissions for recursive")
+			logger.Error(err.Error())
+			err = status.Errorf(codes.Internal, "Internal error")
+			return
+		}
 		if foundAt >= 0 {
 			out.Valid = true
 			out.Recursion = int32(foundAt)
@@ -69,10 +82,14 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 			out.Recursion = -1
 		}
 	} else {
-		directChan := make(chan bool)
-		go CheckPermissionDirect(directChan, "nspc", in.Object, in.Permission, in.Entity)
-		isValid := <-directChan
-		out.Valid = isValid
+		found, err = CheckPermissionDirect("nspc", in.Object, in.Permission, in.Entity)
+		if err != nil {
+			logger.Error("Error checking permissions direct for non recursive")
+			logger.Error(err.Error())
+			err = status.Errorf(codes.Internal, "Internal error")
+			return
+		}
+		out.Valid = found
 		out.Recursion = 0
 	}
 	return

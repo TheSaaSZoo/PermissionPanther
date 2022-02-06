@@ -41,7 +41,7 @@ func StartHTTPServer(port string) {
 	Server.Echo.GET("/metrics", wrapPromHandler)
 	SetupMetrics()
 
-	logger.Info("Starting Permission Panther HTTP API on port ", port)
+	logger.Info("Starting Permission Panther HTTP API on port %s", port)
 	server := &http2.Server{}
 	Server.Echo.StartH2CServer(":"+port, server)
 }
