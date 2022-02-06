@@ -291,9 +291,6 @@ func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {
 			"ns":     ns,
 			"action": "delete_relation",
 		}).Info()
-	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
-		// Not existent, no bill
-		return false, nil
 	} else if rows == 0 {
 		return false, nil
 	}
