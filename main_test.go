@@ -47,6 +47,11 @@ func SetupCRDB() {
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancelFunc()
 
+	_, err = conn.Exec(ctx, "TRUNCATE relations")
+	if err != nil {
+		panic(err)
+	}
+
 	queries := query.New(conn)
 
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{

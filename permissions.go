@@ -9,6 +9,7 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/pb"
 	"github.com/danthegoodman1/PermissionPanther/query"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 )
@@ -95,7 +96,7 @@ func CheckPermissionDirect(ns, obj, permission, entity string) (bool, error) {
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
-			return false, nil
+			// Keep going
 		default:
 			logger.Error("Error getting direct relation %+v", params)
 			return false, err
@@ -131,8 +132,7 @@ func GetPermissionGroups(ns, obj, permission string) ([]query.Relation, error) {
 	r, err := query.New(conn).GetGroupRelations(ctx, params)
 	if err != nil {
 		logger.Error("Error getting group relations %+v", params)
-		logger.Error(err.Error())
-		return []query.Relation{}, nil
+		return []query.Relation{}, err
 	}
 
 	logger.Logger.WithFields(logrus.Fields{
@@ -179,12 +179,14 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 		})
 	}
 
-	logger.Logger.WithFields(logrus.Fields{
-		"ns":             ns,
-		"action":         "list_entity",
-		"length":         len(r),
-		"has_permission": permission != "",
-	}).Info()
+	if err == nil {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":             ns,
+			"action":         "list_entity",
+			"length":         len(r),
+			"has_permission": permission != "",
+		}).Info()
+	}
 
 	return
 }
@@ -224,12 +226,14 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 		})
 	}
 
-	logger.Logger.WithFields(logrus.Fields{
-		"ns":             ns,
-		"action":         "list_object",
-		"length":         len(r),
-		"has_permission": permission != "",
-	}).Info()
+	if err == nil {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":             ns,
+			"action":         "list_object",
+			"length":         len(r),
+			"has_permission": permission != "",
+		}).Info()
+	}
 
 	return
 }
@@ -251,11 +255,15 @@ func UpsertRelation(ns, obj, permission, entity string) (err error) {
 		Entity:     entity,
 	})
 
-	if err != nil {
+	if err == nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"ns":     ns,
 			"action": "upsert_relation",
 		}).Info()
+	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
+		// Upsert, no bill
+		logger.Warn("THis is pgerr")
+		return nil
 	}
 
 	return
@@ -271,18 +279,22 @@ func DeleteRelation(ns, obj, permission, entity string) (err error) {
 	}
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
-	err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
+	var rows int64
+	rows, err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
 		Ns:         ns,
 		Permission: permission,
 		Object:     obj,
 		Entity:     entity,
 	})
 
-	if err != nil {
+	if err == nil && rows != 0 {
 		logger.Logger.WithFields(logrus.Fields{
 			"ns":     ns,
 			"action": "delete_relation",
 		}).Info()
+	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
+		// Not existent, no bill
+		return nil
 	}
 
 	return

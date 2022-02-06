@@ -83,7 +83,7 @@ func (q *Queries) CheckRelationWildcard(ctx context.Context, arg CheckRelationWi
 	return column_1, err
 }
 
-const deleteRelation = `-- name: DeleteRelation :exec
+const deleteRelation = `-- name: DeleteRelation :execrows
 DELETE FROM relations
 WHERE ns = $1
 AND entity = $2
@@ -98,14 +98,17 @@ type DeleteRelationParams struct {
 	Object     string
 }
 
-func (q *Queries) DeleteRelation(ctx context.Context, arg DeleteRelationParams) error {
-	_, err := q.db.Exec(ctx, deleteRelation,
+func (q *Queries) DeleteRelation(ctx context.Context, arg DeleteRelationParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRelation,
 		arg.Ns,
 		arg.Entity,
 		arg.Permission,
 		arg.Object,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const getGroupRelations = `-- name: GetGroupRelations :many
@@ -151,7 +154,6 @@ func (q *Queries) GetGroupRelations(ctx context.Context, arg GetGroupRelationsPa
 const insertRelation = `-- name: InsertRelation :exec
 INSERT INTO relations (ns, entity, permission, object)
 VALUES ($1, $2, $3, $4)
-ON CONFLICT DO NOTHING
 `
 
 type InsertRelationParams struct {

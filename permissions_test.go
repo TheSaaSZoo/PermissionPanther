@@ -116,8 +116,22 @@ func TestPermissions(t *testing.T) {
 		log.Printf("Found relations %+v\n", relations)
 	})
 
-	t.Run("Upsert relation", func(t *testing.T) {
-		log.Println("\n\n\n### test upsert relation")
+	t.Run("insert relation", func(t *testing.T) {
+		log.Println("\n\n\n### test insert relation")
+		err := UpsertRelation("nspc", "tobj", "tperm", "tuser")
+		utils.HandleTestError(t, err)
+
+		// Get it to validate
+		perm := "tperm"
+		relations, err := ListEntityPermissions("nspc", "tuser", perm)
+		utils.HandleTestError(t, err)
+		if len(relations) != 1 {
+			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
+		}
+	})
+
+	t.Run("insert relation already exists", func(t *testing.T) {
+		log.Println("\n\n\n### test insert relation already exists")
 		err := UpsertRelation("nspc", "tobj", "tperm", "tuser")
 		utils.HandleTestError(t, err)
 
@@ -132,6 +146,19 @@ func TestPermissions(t *testing.T) {
 
 	t.Run("Delete relation", func(t *testing.T) {
 		log.Println("\n\n\n### test delete relation")
+		err := DeleteRelation("nspc", "tobj", "tperm", "tuser")
+		utils.HandleTestError(t, err)
+
+		// Get it to validate
+		relations, err := ListEntityPermissions("nspc", "tuser", "")
+		utils.HandleTestError(t, err)
+		if len(relations) != 0 {
+			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
+		}
+	})
+
+	t.Run("Delete relation not exists", func(t *testing.T) {
+		log.Println("\n\n\n### test delete relation not exists")
 		err := DeleteRelation("nspc", "tobj", "tperm", "tuser")
 		utils.HandleTestError(t, err)
 
