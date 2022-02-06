@@ -180,9 +180,10 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 	}
 
 	logger.Logger.WithFields(logrus.Fields{
-		"ns":     ns,
-		"action": "list_entity",
-		"length": len(r),
+		"ns":             ns,
+		"action":         "list_entity",
+		"length":         len(r),
+		"has_permission": permission != "",
 	}).Info()
 
 	return
@@ -224,9 +225,10 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 	}
 
 	logger.Logger.WithFields(logrus.Fields{
-		"ns":     ns,
-		"action": "list_object",
-		"length": len(r),
+		"ns":             ns,
+		"action":         "list_object",
+		"length":         len(r),
+		"has_permission": permission != "",
 	}).Info()
 
 	return
