@@ -27,6 +27,11 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 		return -1, nil
 	}
 	logger.Debug("Running permission check, recursion: %d/%d", currentRecursion, maxRecursion)
+	logger.Logger.WithFields(logrus.Fields{
+		"ns":        ns,
+		"action":    "check_recursion",
+		"recursion": currentRecursion,
+	}).Info()
 
 	// First check for direct access
 	found, err := CheckPermissionDirect(ns, object, permission, entity)
