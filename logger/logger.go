@@ -30,6 +30,7 @@ func ConfigureLogger() {
 		TimestampFormat: "2006-01-02T15:04:05.000Z",
 	}})
 	// Logger.SetReportCaller(true) // this shows the below functions since it always executes from there
+	// https://stackoverflow.com/questions/63658002/is-it-possible-to-wrap-logrus-logger-functions-without-losing-the-line-number-pr
 }
 
 func Debug(format string, args ...interface{}) {
