@@ -18,11 +18,13 @@ export default class PermissionPanther {
      */
     ListObjectRelations(input: ListObjectRelationsInput): Promise<ListRelationsResponse>;
     /**
-     * Sets a permission. Is a no-op if the permission already exists.
+     * Sets a permission.
+     * Returns whether the relation was created (did not exist).
      */
-    SetPermission(input: Relationship): Promise<unknown>;
+    SetPermission(input: Relationship): Promise<boolean>;
     /**
-     * Removes a permission. Is a no-op if the permission does not exist.
+     * Removes a permission.
+     * Returns whether the relation was deleted (existed).
      */
     RemovePermission(input: Relationship): Promise<unknown>;
 }

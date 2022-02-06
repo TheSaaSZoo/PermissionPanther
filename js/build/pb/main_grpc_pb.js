@@ -3,6 +3,15 @@
 var grpc = require('@grpc/grpc-js');
 var pb_main_pb = require('../pb/main_pb.js');
 var pb_permissions_pb = require('../pb/permissions_pb.js');
+function serialize_Applied(arg) {
+    if (!(arg instanceof pb_main_pb.Applied)) {
+        throw new Error('Expected argument of type Applied');
+    }
+    return Buffer.from(arg.serializeBinary());
+}
+function deserialize_Applied(buffer_arg) {
+    return pb_main_pb.Applied.deserializeBinary(new Uint8Array(buffer_arg));
+}
 function serialize_CheckDirectReq(arg) {
     if (!(arg instanceof pb_permissions_pb.CheckDirectReq)) {
         throw new Error('Expected argument of type CheckDirectReq');
@@ -38,15 +47,6 @@ function serialize_ListObjectRelationsReq(arg) {
 }
 function deserialize_ListObjectRelationsReq(buffer_arg) {
     return pb_permissions_pb.ListObjectRelationsReq.deserializeBinary(new Uint8Array(buffer_arg));
-}
-function serialize_NoContent(arg) {
-    if (!(arg instanceof pb_main_pb.NoContent)) {
-        throw new Error('Expected argument of type NoContent');
-    }
-    return Buffer.from(arg.serializeBinary());
-}
-function deserialize_NoContent(buffer_arg) {
-    return pb_main_pb.NoContent.deserializeBinary(new Uint8Array(buffer_arg));
 }
 function serialize_RelationReq(arg) {
     if (!(arg instanceof pb_permissions_pb.RelationReq)) {
@@ -109,11 +109,11 @@ var PermissionPantherService = exports.PermissionPantherService = {
         requestStream: false,
         responseStream: false,
         requestType: pb_permissions_pb.RelationReq,
-        responseType: pb_main_pb.NoContent,
+        responseType: pb_main_pb.Applied,
         requestSerialize: serialize_RelationReq,
         requestDeserialize: deserialize_RelationReq,
-        responseSerialize: serialize_NoContent,
-        responseDeserialize: deserialize_NoContent,
+        responseSerialize: serialize_Applied,
+        responseDeserialize: deserialize_Applied,
     },
     // Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
     removePermission: {
@@ -121,11 +121,11 @@ var PermissionPantherService = exports.PermissionPantherService = {
         requestStream: false,
         responseStream: false,
         requestType: pb_permissions_pb.RelationReq,
-        responseType: pb_main_pb.NoContent,
+        responseType: pb_main_pb.Applied,
         requestSerialize: serialize_RelationReq,
         requestDeserialize: deserialize_RelationReq,
-        responseSerialize: serialize_NoContent,
-        responseDeserialize: deserialize_NoContent,
+        responseSerialize: serialize_Applied,
+        responseDeserialize: deserialize_Applied,
     },
 };
 exports.PermissionPantherClient = grpc.makeGenericClientConstructor(PermissionPantherService);

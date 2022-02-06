@@ -136,7 +136,8 @@ class PermissionPanther {
         });
     }
     /**
-     * Sets a permission. Is a no-op if the permission already exists.
+     * Sets a permission.
+     * Returns whether the relation was created (did not exist).
      */
     async SetPermission(input) {
         return new Promise((resolve, reject) => {
@@ -154,12 +155,13 @@ class PermissionPanther {
                             reject(err);
                     }
                 }
-                resolve(undefined);
+                resolve(res.getApplied());
             });
         });
     }
     /**
-     * Removes a permission. Is a no-op if the permission does not exist.
+     * Removes a permission.
+     * Returns whether the relation was deleted (existed).
      */
     async RemovePermission(input) {
         return new Promise((resolve, reject) => {
@@ -177,7 +179,7 @@ class PermissionPanther {
                             reject(err);
                     }
                 }
-                resolve(undefined);
+                resolve(res.getApplied());
             });
         });
     }

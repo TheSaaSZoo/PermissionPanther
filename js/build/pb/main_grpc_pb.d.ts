@@ -51,12 +51,12 @@ export namespace PermissionPantherService {
         export { responseStream_3 as responseStream };
         const requestType_3: typeof pb_permissions_pb.RelationReq;
         export { requestType_3 as requestType };
-        const responseType_3: typeof pb_main_pb.NoContent;
+        const responseType_3: typeof pb_main_pb.Applied;
         export { responseType_3 as responseType };
         export { serialize_RelationReq as requestSerialize };
         export { deserialize_RelationReq as requestDeserialize };
-        export { serialize_NoContent as responseSerialize };
-        export { deserialize_NoContent as responseDeserialize };
+        export { serialize_Applied as responseSerialize };
+        export { deserialize_Applied as responseDeserialize };
     }
     namespace removePermission {
         const path_4: string;
@@ -67,12 +67,12 @@ export namespace PermissionPantherService {
         export { responseStream_4 as responseStream };
         const requestType_4: typeof pb_permissions_pb.RelationReq;
         export { requestType_4 as requestType };
-        const responseType_4: typeof pb_main_pb.NoContent;
+        const responseType_4: typeof pb_main_pb.Applied;
         export { responseType_4 as responseType };
         export { serialize_RelationReq as requestSerialize };
         export { deserialize_RelationReq as requestDeserialize };
-        export { serialize_NoContent as responseSerialize };
-        export { deserialize_NoContent as responseDeserialize };
+        export { serialize_Applied as responseSerialize };
+        export { deserialize_Applied as responseDeserialize };
     }
 }
 export var PermissionPantherClient: grpc.ServiceClientConstructor;
@@ -90,7 +90,7 @@ declare function deserialize_ListObjectRelationsReq(buffer_arg: any): pb_permiss
 import pb_main_pb = require("../pb/main_pb.js");
 declare function serialize_RelationReq(arg: any): Buffer;
 declare function deserialize_RelationReq(buffer_arg: any): pb_permissions_pb.RelationReq;
-declare function serialize_NoContent(arg: any): Buffer;
-declare function deserialize_NoContent(buffer_arg: any): pb_main_pb.NoContent;
+declare function serialize_Applied(arg: any): Buffer;
+declare function deserialize_Applied(buffer_arg: any): pb_main_pb.Applied;
 import grpc = require("@grpc/grpc-js");
 export {};
