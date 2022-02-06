@@ -47,7 +47,7 @@ func SetupCRDB() {
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancelFunc()
 
-	_, err = conn.Exec(ctx, "TRUNCATE relations")
+	_, err = conn.Exec(ctx, "DELETE FROM relations WHERE ns = 'testns'")
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ func SetupCRDB() {
 
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj1",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "user1",
 		Permission: "access",
 	})
@@ -64,7 +64,7 @@ func SetupCRDB() {
 	// Group
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj2",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "~obj1#access",
 		Permission: "access",
 	})
@@ -72,7 +72,7 @@ func SetupCRDB() {
 	// Group
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj3",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "~obj2#access",
 		Permission: "access",
 	})
@@ -80,7 +80,7 @@ func SetupCRDB() {
 	// Group
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj4",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "~obj3#access",
 		Permission: "access",
 	})
@@ -88,7 +88,7 @@ func SetupCRDB() {
 	// Group
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj5",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "~obj4#access",
 		Permission: "access",
 	})
@@ -96,7 +96,7 @@ func SetupCRDB() {
 	// Group
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj6",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "~obj5#access",
 		Permission: "access",
 	})
@@ -106,7 +106,7 @@ func SetupCRDB() {
 	// Direct
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj1",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "user2",
 		Permission: "access",
 	})
@@ -114,7 +114,7 @@ func SetupCRDB() {
 	// Direct
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj2",
-		Ns:         "nspc",
+		Ns:         "testns",
 		Entity:     "user2",
 		Permission: "access",
 	})
