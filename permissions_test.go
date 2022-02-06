@@ -118,8 +118,12 @@ func TestPermissions(t *testing.T) {
 
 	t.Run("insert relation", func(t *testing.T) {
 		log.Println("\n\n\n### test insert relation")
-		err := UpsertRelation("nspc", "tobj", "tperm", "tuser")
+		applied, err := UpsertRelation("nspc", "tobj", "tperm", "tuser")
 		utils.HandleTestError(t, err)
+
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied"))
+		}
 
 		// Get it to validate
 		perm := "tperm"
@@ -132,8 +136,11 @@ func TestPermissions(t *testing.T) {
 
 	t.Run("insert relation already exists", func(t *testing.T) {
 		log.Println("\n\n\n### test insert relation already exists")
-		err := UpsertRelation("nspc", "tobj", "tperm", "tuser")
+		applied, err := UpsertRelation("nspc", "tobj", "tperm", "tuser")
 		utils.HandleTestError(t, err)
+		if applied {
+			utils.HandleTestError(t, fmt.Errorf("applied"))
+		}
 
 		// Get it to validate
 		perm := "tperm"
@@ -146,8 +153,11 @@ func TestPermissions(t *testing.T) {
 
 	t.Run("Delete relation", func(t *testing.T) {
 		log.Println("\n\n\n### test delete relation")
-		err := DeleteRelation("nspc", "tobj", "tperm", "tuser")
+		applied, err := DeleteRelation("nspc", "tobj", "tperm", "tuser")
 		utils.HandleTestError(t, err)
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied"))
+		}
 
 		// Get it to validate
 		relations, err := ListEntityPermissions("nspc", "tuser", "")
@@ -159,8 +169,11 @@ func TestPermissions(t *testing.T) {
 
 	t.Run("Delete relation not exists", func(t *testing.T) {
 		log.Println("\n\n\n### test delete relation not exists")
-		err := DeleteRelation("nspc", "tobj", "tperm", "tuser")
+		applied, err := DeleteRelation("nspc", "tobj", "tperm", "tuser")
 		utils.HandleTestError(t, err)
+		if applied {
+			utils.HandleTestError(t, fmt.Errorf("applied"))
+		}
 
 		// Get it to validate
 		relations, err := ListEntityPermissions("nspc", "tuser", "")

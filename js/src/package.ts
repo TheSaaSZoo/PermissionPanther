@@ -124,9 +124,10 @@ export default class PermissionPanther {
   }
 
   /**
-   * Sets a permission. Is a no-op if the permission already exists.
+   * Sets a permission.
+   * Returns whether the relation was created (did not exist).
    */
-  async SetPermission(input: Relationship) {
+  async SetPermission(input: Relationship): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const req = new RelationReq()
       req.setEntity(input.entity)
@@ -142,13 +143,14 @@ export default class PermissionPanther {
               reject(err)
           }
         }
-        resolve(undefined)
+        resolve(res.getApplied())
       })
     })
   }
 
   /**
-   * Removes a permission. Is a no-op if the permission does not exist.
+   * Removes a permission.
+   * Returns whether the relation was deleted (existed).
    */
   async RemovePermission(input: Relationship) {
     return new Promise((resolve, reject) => {
@@ -166,7 +168,7 @@ export default class PermissionPanther {
               reject(err)
           }
         }
-        resolve(undefined)
+        resolve(res.getApplied())
       })
     })
   }

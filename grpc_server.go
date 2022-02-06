@@ -131,15 +131,15 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 	return
 }
 
-func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.NoContent, err error) {
-	out = &pb.NoContent{}
+func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
 
 	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
 		err = status.Error(codes.PermissionDenied, "Permission denied")
 		return
 	}
 
-	err = UpsertRelation("nspc", in.Object, in.Permission, in.Entity)
+	out.Applied, err = UpsertRelation("nspc", in.Object, in.Permission, in.Entity)
 	if err != nil {
 		logger.Error("Error upserting relation")
 		logger.Error(err.Error())
@@ -149,15 +149,15 @@ func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.No
 	return
 }
 
-func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb.NoContent, err error) {
-	out = &pb.NoContent{}
+func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
 
 	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
 		err = status.Error(codes.PermissionDenied, "Permission denied")
 		return
 	}
 
-	err = DeleteRelation("nspc", in.Object, in.Permission, in.Entity)
+	out.Applied, err = DeleteRelation("nspc", in.Object, in.Permission, in.Entity)
 	if err != nil {
 		logger.Error("Error deleting relation")
 		logger.Error(err.Error())

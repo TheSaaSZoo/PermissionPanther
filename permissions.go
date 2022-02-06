@@ -238,13 +238,13 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 	return
 }
 
-func UpsertRelation(ns, obj, permission, entity string) (err error) {
+func UpsertRelation(ns, obj, permission, entity string) (done bool, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
-		return err
+		return false, err
 	}
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
@@ -262,20 +262,19 @@ func UpsertRelation(ns, obj, permission, entity string) (err error) {
 		}).Info()
 	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
 		// Upsert, no bill
-		logger.Warn("THis is pgerr")
-		return nil
+		return false, nil
 	}
 
-	return
+	return true, nil
 }
 
-func DeleteRelation(ns, obj, permission, entity string) (err error) {
+func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
 		logger.Error(err.Error())
-		return err
+		return false, err
 	}
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
@@ -294,8 +293,10 @@ func DeleteRelation(ns, obj, permission, entity string) (err error) {
 		}).Info()
 	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
 		// Not existent, no bill
-		return nil
+		return false, nil
+	} else if rows == 0 {
+		return false, nil
 	}
 
-	return
+	return true, nil
 }

@@ -25,9 +25,9 @@ type PermissionPantherClient interface {
 	// List all relations for an object, optoinally specify permissions to filter on
 	ListObjectRelations(ctx context.Context, in *ListObjectRelationsReq, opts ...grpc.CallOption) (*RelationsResponse, error)
 	// Will set a permission for an entity on an object. If the permission already exists it is a no-op.
-	SetPermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*NoContent, error)
+	SetPermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*Applied, error)
 	// Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
-	RemovePermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*NoContent, error)
+	RemovePermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*Applied, error)
 }
 
 type permissionPantherClient struct {
@@ -65,8 +65,8 @@ func (c *permissionPantherClient) ListObjectRelations(ctx context.Context, in *L
 	return out, nil
 }
 
-func (c *permissionPantherClient) SetPermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*NoContent, error) {
-	out := new(NoContent)
+func (c *permissionPantherClient) SetPermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*Applied, error) {
+	out := new(Applied)
 	err := c.cc.Invoke(ctx, "/PermissionPanther/SetPermission", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -74,8 +74,8 @@ func (c *permissionPantherClient) SetPermission(ctx context.Context, in *Relatio
 	return out, nil
 }
 
-func (c *permissionPantherClient) RemovePermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*NoContent, error) {
-	out := new(NoContent)
+func (c *permissionPantherClient) RemovePermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*Applied, error) {
+	out := new(Applied)
 	err := c.cc.Invoke(ctx, "/PermissionPanther/RemovePermission", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -94,9 +94,9 @@ type PermissionPantherServer interface {
 	// List all relations for an object, optoinally specify permissions to filter on
 	ListObjectRelations(context.Context, *ListObjectRelationsReq) (*RelationsResponse, error)
 	// Will set a permission for an entity on an object. If the permission already exists it is a no-op.
-	SetPermission(context.Context, *RelationReq) (*NoContent, error)
+	SetPermission(context.Context, *RelationReq) (*Applied, error)
 	// Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
-	RemovePermission(context.Context, *RelationReq) (*NoContent, error)
+	RemovePermission(context.Context, *RelationReq) (*Applied, error)
 	mustEmbedUnimplementedPermissionPantherServer()
 }
 
@@ -113,10 +113,10 @@ func (UnimplementedPermissionPantherServer) ListEntityRelations(context.Context,
 func (UnimplementedPermissionPantherServer) ListObjectRelations(context.Context, *ListObjectRelationsReq) (*RelationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListObjectRelations not implemented")
 }
-func (UnimplementedPermissionPantherServer) SetPermission(context.Context, *RelationReq) (*NoContent, error) {
+func (UnimplementedPermissionPantherServer) SetPermission(context.Context, *RelationReq) (*Applied, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetPermission not implemented")
 }
-func (UnimplementedPermissionPantherServer) RemovePermission(context.Context, *RelationReq) (*NoContent, error) {
+func (UnimplementedPermissionPantherServer) RemovePermission(context.Context, *RelationReq) (*Applied, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemovePermission not implemented")
 }
 func (UnimplementedPermissionPantherServer) mustEmbedUnimplementedPermissionPantherServer() {}
