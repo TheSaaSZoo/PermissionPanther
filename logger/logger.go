@@ -24,8 +24,12 @@ var (
 func ConfigureLogger() {
 	Logger.SetLevel(logrus.DebugLevel)
 	Logger.SetFormatter(UTCFormatter{&logrus.JSONFormatter{
+		FieldMap: logrus.FieldMap{
+			logrus.FieldKeyLevel: "severity",
+		},
 		TimestampFormat: "2006-01-02T15:04:05.000Z",
 	}})
+	// Logger.SetReportCaller(true) // this shows the below functions since it always executes from there
 }
 
 func Debug(format string, args ...interface{}) {
