@@ -130,3 +130,39 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 
 	return
 }
+
+func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.NoContent, err error) {
+	out = &pb.NoContent{}
+
+	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
+		err = status.Error(codes.PermissionDenied, "Permission denied")
+		return
+	}
+
+	err = UpsertRelation("nspc", in.Object, in.Permission, in.Entity)
+	if err != nil {
+		logger.Error("Error upserting relation")
+		logger.Error(err.Error())
+		err = status.Errorf(codes.Internal, "Internal error")
+	}
+
+	return
+}
+
+func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb.NoContent, err error) {
+	out = &pb.NoContent{}
+
+	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
+		err = status.Error(codes.PermissionDenied, "Permission denied")
+		return
+	}
+
+	err = DeleteRelation("nspc", in.Object, in.Permission, in.Entity)
+	if err != nil {
+		logger.Error("Error deleting relation")
+		logger.Error(err.Error())
+		err = status.Errorf(codes.Internal, "Internal error")
+	}
+
+	return
+}
