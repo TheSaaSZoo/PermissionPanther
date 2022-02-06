@@ -33,14 +33,14 @@ func ConfigureLogger() {
 }
 
 func Debug(format string, args ...interface{}) {
-	Logger.Debug(fmt.Sprintf(format+"\n", args...))
+	Logger.Debug(fmt.Sprintf(format, args...))
 }
 func Info(format string, args ...interface{}) {
-	Logger.Info(fmt.Sprintf(format+"\n", args...))
+	Logger.Info(fmt.Sprintf(format, args...))
 }
 func Warn(format string, args ...interface{}) {
-	Logger.Warn(fmt.Sprintf(format+"\n", args...))
+	Logger.Warn(fmt.Sprintf(format, args...))
 }
 func Error(format string, args ...interface{}) {
-	Logger.Error(fmt.Sprintf(format+"\n", args...))
+	Logger.Error(fmt.Sprintf(format, args...))
 }
