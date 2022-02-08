@@ -96,7 +96,11 @@ func CheckPermissionDirect(ns, obj, permission, entity string) (bool, error) {
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
-			// Keep going
+			logger.Logger.WithFields(logrus.Fields{
+				"ns":     ns,
+				"action": "check_direct",
+			}).Info()
+			return false, nil
 		default:
 			logger.Error("Error getting direct relation %+v", params)
 			return false, err
