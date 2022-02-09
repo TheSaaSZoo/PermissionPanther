@@ -27,7 +27,7 @@ func CheckPermissions(ns, object, permission, entity string, currentRecursion, m
 		logger.Logger.WithFields(logrus.Fields{
 			"ns":        ns,
 			"action":    "exceed_recursion",
-			"recursion": currentRecursion,
+			"recursion": maxRecursion,
 		}).Info()
 		// Fail fast
 		return -1, nil
