@@ -24,6 +24,11 @@ const (
 func CheckPermissions(ns, object, permission, entity string, currentRecursion, maxRecursion int) (int, error) {
 	if currentRecursion > maxRecursion {
 		logger.Debug("Aborting nested group checks, exceeded %d recursions!", maxRecursion)
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":        ns,
+			"action":    "exceed_recursion",
+			"recursion": currentRecursion,
+		}).Info()
 		// Fail fast
 		return -1, nil
 	}
