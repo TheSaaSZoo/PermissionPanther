@@ -2,14 +2,15 @@ syntax = "proto3";
 option go_package = "./pb";
 
 message CheckDirectReq {
-  string key = 1;
+  string keyID = 1;
+  string keySecret = 2;
 
-  string entity = 2;
-  string permission = 3;
-  string object = 4;
-  bool recursive = 5;
+  string entity = 3;
+  string permission = 4;
+  string object = 5;
+  bool recursive = 6;
 
-  string denyPermission = 6;
+  string denyPermission = 7;
 }
 
 message CheckDirectRes {
@@ -21,24 +22,25 @@ message CheckDirectRes {
 }
 
 message ListEntityRelationsReq {
-  string key = 1;
+  string keyID = 1;
+  string keySecret = 2;
 
-  string entity = 2;
+  string entity = 3;
   // Optional, if not provided then we will list all permissions
-  string permission = 3;
+  string permission = 4;
 
-  // Base64 encoded scylla offset
-  string offset = 4;
+  string offset = 5;
 }
 
 message ListObjectRelationsReq {
-  string key = 1;
+  string keyID = 1;
+  string keySecret = 2;
 
-  string object = 2;
+  string object = 3;
   // Optional, if not provided then we will list all permissions
-  string permission = 3;
+  string permission = 4;
   // Base64 encoded scylla offset
-  string offset = 4;
+  string offset = 5;
 }
 
 message RelationsResponse {
@@ -52,9 +54,10 @@ message Relation {
 }
 
 message RelationReq {
-  string key = 1;
+  string keyID = 1;
+  string keySecret = 2;
 
-  string entity = 2;
-  string permission = 3;
-  string object = 4;
+  string entity = 3;
+  string permission = 4;
+  string object = 5;
 }

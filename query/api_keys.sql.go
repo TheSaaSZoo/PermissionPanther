@@ -9,11 +9,11 @@ import (
 
 const deleteAPIKey = `-- name: DeleteAPIKey :execrows
 DELETE FROM keys
-WHERE secret_hash = $1
+WHERE id = $1
 `
 
-func (q *Queries) DeleteAPIKey(ctx context.Context, secretHash string) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteAPIKey, secretHash)
+func (q *Queries) DeleteAPIKey(ctx context.Context, id string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAPIKey, id)
 	if err != nil {
 		return 0, err
 	}
@@ -21,22 +21,23 @@ func (q *Queries) DeleteAPIKey(ctx context.Context, secretHash string) (int64, e
 }
 
 const insertAPIKey = `-- name: InsertAPIKey :exec
-INSERT INTO keys (secret_hash, ns)
-VALUES ($1, $2)
+INSERT INTO keys (id, secret_hash, ns)
+VALUES ($1, $2, $3)
 `
 
 type InsertAPIKeyParams struct {
+	ID         string
 	SecretHash string
 	Ns         string
 }
 
 func (q *Queries) InsertAPIKey(ctx context.Context, arg InsertAPIKeyParams) error {
-	_, err := q.db.Exec(ctx, insertAPIKey, arg.SecretHash, arg.Ns)
+	_, err := q.db.Exec(ctx, insertAPIKey, arg.ID, arg.SecretHash, arg.Ns)
 	return err
 }
 
 const listAPIKeysForNS = `-- name: ListAPIKeysForNS :many
-SELECT secret_hash, ns, created_at
+SELECT id, secret_hash, ns, created_at
 FROM keys
 WHERE ns = $1
 `
@@ -50,7 +51,12 @@ func (q *Queries) ListAPIKeysForNS(ctx context.Context, ns string) ([]Key, error
 	var items []Key
 	for rows.Next() {
 		var i Key
-		if err := rows.Scan(&i.SecretHash, &i.Ns, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.SecretHash,
+			&i.Ns,
+			&i.CreatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -61,15 +67,20 @@ func (q *Queries) ListAPIKeysForNS(ctx context.Context, ns string) ([]Key, error
 	return items, nil
 }
 
-const selectAPIKeyNS = `-- name: SelectAPIKeyNS :one
-SELECT ns
+const selectAPIKey = `-- name: SelectAPIKey :one
+SELECT secret_hash, ns
 FROM keys
-WHERE secret_hash = $1
+WHERE id = $1
 `
 
-func (q *Queries) SelectAPIKeyNS(ctx context.Context, secretHash string) (string, error) {
-	row := q.db.QueryRow(ctx, selectAPIKeyNS, secretHash)
-	var ns string
-	err := row.Scan(&ns)
-	return ns, err
+type SelectAPIKeyRow struct {
+	SecretHash string
+	Ns         string
+}
+
+func (q *Queries) SelectAPIKey(ctx context.Context, id string) (SelectAPIKeyRow, error) {
+	row := q.db.QueryRow(ctx, selectAPIKey, id)
+	var i SelectAPIKeyRow
+	err := row.Scan(&i.SecretHash, &i.Ns)
+	return i, err
 }

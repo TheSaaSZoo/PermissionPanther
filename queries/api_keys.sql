@@ -1,17 +1,17 @@
 -- name: InsertAPIKey :exec
-INSERT INTO keys (secret_hash, ns)
-VALUES ($1, $2);
+INSERT INTO keys (id, secret_hash, ns)
+VALUES ($1, $2, $3);
 
 -- name: DeleteAPIKey :execrows
 DELETE FROM keys
-WHERE secret_hash = $1;
+WHERE id = $1;
 
 -- name: ListAPIKeysForNS :many
 SELECT *
 FROM keys
 WHERE ns = $1;
 
--- name: SelectAPIKeyNS :one
-SELECT ns
+-- name: SelectAPIKey :one
+SELECT secret_hash, ns
 FROM keys
-WHERE secret_hash = $1;
+WHERE id = $1;

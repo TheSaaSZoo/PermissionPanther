@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-func CheckAPIKey(key string) (namespace string, err error) {
+func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	conn, err := crdb.PGPool.Acquire(ctx)
@@ -20,7 +20,7 @@ func CheckAPIKey(key string) (namespace string, err error) {
 	}
 	defer conn.Release()
 
-	ns, err := query.New(conn).SelectAPIKeyNS(ctx, keyID)
+	key, err := query.New(conn).SelectAPIKey(ctx, keyID)
 	if err != nil {
 		if err != pgx.ErrNoRows {
 			logger.Error("Error selecting api key")
@@ -28,5 +28,7 @@ func CheckAPIKey(key string) (namespace string, err error) {
 		return "", err
 	}
 
-	return ns, nil
+	// Validate secret against bcrypt
+
+	return key.Ns, nil
 }
