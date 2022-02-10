@@ -28,6 +28,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	utils.CheckFlags()
+	if utils.CACHE_TTL != 0 {
+		err := InitCache()
+		if err != nil {
+			logger.Error("Error initializing cache:")
+			logger.Error(err.Error())
+		}
+	}
+
 	go StartGRPCServer(utils.GetEnvOrDefault("PORT", "8080"))
 	// go StartHTTPServer(utils.GetEnvOrDefault("HTTP_PORT", "9090"))
 

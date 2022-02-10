@@ -14,7 +14,6 @@ import (
 
 var (
 	HTTP_PORT          = os.Getenv("HTTP_PORT")
-	REDIS_HOST         = os.Getenv("REDIS_HOST")
 	ADMIN_KEY_HASH     = GetEnvOrFail("ADMIN_KEY_HASH")
 	CACHE_TTL      int = 0
 )
@@ -42,7 +41,6 @@ func GetEnvOrFail(env string) string {
 
 func CheckFlags() {
 	flag.StringVar(&HTTP_PORT, "http-port", HTTP_PORT, "Specify the http port to listen on")
-	flag.StringVar(&REDIS_HOST, "redis-host", REDIS_HOST, "The redis host to use for service discovery")
 
 	flag.Parse()
 

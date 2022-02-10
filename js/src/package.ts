@@ -14,7 +14,11 @@ export default class PermissionPanther {
     this.keyID = config.keyID
     this.keySecret = config.keySecret
     this.target = config.endpoint
-    this.client = new PermissionPantherClient(this.target, grpc.credentials.createSsl())
+    if (config.insecure === false) {
+      this.client = new PermissionPantherClient(this.target, grpc.credentials.createInsecure())
+    } else {
+      this.client = new PermissionPantherClient(this.target, grpc.credentials.createSsl())
+    }
   }
 
   /**
