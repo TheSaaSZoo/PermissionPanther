@@ -29,6 +29,7 @@ func main() {
 	}
 
 	go StartGRPCServer(utils.GetEnvOrDefault("PORT", "8080"))
+	go StartHTTPServer(utils.GetEnvOrDefault("HTTP_PORT", "9090"))
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)

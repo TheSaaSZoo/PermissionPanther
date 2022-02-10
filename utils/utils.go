@@ -15,7 +15,7 @@ import (
 var (
 	HTTP_PORT          = os.Getenv("HTTP_PORT")
 	REDIS_HOST         = os.Getenv("REDIS_HOST")
-	ADMIN_KEY_HASH     = os.Getenv("ADMIN_KEY_HASH")
+	ADMIN_KEY_HASH     = GetEnvOrFail("ADMIN_KEY_HASH")
 	CACHE_TTL      int = 0
 )
 

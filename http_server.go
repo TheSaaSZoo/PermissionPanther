@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	_ "net/http/pprof"
@@ -71,17 +72,19 @@ func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		adminKeyHeader := c.Request().Header.Get("ak")
 		if !utils.CheckAdminKey(adminKeyHeader) {
+			fmt.Println("no")
 			return c.String(http.StatusForbidden, "Invalid admin key")
 		} else {
+			fmt.Println("yes")
 			return next(c)
 		}
 	}
 }
 
 func CreateAPIKey(c echo.Context) error {
-
+	return c.String(200, "yep")
 }
 
 func DeleteAPIKey(c echo.Context) error {
-
+	return nil
 }
