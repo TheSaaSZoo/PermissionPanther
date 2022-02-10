@@ -12,11 +12,10 @@ CREATE TABLE IF NOT EXISTS relations (
 
 
 CREATE TABLE IF NOT EXISTS keys (
-  id TEXT NOT NULL,
   secret_hash TEXT NOT NULL,
   ns TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (id)
+  PRIMARY KEY (secret_hash)
 );
 
 

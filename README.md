@@ -9,7 +9,7 @@ The TTL in milliseconds that the instance will cache API key queries. If set to 
 
 More cache hits result in lower latency and higher concurrency per instance.
 
-### `ADMIN_KEY_HASH`
+<!-- ### `ADMIN_KEY_HASH`
 
 The SHA256 hash lower case hex string of a string used as the admin key for admin functionality (creating/destroying API keys). This must be defined.
 
@@ -52,4 +52,4 @@ func main() {
   hashString := hex.EncodeToString(hashBytes[:])
   fmt.Println(hashString)
 }
-```
+``` -->

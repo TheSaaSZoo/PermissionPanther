@@ -98,7 +98,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelationsReq) (out *pb.RelationsResponse, err error) {
 	out = &pb.RelationsResponse{}
 
-	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
+	if CheckAPIKey(in.Key) {
 		err = status.Error(codes.PermissionDenied, "Permission denied")
 		return
 	}

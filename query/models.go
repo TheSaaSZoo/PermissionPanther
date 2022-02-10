@@ -7,7 +7,6 @@ import (
 )
 
 type Key struct {
-	ID         string
 	SecretHash string
 	Ns         string
 	CreatedAt  time.Time
