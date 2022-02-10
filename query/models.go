@@ -4,6 +4,12 @@ package query
 
 import ()
 
+type Key struct {
+	ID         string
+	SecretHash string
+	Ns         string
+}
+
 type Relation struct {
 	Object     string
 	Entity     string

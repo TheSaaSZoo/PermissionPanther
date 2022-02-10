@@ -6,6 +6,7 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/danthegoodman1/PermissionPanther/logger"
+	"github.com/danthegoodman1/PermissionPanther/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -37,6 +38,9 @@ func StartHTTPServer(port string) {
 	}
 	Server.Echo.Use(middleware.LoggerWithConfig(config))
 
+	// Setup admin routes
+	Server.Echo.POST("/ns", CreateNamespace, ValidateAdminKey)
+
 	// Count requests
 	Server.Echo.GET("/metrics", wrapPromHandler)
 	SetupMetrics()
@@ -60,4 +64,19 @@ func wrapPromHandler(c echo.Context) error {
 	h := promhttp.Handler()
 	h.ServeHTTP(c.Response(), c.Request())
 	return nil
+}
+
+func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		adminKeyHeader := c.Request().Header.Get("ak")
+		if !utils.CheckAdminKey(adminKeyHeader) {
+			return c.String(http.StatusForbidden, "Invalid admin key")
+		} else {
+			return next(c)
+		}
+	}
+}
+
+func CreateNamespace(c echo.Context) error {
+
 }
