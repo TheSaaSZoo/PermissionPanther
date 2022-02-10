@@ -2,12 +2,15 @@
 
 package query
 
-import ()
+import (
+	"time"
+)
 
 type Key struct {
 	ID         string
 	SecretHash string
 	Ns         string
+	CreatedAt  time.Time
 }
 
 type Relation struct {

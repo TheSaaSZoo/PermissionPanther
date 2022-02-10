@@ -39,7 +39,8 @@ func StartHTTPServer(port string) {
 	Server.Echo.Use(middleware.LoggerWithConfig(config))
 
 	// Setup admin routes
-	Server.Echo.POST("/ns", CreateNamespace, ValidateAdminKey)
+	Server.Echo.POST("/key", CreateAPIKey, ValidateAdminKey)
+	Server.Echo.DELETE("/key", DeleteAPIKey, ValidateAdminKey)
 
 	// Count requests
 	Server.Echo.GET("/metrics", wrapPromHandler)
@@ -77,6 +78,10 @@ func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func CreateNamespace(c echo.Context) error {
+func CreateAPIKey(c echo.Context) error {
+
+}
+
+func DeleteAPIKey(c echo.Context) error {
 
 }
