@@ -25,9 +25,15 @@ const permissions_pb_1 = require("./pb/permissions_pb");
 const errors_1 = require("./errors");
 class PermissionPanther {
     constructor(config) {
-        this.key = config.key;
+        this.keyID = config.keyID;
+        this.keySecret = config.keySecret;
         this.target = config.endpoint;
-        this.client = new main_grpc_pb_1.PermissionPantherClient(this.target, grpc.credentials.createSsl());
+        if (config.insecure === false) {
+            this.client = new main_grpc_pb_1.PermissionPantherClient(this.target, grpc.credentials.createInsecure());
+        }
+        else {
+            this.client = new main_grpc_pb_1.PermissionPantherClient(this.target, grpc.credentials.createSsl());
+        }
     }
     /**
      * Checks whether an entity has a permission on an object. Optionally specify explicity deny permission, and group inheritance checks.
@@ -35,7 +41,8 @@ class PermissionPanther {
     async CheckPermission(input) {
         return new Promise((resolve, reject) => {
             const req = new permissions_pb_1.CheckDirectReq();
-            req.setKey(this.key);
+            req.setKeyid(this.keyID);
+            req.setKeysecret(this.keySecret);
             req.setEntity(input.entity);
             req.setPermission(input.permission);
             req.setObject(input.object);
@@ -71,7 +78,8 @@ class PermissionPanther {
     async ListEntityRelations(input) {
         return new Promise((resolve, reject) => {
             const req = new permissions_pb_1.ListEntityRelationsReq();
-            req.setKey(this.key);
+            req.setKeyid(this.keyID);
+            req.setKeysecret(this.keySecret);
             req.setEntity(input.entity);
             if (input.permission) {
                 req.setPermission(input.permission);
@@ -106,7 +114,8 @@ class PermissionPanther {
     async ListObjectRelations(input) {
         return new Promise((resolve, reject) => {
             const req = new permissions_pb_1.ListObjectRelationsReq();
-            req.setKey(this.key);
+            req.setKeyid(this.keyID);
+            req.setKeysecret(this.keySecret);
             req.setObject(input.object);
             if (input.permission) {
                 req.setPermission(input.permission);
@@ -143,7 +152,8 @@ class PermissionPanther {
         return new Promise((resolve, reject) => {
             const req = new permissions_pb_1.RelationReq();
             req.setEntity(input.entity);
-            req.setKey(this.key);
+            req.setKeyid(this.keyID);
+            req.setKeysecret(this.keySecret);
             req.setObject(input.object);
             req.setPermission(input.permission);
             this.client.setPermission(req, (err, res) => {
@@ -167,7 +177,8 @@ class PermissionPanther {
         return new Promise((resolve, reject) => {
             const req = new permissions_pb_1.RelationReq();
             req.setEntity(input.entity);
-            req.setKey(this.key);
+            req.setKeyid(this.keyID);
+            req.setKeysecret(this.keySecret);
             req.setObject(input.object);
             req.setPermission(input.permission);
             this.client.removePermission(req, (err, res) => {

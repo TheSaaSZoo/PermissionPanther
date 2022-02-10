@@ -1,7 +1,8 @@
 import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb';
 export default class PermissionPanther {
-    key: string;
+    keyID: string;
+    keySecret: string;
     target: string;
     client: PermissionPantherClient;
     constructor(config: PantherConfig);

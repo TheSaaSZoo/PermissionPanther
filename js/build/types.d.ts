@@ -1,6 +1,8 @@
 export interface PantherConfig {
-    key: string;
+    keyID: string;
+    keySecret: string;
     endpoint: string;
+    insecure?: boolean;
 }
 export interface CheckPermissionInput {
     /**
