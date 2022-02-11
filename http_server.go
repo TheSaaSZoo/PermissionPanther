@@ -127,5 +127,29 @@ func CreateAPIKey(c echo.Context) error {
 }
 
 func DeleteAPIKey(c echo.Context) error {
-	return nil
+	key := c.QueryParam("key")
+	if key == "" {
+		return c.String(400, "Missing `key` query param")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	conn, err := crdb.PGPool.Acquire(ctx)
+	if err != nil {
+		logger.Error("Error acquiring pgpool connection")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	defer conn.Release()
+
+	rows, err := query.New(conn).DeleteAPIKey(ctx, key)
+	if err != nil {
+		logger.Error("Error deleting api key")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	} else if rows == 0 {
+		logger.Debug("Key %s not found", key)
+		return c.String(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+	}
+	return c.NoContent(http.StatusNoContent)
 }
