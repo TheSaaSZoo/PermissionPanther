@@ -1,5 +1,5 @@
 # PermissionPanther
-Permissions for killer software
+Permissions for killer apps
 
 ## What is Permission Panther?
 
