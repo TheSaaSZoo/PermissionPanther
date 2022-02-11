@@ -8,6 +8,7 @@ import (
 
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/pb"
+	"github.com/jackc/pgx/v4"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -41,17 +42,26 @@ func StartGRPCServer(port string) {
 
 func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) (out *pb.CheckDirectRes, err error) {
 	out = &pb.CheckDirectRes{}
-	// TODO: Intercepted auth
-	// TEMP AUTH
-	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
-		err = status.Error(codes.PermissionDenied, "Permission denied")
+
+	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		case ErrInvalidHash:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		default:
+			logger.Error("CheckDirectPermission(): Check api key error")
+			logger.Error(err.Error())
+			err = status.Error(codes.Internal, codes.Internal.String())
+		}
 		return
 	}
 
 	// First check explicit deny if provided
 	var found bool
 	if in.DenyPermission != "" {
-		found, err = CheckPermissionDirect("nspc", in.Object, in.DenyPermission, in.Entity)
+		found, err = CheckPermissionDirect(ns, in.Object, in.DenyPermission, in.Entity)
 		if err != nil {
 			logger.Error("Error checking permission direct for deny check")
 			logger.Error(err.Error())
@@ -67,7 +77,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 
 	var foundAt int
 	if in.Recursive {
-		foundAt, err = CheckPermissions("nspc", in.Object, in.Permission, in.Entity, 0, MAX_RECURSIONS)
+		foundAt, err = CheckPermissions(ns, in.Object, in.Permission, in.Entity, 0, MAX_RECURSIONS)
 		if err != nil {
 			logger.Error("Error checking permissions for recursive")
 			logger.Error(err.Error())
@@ -82,7 +92,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 			out.Recursion = -1
 		}
 	} else {
-		found, err = CheckPermissionDirect("nspc", in.Object, in.Permission, in.Entity)
+		found, err = CheckPermissionDirect(ns, in.Object, in.Permission, in.Entity)
 		if err != nil {
 			logger.Error("Error checking permissions direct for non recursive")
 			logger.Error(err.Error())
@@ -98,12 +108,22 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelationsReq) (out *pb.RelationsResponse, err error) {
 	out = &pb.RelationsResponse{}
 
-	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
-		err = status.Error(codes.PermissionDenied, "Permission denied")
+	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		case ErrInvalidHash:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		default:
+			logger.Error("CheckDirectPermission(): Check api key error")
+			logger.Error(err.Error())
+			err = status.Error(codes.Internal, codes.Internal.String())
+		}
 		return
 	}
 
-	out.Relations, err = ListEntityPermissions("nspc", in.Entity, in.Permission)
+	out.Relations, err = ListEntityPermissions(ns, in.Entity, in.Permission)
 	if err != nil {
 		logger.Error("Error listing entity permissions")
 		logger.Error(err.Error())
@@ -116,12 +136,22 @@ func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelation
 func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelationsReq) (out *pb.RelationsResponse, err error) {
 	out = &pb.RelationsResponse{}
 
-	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
-		err = status.Error(codes.PermissionDenied, "Permission denied")
+	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		case ErrInvalidHash:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		default:
+			logger.Error("CheckDirectPermission(): Check api key error")
+			logger.Error(err.Error())
+			err = status.Error(codes.Internal, codes.Internal.String())
+		}
 		return
 	}
 
-	out.Relations, err = ListObjectPermissions("nspc", in.Object, in.Permission)
+	out.Relations, err = ListObjectPermissions(ns, in.Object, in.Permission)
 	if err != nil {
 		logger.Error("Error listing object permissions")
 		logger.Error(err.Error())
@@ -134,12 +164,22 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Applied, err error) {
 	out = &pb.Applied{}
 
-	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
-		err = status.Error(codes.PermissionDenied, "Permission denied")
+	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		case ErrInvalidHash:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		default:
+			logger.Error("CheckDirectPermission(): Check api key error")
+			logger.Error(err.Error())
+			err = status.Error(codes.Internal, codes.Internal.String())
+		}
 		return
 	}
 
-	out.Applied, err = UpsertRelation("nspc", in.Object, in.Permission, in.Entity)
+	out.Applied, err = UpsertRelation(ns, in.Object, in.Permission, in.Entity)
 	if err != nil {
 		logger.Error("Error upserting relation")
 		logger.Error(err.Error())
@@ -152,12 +192,22 @@ func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Ap
 func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb.Applied, err error) {
 	out = &pb.Applied{}
 
-	if in.Key != "thisisasupersecretkeythatyouwillneverguesshahahahahagoodluckidiothackers" {
-		err = status.Error(codes.PermissionDenied, "Permission denied")
+	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		case ErrInvalidHash:
+			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+		default:
+			logger.Error("CheckDirectPermission(): Check api key error")
+			logger.Error(err.Error())
+			err = status.Error(codes.Internal, codes.Internal.String())
+		}
 		return
 	}
 
-	out.Applied, err = DeleteRelation("nspc", in.Object, in.Permission, in.Entity)
+	out.Applied, err = DeleteRelation(ns, in.Object, in.Permission, in.Entity)
 	if err != nil {
 		logger.Error("Error deleting relation")
 		logger.Error(err.Error())

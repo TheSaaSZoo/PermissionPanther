@@ -6,13 +6,19 @@ import { CheckDirectReq, ListEntityRelationsReq, ListObjectRelationsReq, Relatio
 import { PermissionDenied } from "./errors";
 
 export default class PermissionPanther {
-  key: string
+  keyID: string
+  keySecret: string
   target: string
   client: PermissionPantherClient
   constructor(config: PantherConfig) {
-    this.key = config.key
+    this.keyID = config.keyID
+    this.keySecret = config.keySecret
     this.target = config.endpoint
-    this.client = new PermissionPantherClient(this.target, grpc.credentials.createSsl())
+    if (config.insecure === true) {
+      this.client = new PermissionPantherClient(this.target, grpc.credentials.createInsecure())
+    } else {
+      this.client = new PermissionPantherClient(this.target, grpc.credentials.createSsl())
+    }
   }
 
   /**
@@ -21,7 +27,8 @@ export default class PermissionPanther {
   async CheckPermission(input: CheckPermissionInput): Promise<CheckPermissionResponse> {
     return new Promise((resolve, reject) => {
       const req = new CheckDirectReq()
-      req.setKey(this.key)
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
       req.setEntity(input.entity)
       req.setPermission(input.permission)
       req.setObject(input.object)
@@ -57,7 +64,8 @@ export default class PermissionPanther {
   async ListEntityRelations(input: ListEntityRelationsInput): Promise<ListRelationsResponse> {
     return new Promise((resolve, reject) => {
       const req = new ListEntityRelationsReq()
-      req.setKey(this.key)
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
       req.setEntity(input.entity)
       if (input.permission) {
         req.setPermission(input.permission)
@@ -93,7 +101,8 @@ export default class PermissionPanther {
   async ListObjectRelations(input: ListObjectRelationsInput): Promise<ListRelationsResponse> {
     return new Promise((resolve, reject) => {
       const req = new ListObjectRelationsReq()
-      req.setKey(this.key)
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
       req.setObject(input.object)
       if (input.permission) {
         req.setPermission(input.permission)
@@ -131,7 +140,8 @@ export default class PermissionPanther {
     return new Promise((resolve, reject) => {
       const req = new RelationReq()
       req.setEntity(input.entity)
-      req.setKey(this.key)
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
       req.setObject(input.object)
       req.setPermission(input.permission)
       this.client.setPermission(req, (err, res) => {
@@ -156,7 +166,8 @@ export default class PermissionPanther {
     return new Promise((resolve, reject) => {
       const req = new RelationReq()
       req.setEntity(input.entity)
-      req.setKey(this.key)
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
       req.setObject(input.object)
       req.setPermission(input.permission)
       this.client.removePermission(req, (err, res) => {

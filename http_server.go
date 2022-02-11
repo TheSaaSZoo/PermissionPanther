@@ -1,13 +1,19 @@
 package main
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	_ "net/http/pprof"
 
+	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/logger"
+	"github.com/danthegoodman1/PermissionPanther/query"
+	"github.com/danthegoodman1/PermissionPanther/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	nanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/net/http2"
 )
@@ -37,6 +43,10 @@ func StartHTTPServer(port string) {
 	}
 	Server.Echo.Use(middleware.LoggerWithConfig(config))
 
+	// Setup admin routes
+	Server.Echo.POST("/key", CreateAPIKey, ValidateAdminKey)
+	Server.Echo.DELETE("/key", DeleteAPIKey, ValidateAdminKey)
+
 	// Count requests
 	Server.Echo.GET("/metrics", wrapPromHandler)
 	SetupMetrics()
@@ -60,4 +70,86 @@ func wrapPromHandler(c echo.Context) error {
 	h := promhttp.Handler()
 	h.ServeHTTP(c.Response(), c.Request())
 	return nil
+}
+
+func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		adminKeyHeader := c.Request().Header.Get("ak")
+		if adminKeyHeader != utils.ADMIN_KEY {
+			return c.String(http.StatusForbidden, "Invalid admin key")
+		} else {
+			return next(c)
+		}
+	}
+}
+
+func CreateAPIKey(c echo.Context) error {
+	ns := c.QueryParam("ns")
+	if ns == "" {
+		return c.String(400, "Missing `ns` query param")
+	}
+
+	keyID := nanoid.Must()
+	keySecret := nanoid.Must()
+
+	keySecretHash, err := HashPassword(keySecret)
+	if err != nil {
+		logger.Error("Error generating argon2 hash:")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	// Store the key hash
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	conn, err := crdb.PGPool.Acquire(ctx)
+	if err != nil {
+		logger.Error("Error acquiring pgpool connection")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	defer conn.Release()
+
+	err = query.New(conn).InsertAPIKey(ctx, query.InsertAPIKeyParams{
+		ID:         keyID,
+		SecretHash: string(keySecretHash),
+		Ns:         ns,
+	})
+	if err != nil {
+		logger.Error("Error inserting api key")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(200, map[string]interface{}{
+		"keyID":     keyID,
+		"keySecret": keySecret,
+	})
+}
+
+func DeleteAPIKey(c echo.Context) error {
+	key := c.QueryParam("key")
+	if key == "" {
+		return c.String(400, "Missing `key` query param")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	conn, err := crdb.PGPool.Acquire(ctx)
+	if err != nil {
+		logger.Error("Error acquiring pgpool connection")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	defer conn.Release()
+
+	rows, err := query.New(conn).DeleteAPIKey(ctx, key)
+	if err != nil {
+		logger.Error("Error deleting api key")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	} else if rows == 0 {
+		logger.Debug("Key %s not found", key)
+		return c.String(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+	}
+	return c.NoContent(http.StatusNoContent)
 }

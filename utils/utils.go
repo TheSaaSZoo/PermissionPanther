@@ -4,20 +4,22 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/danthegoodman1/PermissionPanther/logger"
 )
 
 var (
-	HTTP_PORT  = os.Getenv("HTTP_PORT")
-	REDIS_HOST = os.Getenv("REDIS_HOST")
+	HTTP_PORT     = os.Getenv("HTTP_PORT")
+	ADMIN_KEY     = GetEnvOrFail("ADMIN_KEY")
+	CACHE_TTL int = 0
 )
 
 func GetEnvOrDefault(env, defaultVal string) string {
 	e := os.Getenv(env)
 	if e == "" {
-		logger.Debug("Using default value for env var ", env)
+		logger.Debug("Using default value of '%s' for env var '%s'", defaultVal, env)
 		return defaultVal
 	} else {
 		return e
@@ -37,12 +39,21 @@ func GetEnvOrFail(env string) string {
 
 func CheckFlags() {
 	flag.StringVar(&HTTP_PORT, "http-port", HTTP_PORT, "Specify the http port to listen on")
-	flag.StringVar(&REDIS_HOST, "redis-host", REDIS_HOST, "The redis host to use for service discovery")
 
 	flag.Parse()
 
 	if HTTP_PORT == "" {
 		HTTP_PORT = "8080"
+	}
+	cacheEnvVar := os.Getenv("CACHE_TTL")
+	if cacheEnvVar != "" {
+		intVar, err := strconv.Atoi(cacheEnvVar)
+		if err != nil {
+			logger.Error("Error converting CACHE_TTL to int:")
+			logger.Error(err.Error())
+		} else {
+			CACHE_TTL = intVar
+		}
 	}
 }
 

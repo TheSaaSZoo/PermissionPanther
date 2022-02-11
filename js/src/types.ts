@@ -1,9 +1,14 @@
 export interface PantherConfig {
-  // Your API Key
-  key: string
+  // Your API Key ID
+  keyID: string
+  // Your API Key Secret
+  keySecret: string
 
   // The endpoint of the PermissionPanther service, ex: `localhost:8080`
   endpoint: string
+
+  // If true, will use an insecure connection
+  insecure?: boolean
 }
 
 export interface CheckPermissionInput {

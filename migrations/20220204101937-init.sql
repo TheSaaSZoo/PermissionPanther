@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS relations (
   object TEXT NOT NULL,
   entity TEXT NOT NULL,
   permission TEXT NOT NULL,
-  ns TEXT,
+  ns TEXT NOT NULL,
   PRIMARY KEY (ns, entity, permission, object)
 );
 

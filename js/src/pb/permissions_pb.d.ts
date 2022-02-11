@@ -7,8 +7,10 @@
 import * as jspb from "google-protobuf";
 
 export class CheckDirectReq extends jspb.Message { 
-    getKey(): string;
-    setKey(value: string): CheckDirectReq;
+    getKeyid(): string;
+    setKeyid(value: string): CheckDirectReq;
+    getKeysecret(): string;
+    setKeysecret(value: string): CheckDirectReq;
     getEntity(): string;
     setEntity(value: string): CheckDirectReq;
     getPermission(): string;
@@ -32,7 +34,8 @@ export class CheckDirectReq extends jspb.Message {
 
 export namespace CheckDirectReq {
     export type AsObject = {
-        key: string,
+        keyid: string,
+        keysecret: string,
         entity: string,
         permission: string,
         object: string,
@@ -65,8 +68,10 @@ export namespace CheckDirectRes {
 }
 
 export class ListEntityRelationsReq extends jspb.Message { 
-    getKey(): string;
-    setKey(value: string): ListEntityRelationsReq;
+    getKeyid(): string;
+    setKeyid(value: string): ListEntityRelationsReq;
+    getKeysecret(): string;
+    setKeysecret(value: string): ListEntityRelationsReq;
     getEntity(): string;
     setEntity(value: string): ListEntityRelationsReq;
     getPermission(): string;
@@ -86,7 +91,8 @@ export class ListEntityRelationsReq extends jspb.Message {
 
 export namespace ListEntityRelationsReq {
     export type AsObject = {
-        key: string,
+        keyid: string,
+        keysecret: string,
         entity: string,
         permission: string,
         offset: string,
@@ -94,8 +100,10 @@ export namespace ListEntityRelationsReq {
 }
 
 export class ListObjectRelationsReq extends jspb.Message { 
-    getKey(): string;
-    setKey(value: string): ListObjectRelationsReq;
+    getKeyid(): string;
+    setKeyid(value: string): ListObjectRelationsReq;
+    getKeysecret(): string;
+    setKeysecret(value: string): ListObjectRelationsReq;
     getObject(): string;
     setObject(value: string): ListObjectRelationsReq;
     getPermission(): string;
@@ -115,7 +123,8 @@ export class ListObjectRelationsReq extends jspb.Message {
 
 export namespace ListObjectRelationsReq {
     export type AsObject = {
-        key: string,
+        keyid: string,
+        keysecret: string,
         object: string,
         permission: string,
         offset: string,
@@ -171,8 +180,10 @@ export namespace Relation {
 }
 
 export class RelationReq extends jspb.Message { 
-    getKey(): string;
-    setKey(value: string): RelationReq;
+    getKeyid(): string;
+    setKeyid(value: string): RelationReq;
+    getKeysecret(): string;
+    setKeysecret(value: string): RelationReq;
     getEntity(): string;
     setEntity(value: string): RelationReq;
     getPermission(): string;
@@ -192,7 +203,8 @@ export class RelationReq extends jspb.Message {
 
 export namespace RelationReq {
     export type AsObject = {
-        key: string,
+        keyid: string,
+        keysecret: string,
         entity: string,
         permission: string,
         object: string,
