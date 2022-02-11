@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net"
 
 	"github.com/danthegoodman1/PermissionPanther/logger"
@@ -22,18 +20,13 @@ type server struct {
 	pb.UnimplementedPermissionPantherServer
 }
 
-func StartGRPCServer(port string) {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
+func StartGRPCServer(lis net.Listener) {
 	var opts []grpc.ServerOption
 
 	GRPCServer = grpc.NewServer(opts...)
 	pb.RegisterPermissionPantherServer(GRPCServer, &server{})
-	logger.Info("Starting Permission Panther gRPC Server on port %s", port)
-	err = GRPCServer.Serve(lis)
+	logger.Info("Starting Permission Panther gRPC Server")
+	err := GRPCServer.Serve(lis)
 	if err != nil {
 		logger.Error("Error closing grpc server:")
 		logger.Error(err.Error())

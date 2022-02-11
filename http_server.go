@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net"
 	"net/http"
 	"time"
 
@@ -26,7 +27,7 @@ var (
 	Server *HTTPServer
 )
 
-func StartHTTPServer(port string) {
+func StartHTTPServer(lis net.Listener) {
 	echoInstance := echo.New()
 	Server = &HTTPServer{
 		Echo: echoInstance,
@@ -51,9 +52,11 @@ func StartHTTPServer(port string) {
 	Server.Echo.GET("/metrics", wrapPromHandler)
 	SetupMetrics()
 
-	logger.Info("Starting Permission Panther HTTP API on port %s", port)
+	logger.Info("Starting Permission Panther HTTP API")
+	Server.Echo.Listener = lis
 	server := &http2.Server{}
-	Server.Echo.StartH2CServer(":"+port, server)
+	Server.Echo.StartH2CServer("", server) // HTTP/2
+	// Server.Echo.Start("") // HTTP/1.1
 }
 
 func ValidateRequest(c echo.Context, s interface{}) error {
