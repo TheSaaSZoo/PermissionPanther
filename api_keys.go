@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/danthegoodman1/PermissionPanther/crdb"
@@ -20,29 +21,35 @@ var (
 func InitCache() error {
 	var err error
 	APIKeyCache, err = ristretto.NewCache(&ristretto.Config{
-		MaxCost: 1 << 22, // 4.2MB
+		MaxCost:     1 << 22, // 4.2MB
+		NumCounters: 1e4,     // 10k keys
+		BufferItems: 64,
 	})
 	return err
 }
 
 func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
-	// Check cache
 	keyHash := ""
+	found := false
+	var val interface{}
+
+	// Check cache
 	if utils.CACHE_TTL != 0 {
 		// First check the cache
-		val, found := APIKeyCache.Get(keyID)
+		val, found = APIKeyCache.Get(keyID)
 		if found {
 			valString, ok := val.(string)
 			if !ok {
 				logger.Error("Error casting cached value for keyid %s to string", keyID)
 			} else {
-				keyHash = valString
+				keyHash = strings.Split(valString, "#")[0]
+				namespace = strings.Split(valString, "#")[1]
 			}
 		}
 	}
 
 	// If we don't have results from the cache
-	if keyHash == "" {
+	if !found {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 		conn, err := crdb.PGPool.Acquire(ctx)
@@ -71,9 +78,9 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 	}
 
 	// Load cache
-	if utils.CACHE_TTL != 0 {
+	if utils.CACHE_TTL != 0 && found {
 		logger.Debug("Loading cache for keyid %s", keyID)
-		added := APIKeyCache.SetWithTTL(keyID, keyHash, 72, time.Millisecond*time.Duration(utils.CACHE_TTL))
+		added := APIKeyCache.SetWithTTL(keyID, strings.Join([]string{keyHash, namespace}, "#"), 72, time.Millisecond*time.Duration(utils.CACHE_TTL))
 		if !added {
 			logger.Warn("Did not add keyID %s to cache!", keyID)
 		}
