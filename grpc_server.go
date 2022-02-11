@@ -9,7 +9,6 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/pb"
 	"github.com/jackc/pgx/v4"
-	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,7 +48,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 		switch err {
 		case pgx.ErrNoRows:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-		case bcrypt.ErrMismatchedHashAndPassword:
+		case ErrInvalidHash:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 		default:
 			logger.Error("CheckDirectPermission(): Check api key error")
@@ -114,7 +113,7 @@ func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelation
 		switch err {
 		case pgx.ErrNoRows:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-		case bcrypt.ErrMismatchedHashAndPassword:
+		case ErrInvalidHash:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 		default:
 			logger.Error("CheckDirectPermission(): Check api key error")
@@ -142,7 +141,7 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 		switch err {
 		case pgx.ErrNoRows:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-		case bcrypt.ErrMismatchedHashAndPassword:
+		case ErrInvalidHash:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 		default:
 			logger.Error("CheckDirectPermission(): Check api key error")
@@ -170,7 +169,7 @@ func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Ap
 		switch err {
 		case pgx.ErrNoRows:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-		case bcrypt.ErrMismatchedHashAndPassword:
+		case ErrInvalidHash:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 		default:
 			logger.Error("CheckDirectPermission(): Check api key error")
@@ -198,7 +197,7 @@ func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb
 		switch err {
 		case pgx.ErrNoRows:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-		case bcrypt.ErrMismatchedHashAndPassword:
+		case ErrInvalidHash:
 			err = status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 		default:
 			logger.Error("CheckDirectPermission(): Check api key error")

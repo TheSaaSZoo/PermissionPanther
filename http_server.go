@@ -15,7 +15,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	nanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/http2"
 )
 
@@ -93,9 +92,9 @@ func CreateAPIKey(c echo.Context) error {
 	keyID := nanoid.Must()
 	keySecret := nanoid.Must()
 
-	keySecretHash, err := bcrypt.GenerateFromPassword([]byte(keySecret), 10)
+	keySecretHash, err := HashPassword(keySecret)
 	if err != nil {
-		logger.Error("Error generating bcrypt hash:")
+		logger.Error("Error generating argon2 hash:")
 		logger.Error(err.Error())
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
