@@ -1,5 +1,9 @@
 # PermissionPanther
-Relationship Based Access Control (ReBAC) for killer software
+Permissions for killer software
+
+## What is Permission Panther?
+
+Permission Panther is a simple and highly scalable Relationship Based Access Control (ReBAC) service.
 
 ## Environment Variables
 
