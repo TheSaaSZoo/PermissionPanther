@@ -94,7 +94,6 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 	}
 
 	// Validate secret against argon
-	s := time.Now()
 	valid, err := ComparePasswordHash(keySecret, keyHash)
 	if err != nil {
 		return "", err
@@ -102,7 +101,6 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 	if !valid {
 		return "", ErrInvalidHash
 	}
-	fmt.Println("Hashed in", time.Since(s))
 
 	// Load cache
 	if utils.CACHE_TTL != 0 && !found {
