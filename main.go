@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,6 +12,7 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/utils"
 	"github.com/sirupsen/logrus"
+	"github.com/soheilhy/cmux"
 )
 
 var (
@@ -37,8 +41,19 @@ func main() {
 		}
 	}
 
-	go StartGRPCServer(utils.GetEnvOrDefault("PORT", "8080"))
-	go StartHTTPServer(utils.GetEnvOrDefault("HTTP_PORT", "9090"))
+	logger.Info("Starting cmux listener on port %s", utils.GetEnvOrDefault("PORT", "8080"))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", utils.GetEnvOrDefault("PORT", "8080")))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	m := cmux.New(lis)
+	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+	httpL := m.Match(cmux.HTTP2()) // m.Match(cmux.HTTP1Fast())
+	go StartGRPCServer(grpcL)
+	go StartHTTPServer(httpL)
+
+	m.Serve()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
