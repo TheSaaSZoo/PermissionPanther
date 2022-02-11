@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	_ "net/http/pprof"
@@ -39,6 +38,10 @@ func StartHTTPServer(port string) {
 	}
 	Server.Echo.Use(middleware.LoggerWithConfig(config))
 
+	// Setup admin routes
+	Server.Echo.POST("/key", CreateAPIKey, ValidateAdminKey)
+	Server.Echo.DELETE("/key", DeleteAPIKey, ValidateAdminKey)
+
 	// Count requests
 	Server.Echo.GET("/metrics", wrapPromHandler)
 	SetupMetrics()
@@ -67,12 +70,18 @@ func wrapPromHandler(c echo.Context) error {
 func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		adminKeyHeader := c.Request().Header.Get("ak")
-		if !utils.CheckAdminKey(adminKeyHeader) {
-			fmt.Println("no")
+		if adminKeyHeader != utils.ADMIN_KEY {
 			return c.String(http.StatusForbidden, "Invalid admin key")
 		} else {
-			fmt.Println("yes")
 			return next(c)
 		}
 	}
+}
+
+func CreateAPIKey(c echo.Context) error {
+	return c.String(200, "yep")
+}
+
+func DeleteAPIKey(c echo.Context) error {
+	return nil
 }

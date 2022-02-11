@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"os"
@@ -13,9 +11,9 @@ import (
 )
 
 var (
-	HTTP_PORT          = os.Getenv("HTTP_PORT")
-	ADMIN_KEY_HASH     = GetEnvOrFail("ADMIN_KEY_HASH")
-	CACHE_TTL      int = 0
+	HTTP_PORT     = os.Getenv("HTTP_PORT")
+	ADMIN_KEY     = GetEnvOrFail("ADMIN_KEY")
+	CACHE_TTL int = 0
 )
 
 func GetEnvOrDefault(env, defaultVal string) string {
@@ -63,12 +61,4 @@ func HandleTestError(t *testing.T, err error) {
 	if err != nil {
 		t.Error(err)
 	}
-}
-
-// Checks whether the admin key is valid
-func CheckAdminKey(key string) bool {
-	keyBytes := []byte(key)
-	hashBytes := sha256.Sum256(keyBytes)
-	hashString := hex.EncodeToString(hashBytes[:])
-	return ADMIN_KEY_HASH == hashString
 }
