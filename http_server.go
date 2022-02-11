@@ -1,15 +1,21 @@
 package main
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	_ "net/http/pprof"
 
+	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/logger"
+	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/danthegoodman1/PermissionPanther/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	nanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/http2"
 )
 
@@ -79,7 +85,46 @@ func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 func CreateAPIKey(c echo.Context) error {
-	return c.String(200, "yep")
+	ns := c.QueryParam("ns")
+	if ns == "" {
+		return c.String(400, "Missing `ns` query param")
+	}
+
+	keyID := nanoid.Must()
+	keySecret := nanoid.Must()
+
+	keySecretHash, err := bcrypt.GenerateFromPassword([]byte(keySecret), 10)
+	if err != nil {
+		logger.Error("Error generating bcrypt hash:")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	// Store the key hash
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	conn, err := crdb.PGPool.Acquire(ctx)
+	if err != nil {
+		logger.Error("Error acquiring pgpool connection")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	defer conn.Release()
+
+	err = query.New(conn).InsertAPIKey(ctx, query.InsertAPIKeyParams{
+		ID:         keyID,
+		SecretHash: string(keySecretHash),
+		Ns:         ns,
+	})
+	if err != nil {
+		logger.Error("Error inserting api key")
+		logger.Error(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(200, map[string]interface{}{
+		"keyID":     keyID,
+		"keySecret": keySecret,
+	})
 }
 
 func DeleteAPIKey(c echo.Context) error {

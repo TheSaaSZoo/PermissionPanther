@@ -28,7 +28,7 @@ class PermissionPanther {
         this.keyID = config.keyID;
         this.keySecret = config.keySecret;
         this.target = config.endpoint;
-        if (config.insecure === false) {
+        if (config.insecure === true) {
             this.client = new main_grpc_pb_1.PermissionPantherClient(this.target, grpc.credentials.createInsecure());
         }
         else {
