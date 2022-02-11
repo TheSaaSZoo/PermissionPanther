@@ -80,7 +80,7 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 	// Load cache
 	if utils.CACHE_TTL != 0 && found {
 		logger.Debug("Loading cache for keyid %s", keyID)
-		added := APIKeyCache.SetWithTTL(keyID, strings.Join([]string{keyHash, namespace}, "#"), 90, time.Millisecond*time.Duration(utils.CACHE_TTL))
+		added := APIKeyCache.SetWithTTL(keyID, strings.Join([]string{keyHash, namespace}, "#"), 100, time.Millisecond*time.Duration(utils.CACHE_TTL))
 		if !added {
 			logger.Warn("Did not add keyID %s to cache!", keyID)
 		}
