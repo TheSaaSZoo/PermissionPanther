@@ -50,7 +50,7 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 
 	// If we don't have results from the cache
 	if !found {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 		defer cancel()
 		conn, err := crdb.PGPool.Acquire(ctx)
 		if err != nil {
