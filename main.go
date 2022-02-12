@@ -34,6 +34,7 @@ func main() {
 
 	utils.CheckFlags()
 	if utils.CACHE_TTL != 0 {
+		logger.Debug("CACHE_TTL found, setting up API Key cache")
 		err := InitCache()
 		if err != nil {
 			logger.Error("Error initializing cache:")
