@@ -62,4 +62,6 @@ func main() {
 	logger.Warn("Received shutdown signal")
 	GRPCServer.GracefulStop()
 	logger.Info("Stopped gRPC server")
+	Server.Echo.Close()
+	logger.Info("Stopped HTTP server")
 }
