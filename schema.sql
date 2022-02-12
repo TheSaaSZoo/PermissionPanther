@@ -16,4 +16,4 @@ CREATE TABLE IF NOT EXISTS keys (
   PRIMARY KEY (id)
 );
 
-CREATE INDEX IF NOT EXISTS keys_by_namespace ON keys(ns);
+CREATE INDEX IF NOT EXISTS keys_by_ns ON keys(ns);
