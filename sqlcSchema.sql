@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS keys (
   secret_hash TEXT NOT NULL,
   ns TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  max_recursions INT8 NOT NULL,
   PRIMARY KEY (id)
 );
 

@@ -7,10 +7,11 @@ import (
 )
 
 type Key struct {
-	ID         string
-	SecretHash string
-	Ns         string
-	CreatedAt  time.Time
+	ID            string
+	SecretHash    string
+	Ns            string
+	CreatedAt     time.Time
+	MaxRecursions int64
 }
 
 type Relation struct {

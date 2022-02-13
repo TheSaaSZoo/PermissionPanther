@@ -41,6 +41,12 @@ type ArgonParams struct {
 	keyLength   uint32
 }
 
+type CachedKey struct {
+	SecretHash    string
+	Namespace     string
+	MaxRecursions int
+}
+
 func InitCache() error {
 	var err error
 	APIKeyCache, err = ristretto.NewCache(&ristretto.Config{
@@ -51,8 +57,7 @@ func InitCache() error {
 	return err
 }
 
-func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
-	keyHash := ""
+func CheckAPIKey(keyID, keySecret string) (apiKey *CachedKey, err error) {
 	found := false
 	var val interface{}
 
@@ -61,12 +66,11 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 		// First check the cache
 		val, found = APIKeyCache.Get(keyID)
 		if found {
-			valString, ok := val.(string)
+			cachedKey, ok := val.(CachedKey)
 			if !ok {
-				logger.Error("Error casting cached value for keyid %s to string", keyID)
+				logger.Error("Error casting cached value for keyid %s to CachedKey", keyID)
 			} else {
-				keyHash = strings.Split(valString, "#")[0]
-				namespace = strings.Split(valString, "#")[1]
+				apiKey = &cachedKey
 			}
 		}
 	}
@@ -78,7 +82,7 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 		conn, err := crdb.PGPool.Acquire(ctx)
 		if err != nil {
 			logger.Error("Error acquiring pgpool connection")
-			return "", err
+			return nil, err
 		}
 		defer conn.Release()
 
@@ -87,25 +91,28 @@ func CheckAPIKey(keyID, keySecret string) (namespace string, err error) {
 			if err != pgx.ErrNoRows {
 				logger.Error("Error selecting api key")
 			}
-			return "", err
+			return nil, err
 		}
-		keyHash = key.SecretHash
-		namespace = key.Ns
+		apiKey = &CachedKey{
+			SecretHash:    key.SecretHash,
+			Namespace:     key.Ns,
+			MaxRecursions: int(key.MaxRecursions),
+		}
 	}
 
 	// Validate secret against argon
-	valid, err := ComparePasswordHash(keySecret, keyHash)
+	valid, err := ComparePasswordHash(keySecret, apiKey.SecretHash)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if !valid {
-		return "", ErrInvalidHash
+		return nil, ErrInvalidHash
 	}
 
 	// Load cache
 	if utils.CACHE_TTL != 0 && !found {
 		logger.Debug("Loading cache for keyid %s", keyID)
-		added := APIKeyCache.SetWithTTL(keyID, strings.Join([]string{keyHash, namespace}, "#"), 100, time.Millisecond*time.Duration(utils.CACHE_TTL))
+		added := APIKeyCache.SetWithTTL(keyID, *apiKey, 100, time.Millisecond*time.Duration(utils.CACHE_TTL))
 		if !added {
 			logger.Warn("Did not add keyID %s to cache!", keyID)
 		}

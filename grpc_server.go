@@ -36,7 +36,7 @@ func StartGRPCServer(lis net.Listener) {
 func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) (out *pb.CheckDirectRes, err error) {
 	out = &pb.CheckDirectRes{}
 
-	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	apiKey, err := CheckAPIKey(in.KeyID, in.KeySecret)
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
@@ -54,7 +54,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 	// First check explicit deny if provided
 	var found bool
 	if in.DenyPermission != "" {
-		found, err = CheckPermissionDirect(ns, in.Object, in.DenyPermission, in.Entity)
+		found, err = CheckPermissionDirect(apiKey.Namespace, in.Object, in.DenyPermission, in.Entity)
 		if err != nil {
 			logger.Error("Error checking permission direct for deny check")
 			logger.Error(err.Error())
@@ -70,7 +70,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 
 	var foundAt int
 	if in.Recursive {
-		foundAt, err = CheckPermissions(ns, in.Object, in.Permission, in.Entity, 0, MAX_RECURSIONS)
+		foundAt, err = CheckPermissions(apiKey.Namespace, in.Object, in.Permission, in.Entity, 0, apiKey.MaxRecursions)
 		if err != nil {
 			logger.Error("Error checking permissions for recursive")
 			logger.Error(err.Error())
@@ -85,7 +85,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 			out.Recursion = -1
 		}
 	} else {
-		found, err = CheckPermissionDirect(ns, in.Object, in.Permission, in.Entity)
+		found, err = CheckPermissionDirect(apiKey.Namespace, in.Object, in.Permission, in.Entity)
 		if err != nil {
 			logger.Error("Error checking permissions direct for non recursive")
 			logger.Error(err.Error())
@@ -101,7 +101,7 @@ func (server) CheckDirectPermission(ctx context.Context, in *pb.CheckDirectReq) 
 func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelationsReq) (out *pb.RelationsResponse, err error) {
 	out = &pb.RelationsResponse{}
 
-	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	apiKey, err := CheckAPIKey(in.KeyID, in.KeySecret)
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
@@ -116,7 +116,7 @@ func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelation
 		return
 	}
 
-	out.Relations, err = ListEntityPermissions(ns, in.Entity, in.Permission)
+	out.Relations, err = ListEntityPermissions(apiKey.Namespace, in.Entity, in.Permission)
 	if err != nil {
 		logger.Error("Error listing entity permissions")
 		logger.Error(err.Error())
@@ -129,7 +129,7 @@ func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelation
 func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelationsReq) (out *pb.RelationsResponse, err error) {
 	out = &pb.RelationsResponse{}
 
-	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	apiKey, err := CheckAPIKey(in.KeyID, in.KeySecret)
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
@@ -144,7 +144,7 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 		return
 	}
 
-	out.Relations, err = ListObjectPermissions(ns, in.Object, in.Permission)
+	out.Relations, err = ListObjectPermissions(apiKey.Namespace, in.Object, in.Permission)
 	if err != nil {
 		logger.Error("Error listing object permissions")
 		logger.Error(err.Error())
@@ -157,7 +157,7 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Applied, err error) {
 	out = &pb.Applied{}
 
-	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	apiKey, err := CheckAPIKey(in.KeyID, in.KeySecret)
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
@@ -172,7 +172,7 @@ func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Ap
 		return
 	}
 
-	out.Applied, err = UpsertRelation(ns, in.Object, in.Permission, in.Entity)
+	out.Applied, err = UpsertRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
 	if err != nil {
 		logger.Error("Error upserting relation")
 		logger.Error(err.Error())
@@ -185,7 +185,7 @@ func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Ap
 func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb.Applied, err error) {
 	out = &pb.Applied{}
 
-	ns, err := CheckAPIKey(in.KeyID, in.KeySecret)
+	apiKey, err := CheckAPIKey(in.KeyID, in.KeySecret)
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
@@ -200,7 +200,7 @@ func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb
 		return
 	}
 
-	out.Applied, err = DeleteRelation(ns, in.Object, in.Permission, in.Entity)
+	out.Applied, err = DeleteRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
 	if err != nil {
 		logger.Error("Error deleting relation")
 		logger.Error(err.Error())

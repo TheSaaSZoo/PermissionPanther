@@ -4,6 +4,7 @@ import (
 	"context"
 	"net"
 	"net/http"
+	"strconv"
 	"time"
 
 	_ "net/http/pprof"
@@ -88,8 +89,19 @@ func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
 
 func CreateAPIKey(c echo.Context) error {
 	ns := c.QueryParam("ns")
+	mr := c.QueryParam("mr")
 	if ns == "" {
 		return c.String(400, "Missing `ns` query param")
+	}
+	if mr == "" {
+		return c.String(400, "Missing `mr` query param")
+	}
+
+	max_recursions, err := strconv.Atoi(mr)
+	if err != nil {
+		logger.Warn("Failed to cast `mr` query param to int")
+		logger.Warn(err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	keyID := nanoid.Must()
@@ -114,9 +126,10 @@ func CreateAPIKey(c echo.Context) error {
 	defer conn.Release()
 
 	err = query.New(conn).InsertAPIKey(ctx, query.InsertAPIKeyParams{
-		ID:         keyID,
-		SecretHash: string(keySecretHash),
-		Ns:         ns,
+		ID:            keyID,
+		SecretHash:    string(keySecretHash),
+		Ns:            ns,
+		MaxRecursions: int64(max_recursions),
 	})
 	if err != nil {
 		logger.Error("Error inserting api key")

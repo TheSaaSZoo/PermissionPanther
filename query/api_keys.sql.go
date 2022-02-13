@@ -21,23 +21,29 @@ func (q *Queries) DeleteAPIKey(ctx context.Context, id string) (int64, error) {
 }
 
 const insertAPIKey = `-- name: InsertAPIKey :exec
-INSERT INTO keys (id, secret_hash, ns)
-VALUES ($1, $2, $3)
+INSERT INTO keys (id, secret_hash, ns, max_recursions)
+VALUES ($1, $2, $3, $4)
 `
 
 type InsertAPIKeyParams struct {
-	ID         string
-	SecretHash string
-	Ns         string
+	ID            string
+	SecretHash    string
+	Ns            string
+	MaxRecursions int64
 }
 
 func (q *Queries) InsertAPIKey(ctx context.Context, arg InsertAPIKeyParams) error {
-	_, err := q.db.Exec(ctx, insertAPIKey, arg.ID, arg.SecretHash, arg.Ns)
+	_, err := q.db.Exec(ctx, insertAPIKey,
+		arg.ID,
+		arg.SecretHash,
+		arg.Ns,
+		arg.MaxRecursions,
+	)
 	return err
 }
 
 const listAPIKeysForNS = `-- name: ListAPIKeysForNS :many
-SELECT id, secret_hash, ns, created_at
+SELECT id, secret_hash, ns, created_at, max_recursions
 FROM keys
 WHERE ns = $1
 `
@@ -56,6 +62,7 @@ func (q *Queries) ListAPIKeysForNS(ctx context.Context, ns string) ([]Key, error
 			&i.SecretHash,
 			&i.Ns,
 			&i.CreatedAt,
+			&i.MaxRecursions,
 		); err != nil {
 			return nil, err
 		}
@@ -68,19 +75,20 @@ func (q *Queries) ListAPIKeysForNS(ctx context.Context, ns string) ([]Key, error
 }
 
 const selectAPIKey = `-- name: SelectAPIKey :one
-SELECT secret_hash, ns
+SELECT secret_hash, ns, max_recursions
 FROM keys
 WHERE id = $1
 `
 
 type SelectAPIKeyRow struct {
-	SecretHash string
-	Ns         string
+	SecretHash    string
+	Ns            string
+	MaxRecursions int64
 }
 
 func (q *Queries) SelectAPIKey(ctx context.Context, id string) (SelectAPIKeyRow, error) {
 	row := q.db.QueryRow(ctx, selectAPIKey, id)
 	var i SelectAPIKeyRow
-	err := row.Scan(&i.SecretHash, &i.Ns)
+	err := row.Scan(&i.SecretHash, &i.Ns, &i.MaxRecursions)
 	return i, err
 }
