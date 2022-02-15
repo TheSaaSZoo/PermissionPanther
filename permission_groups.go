@@ -171,7 +171,7 @@ func AddMemberToPermissionGroup(ns, groupName, entity string) (applied bool, err
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	// TODO: Give them all the permissions if they do not exist
+	// TODO: Give them all the permissions if they do not exist in transaction
 }
 
 func RemoveMemberFromPermissionGroup(ns, groupName, entity string) (applied bool, err error) {
@@ -184,5 +184,5 @@ func RemoveMemberFromPermissionGroup(ns, groupName, entity string) (applied bool
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	// TODO: Remove all of the permissions from the group if they exist
+	// TODO: Remove all of the permissions from the group if they exist in transaction
 }
