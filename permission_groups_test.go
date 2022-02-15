@@ -139,3 +139,9 @@ func TestPermissionGroups(t *testing.T) {
 		}
 	})
 }
+
+// Check add permission to group with both add to array and propagate
+// Check add permission to group with both add to array and propagate (for the 2 removes below)
+// Check add permission to group with both add to array and NO propagate
+// Check remove permission from group with array and propagate
+// Check remove permission from group with array and NO propagate
