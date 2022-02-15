@@ -88,6 +88,11 @@ DELETE FROM permission_groups
 WHERE ns = $1
 AND name = $2;
 
+-- name: SelectPermissionGroup :one
+SELECT * FROM permission_groups
+WHERE ns = $1
+AND name = $2;
+
 -- name: AddPermissionToGroup :execrows
 -- Adds a permission if it does not exist
 UPDATE permission_groups

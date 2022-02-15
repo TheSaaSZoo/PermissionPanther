@@ -52,6 +52,15 @@ func SetupCRDB() {
 		panic(err)
 	}
 
+	_, err = conn.Exec(ctx, "DELETE FROM permission_groups WHERE ns = 'testns'")
+	if err != nil {
+		panic(err)
+	}
+	_, err = conn.Exec(ctx, "DELETE FROM permission_group_membership WHERE ns = 'testns'")
+	if err != nil {
+		panic(err)
+	}
+
 	queries := query.New(conn)
 
 	err = queries.InsertRelation(ctx, query.InsertRelationParams{

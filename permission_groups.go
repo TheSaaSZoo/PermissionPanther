@@ -199,7 +199,24 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		txQueries := query.New(tx)
 
-		err := txQueries.AddMemberToPermissionGroup(ctx, query.AddMemberToPermissionGroupParams{
+		err := txQueries.InsertRelation(ctx, query.InsertRelationParams{
+			Ns:         ns,
+			Entity:     entity,
+			Permission: groupName,
+			Object:     object,
+		})
+		if err != nil {
+			if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
+				// Unique violation, it exists
+				applied = false
+				return nil
+			} else {
+				logger.Error("Error adding permission when trying to add to permission group")
+				return err
+			}
+		}
+
+		err = txQueries.AddMemberToPermissionGroup(ctx, query.AddMemberToPermissionGroupParams{
 			GroupName: groupName,
 			Entity:    entity,
 			Ns:        ns,
@@ -224,7 +241,7 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 	return
 }
 
-func RemoveMemberFromPermissionGroup(ns, groupName, entity string) (applied bool, err error) {
+func RemoveMemberFromPermissionGroup(ns, groupName, entity, object string) (applied bool, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -237,7 +254,22 @@ func RemoveMemberFromPermissionGroup(ns, groupName, entity string) (applied bool
 	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		txQueries := query.New(tx)
 
-		rows, err := txQueries.RemoveMemberFromPermissionGroup(ctx, query.RemoveMemberFromPermissionGroupParams{
+		rows, err := txQueries.DeleteRelation(ctx, query.DeleteRelationParams{
+			Ns:         ns,
+			Entity:     entity,
+			Permission: groupName,
+			Object:     object,
+		})
+		if err != nil {
+			logger.Error("Error deleting permission when removing from permission group")
+			return err
+		}
+		if rows == 0 {
+			applied = false
+			return nil
+		}
+
+		rows, err = txQueries.RemoveMemberFromPermissionGroup(ctx, query.RemoveMemberFromPermissionGroupParams{
 			Ns:        ns,
 			GroupName: groupName,
 			Entity:    entity,

@@ -172,6 +172,8 @@ func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Ap
 		return
 	}
 
+	// TODO: Check if this is a permission or a group
+
 	out.Applied, err = UpsertRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
 	if err != nil {
 		logger.Error("Error upserting relation")
@@ -199,6 +201,8 @@ func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb
 		}
 		return
 	}
+
+	// TODO: Check if this is a permission or a group
 
 	out.Applied, err = DeleteRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
 	if err != nil {

@@ -14,6 +14,9 @@ tasks:
   test:
     cmds:
       - go test . -count=1 -v
+  test-permission-groups:
+    cmds:
+      - go test . -count=1 -v -run=TestPermissionGroups
   sqlc:
     cmds:
       - node makeSqlcSchema.js

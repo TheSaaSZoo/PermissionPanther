@@ -480,3 +480,21 @@ func (q *Queries) RemovePermissionFromGroup(ctx context.Context, arg RemovePermi
 	}
 	return result.RowsAffected(), nil
 }
+
+const selectPermissionGroup = `-- name: SelectPermissionGroup :one
+SELECT name, ns, perms FROM permission_groups
+WHERE ns = $1
+AND name = $2
+`
+
+type SelectPermissionGroupParams struct {
+	Ns   string
+	Name string
+}
+
+func (q *Queries) SelectPermissionGroup(ctx context.Context, arg SelectPermissionGroupParams) (PermissionGroup, error) {
+	row := q.db.QueryRow(ctx, selectPermissionGroup, arg.Ns, arg.Name)
+	var i PermissionGroup
+	err := row.Scan(&i.Name, &i.Ns, &i.Perms)
+	return i, err
+}

@@ -1,185 +1,141 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"testing"
 
+	"github.com/danthegoodman1/PermissionPanther/crdb"
+	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/danthegoodman1/PermissionPanther/utils"
 )
 
 func TestPermissionGroups(t *testing.T) {
-	t.Run("direct success", func(t *testing.T) {
-		log.Println("\n\n\n### direct success")
-		found, err := CheckPermissions("testns", "obj1", "access", "user1", 0, 4)
-		utils.HandleTestError(t, err)
-		if found == -1 {
-			panic("Not found!")
-		}
-	})
-
-	t.Run("recursion 1 success", func(t *testing.T) {
-		log.Println("\n\n\n### recursion 1 success")
-		found, err := CheckPermissions("testns", "obj2", "access", "user1", 0, 4)
-		utils.HandleTestError(t, err)
-		if found == -1 {
-			panic("Not found!")
-		}
-	})
-
-	t.Run("recursion 2 success", func(t *testing.T) {
-		log.Println("\n\n\n### recursion 2 success")
-		found, err := CheckPermissions("testns", "obj3", "access", "user1", 0, 4)
-		utils.HandleTestError(t, err)
-		if found == -1 {
-			panic("Not found!")
-		}
-	})
-
-	t.Run("recursion 3 success", func(t *testing.T) {
-		log.Println("\n\n\n### recursion 3 success")
-		found, err := CheckPermissions("testns", "obj4", "access", "user1", 0, 4)
-		utils.HandleTestError(t, err)
-		if found == -1 {
-			panic("Not found!")
-		}
-	})
-
-	t.Run("recursion 4 success", func(t *testing.T) {
-		log.Println("\n\n\n### recursion 4 success")
-		found, err := CheckPermissions("testns", "obj5", "access", "user1", 0, 4)
-		utils.HandleTestError(t, err)
-		if found == -1 {
-			panic("Not found!")
-		}
-	})
-
-	t.Run("recursion 5 fail", func(t *testing.T) {
-		log.Println("\n\n\n### recursion 5 fail")
-		found, err := CheckPermissions("testns", "obj6", "access", "user1", 0, 4)
-		utils.HandleTestError(t, err)
-		if found > 0 {
-			panic("Found!")
-		}
-	})
-
-	t.Run("list entity permission success", func(t *testing.T) {
-		log.Println("\n\n\n### list entity permission success")
-		relations, err := ListEntityPermissions("testns", "user1", "")
-		utils.HandleTestError(t, err)
-		if len(relations) < 1 {
-			utils.HandleTestError(t, fmt.Errorf("failed to list entity permission"))
-		}
-		log.Printf("Found relations %+v\n", relations)
-	})
-
-	t.Run("list entity permission success with filter", func(t *testing.T) {
-		log.Println("\n\n\n### list entity permission success with filter")
-		perm := "access"
-		relations, err := ListEntityPermissions("testns", "user1", perm)
-		utils.HandleTestError(t, err)
-		if len(relations) < 1 {
-			utils.HandleTestError(t, fmt.Errorf("failed to list entity permission"))
-		}
-		log.Printf("Found relations %+v\n", relations)
-	})
-
-	t.Run("list object permission success", func(t *testing.T) {
-		log.Println("\n\n\n### list object permission success")
-		relations, err := ListObjectPermissions("testns", "obj1", "")
-		utils.HandleTestError(t, err)
-		if len(relations) < 1 {
-			utils.HandleTestError(t, fmt.Errorf("failed to list object permission"))
-		}
-		log.Printf("Found relations %+v\n", relations)
-	})
-
-	t.Run("list object permission success with filter", func(t *testing.T) {
-		log.Println("\n\n\n### list object permission success with filter")
-		perm := "access"
-		relations, err := ListObjectPermissions("testns", "obj1", perm)
-		utils.HandleTestError(t, err)
-		if len(relations) < 1 {
-			utils.HandleTestError(t, fmt.Errorf("failed to list object permission"))
-		}
-		log.Printf("Found relations %+v\n", relations)
-	})
-
-	t.Run("list object permission empty with filter", func(t *testing.T) {
-		log.Println("\n\n\n### list object permission success with filter")
-		perm := "accesseeeee"
-		relations, err := ListObjectPermissions("testns", "obj1", perm)
-		utils.HandleTestError(t, err)
-		if len(relations) != 0 {
-			utils.HandleTestError(t, fmt.Errorf("failed to list object permission"))
-		}
-		log.Printf("Found relations %+v\n", relations)
-	})
-
-	t.Run("insert relation", func(t *testing.T) {
-		log.Println("\n\n\n### test insert relation")
-		applied, err := UpsertRelation("testns", "tobj", "tperm", "tuser")
+	t.Run("create and remove permission group", func(t *testing.T) {
+		log.Println("\n\n\n### test create and remove permission group")
+		applied, err := CreatePermissionGroup("testns", "test_g_1", []string{"TEST_PERM"})
 		utils.HandleTestError(t, err)
 
 		if !applied {
-			utils.HandleTestError(t, fmt.Errorf("Not applied"))
+			utils.HandleTestError(t, fmt.Errorf("Not applied create"))
 		}
 
-		// Get it to validate
-		perm := "tperm"
-		relations, err := ListEntityPermissions("testns", "tuser", perm)
+		applied, err = CreatePermissionGroup("testns", "test_g_1", []string{"TEST_PERM"})
 		utils.HandleTestError(t, err)
-		if len(relations) != 1 {
-			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
-		}
-	})
 
-	t.Run("insert relation already exists", func(t *testing.T) {
-		log.Println("\n\n\n### test insert relation already exists")
-		applied, err := UpsertRelation("testns", "tobj", "tperm", "tuser")
-		utils.HandleTestError(t, err)
+		// Make sure we cannot do it again
 		if applied {
-			utils.HandleTestError(t, fmt.Errorf("applied"))
+			utils.HandleTestError(t, fmt.Errorf("applied create"))
 		}
 
 		// Get it to validate
-		perm := "tperm"
-		relations, err := ListEntityPermissions("testns", "tuser", perm)
+		conn, err := crdb.PGPool.Acquire(context.Background())
 		utils.HandleTestError(t, err)
-		if len(relations) != 1 {
-			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
+		group, err := query.New(conn).SelectPermissionGroup(context.Background(), query.SelectPermissionGroupParams{
+			Ns:   "testns",
+			Name: "test_g_1",
+		})
+		utils.HandleTestError(t, err)
+		log.Println("Got permission group:")
+		log.Println(group)
+
+		// Delete the group
+		applied, err = RemovePermissionGroup("testns", "test_g_1", true)
+		utils.HandleTestError(t, err)
+
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied delete"))
+		}
+
+		// Make sure we cannot do it again
+		applied, err = RemovePermissionGroup("testns", "test_g_1", true)
+		utils.HandleTestError(t, err)
+
+		if applied {
+			utils.HandleTestError(t, fmt.Errorf("applied delete"))
 		}
 	})
 
-	t.Run("Delete relation", func(t *testing.T) {
-		log.Println("\n\n\n### test delete relation")
-		applied, err := DeleteRelation("testns", "tobj", "tperm", "tuser")
+	t.Run("create and add member then remove member", func(t *testing.T) {
+		log.Println("\n\n\n### test create and add member then remove member")
+		applied, err := CreatePermissionGroup("testns", "test_g_2", []string{"TEST_PERM"})
+		utils.HandleTestError(t, err)
+
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied create"))
+		}
+
+		applied, err = AddMemberToPermissionGroup("testns", "test_g_2", "test_ent_2", "test_obj_2")
 		utils.HandleTestError(t, err)
 		if !applied {
-			utils.HandleTestError(t, fmt.Errorf("Not applied"))
+			utils.HandleTestError(t, fmt.Errorf("Not applied add member"))
 		}
 
 		// Get it to validate
-		relations, err := ListEntityPermissions("testns", "tuser", "")
+		conn, err := crdb.PGPool.Acquire(context.Background())
 		utils.HandleTestError(t, err)
-		if len(relations) != 0 {
-			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
-		}
-	})
-
-	t.Run("Delete relation not exists", func(t *testing.T) {
-		log.Println("\n\n\n### test delete relation not exists")
-		applied, err := DeleteRelation("testns", "tobj", "tperm", "tuser")
+		members, err := query.New(conn).ListEntitiesInPermissionGroup(context.Background(), "")
 		utils.HandleTestError(t, err)
-		if applied {
-			utils.HandleTestError(t, fmt.Errorf("applied"))
+		if len(members) != 1 {
+			utils.HandleTestError(t, fmt.Errorf("Failed to find single user in permission group"))
 		}
 
-		// Get it to validate
-		relations, err := ListEntityPermissions("testns", "tuser", "")
+		// Validate the relation
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_2",
+			Permission: "test_g_2",
+			Object:     "test_obj_2",
+		})
 		utils.HandleTestError(t, err)
-		if len(relations) != 0 {
-			utils.HandleTestError(t, fmt.Errorf("failed to validate upsert"))
+
+		// TODO: Test propagation by checking the direct relation
+
+		// Remove the member
+		rows, err := query.New(conn).RemoveMemberFromPermissionGroup(context.Background(), query.RemoveMemberFromPermissionGroupParams{
+			Ns:        "testns",
+			GroupName: "test_g_2",
+			Entity:    "test_ent_2",
+		})
+		utils.HandleTestError(t, err)
+
+		if rows != 1 {
+			utils.HandleTestError(t, fmt.Errorf("Did not have 1 row when removing users from group"))
+		}
+
+		// Delete the group
+		applied, err = RemovePermissionGroup("testns", "test_g_2", true)
+		utils.HandleTestError(t, err)
+
+		// _, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+		// 	Ns:         "testns",
+		// 	Entity:     "test_ent_2",
+		// 	Permission: "test_g_2",
+		// 	Object:     "test_obj_2",
+		// })
+		// if err == nil {
+		// 	utils.HandleTestError(t, fmt.Errorf("found the relation"))
+		// } else if err != pgx.ErrNoRows {
+		// 	utils.HandleTestError(t, err)
+		// }
+
+		// _, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+		// 	Ns:         "testns",
+		// 	Entity:     "test_ent_2",
+		// 	Permission: "TEST_PERM",
+		// 	Object:     "test_obj_2",
+		// })
+		// if err == nil {
+		// 	utils.HandleTestError(t, fmt.Errorf("found the relation"))
+		// } else if err != pgx.ErrNoRows {
+		// 	utils.HandleTestError(t, err)
+		// }
+
+		// TODO: comment in the above
+
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied delete"))
 		}
 	})
 }
