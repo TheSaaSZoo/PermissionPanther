@@ -21,3 +21,19 @@ CREATE TABLE IF NOT EXISTS keys (
 );
 
 
+
+CREATE TABLE IF NOT EXISTS permission_groups (
+  name TEXT NOT NULL,
+  ns TEXT NOT NULL,
+  perms TEXT[] NOT NULL,
+  PRIMARY KEY (ns, name)
+);
+
+CREATE TABLE IF NOT EXISTS permission_group_membership (
+  group_name TEXT NOT NULL,
+  entity TEXT NOT NULL,
+  ns TEXT NOT NULL,
+  object TEXT NOT NULL, -- for faster permission change propagation
+  PRIMARY KEY(ns, group_name, entity)
+);
+

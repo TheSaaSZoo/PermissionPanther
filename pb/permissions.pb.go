@@ -522,6 +522,156 @@ func (x *RelationReq) GetObject() string {
 	return ""
 }
 
+type PermissionGroupReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	KeyID       string   `protobuf:"bytes,1,opt,name=keyID,proto3" json:"keyID,omitempty"`
+	KeySecret   string   `protobuf:"bytes,2,opt,name=keySecret,proto3" json:"keySecret,omitempty"`
+	GroupName   string   `protobuf:"bytes,3,opt,name=groupName,proto3" json:"groupName,omitempty"`
+	Permissions []string `protobuf:"bytes,4,rep,name=permissions,proto3" json:"permissions,omitempty"`
+}
+
+func (x *PermissionGroupReq) Reset() {
+	*x = PermissionGroupReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_permissions_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PermissionGroupReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PermissionGroupReq) ProtoMessage() {}
+
+func (x *PermissionGroupReq) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_permissions_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PermissionGroupReq.ProtoReflect.Descriptor instead.
+func (*PermissionGroupReq) Descriptor() ([]byte, []int) {
+	return file_pb_permissions_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *PermissionGroupReq) GetKeyID() string {
+	if x != nil {
+		return x.KeyID
+	}
+	return ""
+}
+
+func (x *PermissionGroupReq) GetKeySecret() string {
+	if x != nil {
+		return x.KeySecret
+	}
+	return ""
+}
+
+func (x *PermissionGroupReq) GetGroupName() string {
+	if x != nil {
+		return x.GroupName
+	}
+	return ""
+}
+
+func (x *PermissionGroupReq) GetPermissions() []string {
+	if x != nil {
+		return x.Permissions
+	}
+	return nil
+}
+
+type ModifyPermissionGroupReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	KeyID       string   `protobuf:"bytes,1,opt,name=keyID,proto3" json:"keyID,omitempty"`
+	KeySecret   string   `protobuf:"bytes,2,opt,name=keySecret,proto3" json:"keySecret,omitempty"`
+	GroupName   string   `protobuf:"bytes,3,opt,name=groupName,proto3" json:"groupName,omitempty"`
+	Permissions []string `protobuf:"bytes,4,rep,name=permissions,proto3" json:"permissions,omitempty"`
+	Propagate   bool     `protobuf:"varint,5,opt,name=propagate,proto3" json:"propagate,omitempty"`
+}
+
+func (x *ModifyPermissionGroupReq) Reset() {
+	*x = ModifyPermissionGroupReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_permissions_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ModifyPermissionGroupReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ModifyPermissionGroupReq) ProtoMessage() {}
+
+func (x *ModifyPermissionGroupReq) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_permissions_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ModifyPermissionGroupReq.ProtoReflect.Descriptor instead.
+func (*ModifyPermissionGroupReq) Descriptor() ([]byte, []int) {
+	return file_pb_permissions_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ModifyPermissionGroupReq) GetKeyID() string {
+	if x != nil {
+		return x.KeyID
+	}
+	return ""
+}
+
+func (x *ModifyPermissionGroupReq) GetKeySecret() string {
+	if x != nil {
+		return x.KeySecret
+	}
+	return ""
+}
+
+func (x *ModifyPermissionGroupReq) GetGroupName() string {
+	if x != nil {
+		return x.GroupName
+	}
+	return ""
+}
+
+func (x *ModifyPermissionGroupReq) GetPermissions() []string {
+	if x != nil {
+		return x.Permissions
+	}
+	return nil
+}
+
+func (x *ModifyPermissionGroupReq) GetPropagate() bool {
+	if x != nil {
+		return x.Propagate
+	}
+	return false
+}
+
 var File_pb_permissions_proto protoreflect.FileDescriptor
 
 var file_pb_permissions_proto_rawDesc = []byte{
@@ -583,8 +733,27 @@ var file_pb_permissions_proto_rawDesc = []byte{
 	0x0a, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x0a, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x16, 0x0a,
 	0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x6f,
-	0x62, 0x6a, 0x65, 0x63, 0x74, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x62, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x88, 0x01, 0x0a, 0x12, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05,
+	0x6b, 0x65, 0x79, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6b, 0x65, 0x79,
+	0x49, 0x44, 0x12, 0x1c, 0x0a, 0x09, 0x6b, 0x65, 0x79, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6b, 0x65, 0x79, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74,
+	0x12, 0x1c, 0x0a, 0x09, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x20,
+	0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x04, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73,
+	0x22, 0xac, 0x01, 0x0a, 0x18, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x50, 0x65, 0x72, 0x6d, 0x69,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a,
+	0x05, 0x6b, 0x65, 0x79, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6b, 0x65,
+	0x79, 0x49, 0x44, 0x12, 0x1c, 0x0a, 0x09, 0x6b, 0x65, 0x79, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6b, 0x65, 0x79, 0x53, 0x65, 0x63, 0x72, 0x65,
+	0x74, 0x12, 0x1c, 0x0a, 0x09, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x4e, 0x61, 0x6d, 0x65, 0x12,
+	0x20, 0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x04,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x73, 0x12, 0x1c, 0x0a, 0x09, 0x70, 0x72, 0x6f, 0x70, 0x61, 0x67, 0x61, 0x74, 0x65, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x70, 0x61, 0x67, 0x61, 0x74, 0x65, 0x42,
+	0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -599,15 +768,17 @@ func file_pb_permissions_proto_rawDescGZIP() []byte {
 	return file_pb_permissions_proto_rawDescData
 }
 
-var file_pb_permissions_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_pb_permissions_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_pb_permissions_proto_goTypes = []interface{}{
-	(*CheckDirectReq)(nil),         // 0: CheckDirectReq
-	(*CheckDirectRes)(nil),         // 1: CheckDirectRes
-	(*ListEntityRelationsReq)(nil), // 2: ListEntityRelationsReq
-	(*ListObjectRelationsReq)(nil), // 3: ListObjectRelationsReq
-	(*RelationsResponse)(nil),      // 4: RelationsResponse
-	(*Relation)(nil),               // 5: Relation
-	(*RelationReq)(nil),            // 6: RelationReq
+	(*CheckDirectReq)(nil),           // 0: CheckDirectReq
+	(*CheckDirectRes)(nil),           // 1: CheckDirectRes
+	(*ListEntityRelationsReq)(nil),   // 2: ListEntityRelationsReq
+	(*ListObjectRelationsReq)(nil),   // 3: ListObjectRelationsReq
+	(*RelationsResponse)(nil),        // 4: RelationsResponse
+	(*Relation)(nil),                 // 5: Relation
+	(*RelationReq)(nil),              // 6: RelationReq
+	(*PermissionGroupReq)(nil),       // 7: PermissionGroupReq
+	(*ModifyPermissionGroupReq)(nil), // 8: ModifyPermissionGroupReq
 }
 var file_pb_permissions_proto_depIdxs = []int32{
 	5, // 0: RelationsResponse.relations:type_name -> Relation
@@ -708,6 +879,30 @@ func file_pb_permissions_proto_init() {
 				return nil
 			}
 		}
+		file_pb_permissions_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PermissionGroupReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pb_permissions_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ModifyPermissionGroupReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -715,7 +910,7 @@ func file_pb_permissions_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pb_permissions_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

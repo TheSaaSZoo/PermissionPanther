@@ -209,3 +209,19 @@ func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb
 
 	return
 }
+
+func (server) CreatePermissionGroup(ctx context.Context, in *pb.PermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}
+
+func (server) DeletePermissionGroup(ctx context.Context, in *pb.PermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}
+
+func (server) AddPermissionToGroup(ctx context.Context, in *pb.ModifyPermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}
+
+func (server) RemovePermissionFromGroup(ctx context.Context, in *pb.ModifyPermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}

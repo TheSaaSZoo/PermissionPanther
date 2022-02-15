@@ -61,3 +61,20 @@ message RelationReq {
   string permission = 4;
   string object = 5;
 }
+
+message PermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  repeated string permissions = 4;
+}
+
+message ModifyPermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  repeated string permissions = 4;
+  bool propagate = 5;
+}

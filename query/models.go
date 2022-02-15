@@ -14,6 +14,19 @@ type Key struct {
 	MaxRecursions int64
 }
 
+type PermissionGroup struct {
+	Name  string
+	Ns    string
+	Perms []string
+}
+
+type PermissionGroupMembership struct {
+	GroupName string
+	Entity    string
+	Ns        string
+	Object    string
+}
+
 type Relation struct {
 	Object     string
 	Entity     string

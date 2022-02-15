@@ -18,3 +18,19 @@ CREATE TABLE IF NOT EXISTS keys (
 );
 
 CREATE INDEX IF NOT EXISTS keys_by_ns ON keys(ns);
+
+CREATE TABLE IF NOT EXISTS permission_groups (
+  name TEXT NOT NULL,
+  ns TEXT NOT NULL,
+  perms TEXT[] NOT NULL,
+  PRIMARY KEY (ns, name)
+);
+
+CREATE TABLE IF NOT EXISTS permission_group_membership (
+  group_name TEXT NOT NULL,
+  entity TEXT NOT NULL,
+  ns TEXT NOT NULL,
+  object TEXT NOT NULL, -- for faster permission change propagation
+  PRIMARY KEY(ns, group_name, entity)
+);
+CREATE INDEX IF NOT EXISTS pgm_inverted_pkey ON permission_group_membership(entity, group_name);
