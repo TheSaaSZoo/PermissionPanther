@@ -184,14 +184,6 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 		})
 	}
 
-	for _, e := range r {
-		relations = append(relations, &pb.Relation{
-			Entity:     e.Entity,
-			Permission: e.Permission,
-			Object:     e.Object,
-		})
-	}
-
 	if err == nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"ns":             ns,
@@ -199,6 +191,16 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 			"length":         len(r),
 			"has_permission": permission != "",
 		}).Info()
+	} else {
+		return
+	}
+
+	for _, e := range r {
+		relations = append(relations, &pb.Relation{
+			Entity:     e.Entity,
+			Permission: e.Permission,
+			Object:     e.Object,
+		})
 	}
 
 	return
@@ -230,14 +232,6 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 		})
 	}
 
-	for _, e := range r {
-		relations = append(relations, &pb.Relation{
-			Entity:     e.Entity,
-			Permission: e.Permission,
-			Object:     e.Object,
-		})
-	}
-
 	if err == nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"ns":             ns,
@@ -245,6 +239,16 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 			"length":         len(r),
 			"has_permission": permission != "",
 		}).Info()
+	} else {
+		return
+	}
+
+	for _, e := range r {
+		relations = append(relations, &pb.Relation{
+			Entity:     e.Entity,
+			Permission: e.Permission,
+			Object:     e.Object,
+		})
 	}
 
 	return
@@ -272,8 +276,13 @@ func UpsertRelation(ns, obj, permission, entity string) (done bool, err error) {
 			"action": "upsert_relation",
 		}).Info()
 	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
-		// Upsert, no bill
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "upsert_relation",
+		}).Info()
 		return false, nil
+	} else if err != nil {
+		logger.Error("Error inserting relation")
 	}
 
 	return true, nil
