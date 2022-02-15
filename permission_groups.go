@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 
+	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgx"
 	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 )
 
@@ -33,6 +35,7 @@ func CreatePermissionGroup(ns, groupName string, perms []string) (applied bool, 
 		}).Info()
 	}
 	if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
+		// Unique violation, it exists
 		return false, nil
 	}
 	applied = true
@@ -49,24 +52,32 @@ func RemovePermissionGroup(ns, groupName string, propagate bool) (applied bool, 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	rows, err := query.New(conn).DeletePermissionGroup(ctx, query.DeletePermissionGroupParams{
-		Ns:   ns,
-		Name: groupName,
-	})
-	if err == nil {
-		logger.Logger.WithFields(logrus.Fields{
-			"ns":        ns,
-			"action":    "remove_perm_group",
-			"propagate": propagate,
-		}).Info()
-	}
-	if rows != 0 {
-		applied = true
-		if propagate {
-			// TODO: For all entities in the group, remove their permissions from the group if they exists
-			// Do both of these in transaction
+	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		txQueries := query.New(tx)
+
+		rows, err := txQueries.DeletePermissionGroup(ctx, query.DeletePermissionGroupParams{
+			Ns:   ns,
+			Name: groupName,
+		})
+		if err != nil {
+			return err
 		}
-	}
+		if err == nil {
+			logger.Logger.WithFields(logrus.Fields{
+				"ns":        ns,
+				"action":    "remove_perm_group",
+				"propagate": propagate,
+			}).Info()
+		}
+		if rows != 0 {
+			applied = true
+			if propagate {
+				// TODO: For all entities in the group, remove their permissions from the group if they exists, log every change for billing
+				// Do both of these in transaction
+			}
+		}
+		return nil
+	})
 
 	return
 }
@@ -81,24 +92,31 @@ func AddPermissionToGroup(ns, groupName, perm string, propagate bool) (applied b
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	rows, err := query.New(conn).AddPermissionToGroup(ctx, query.AddPermissionToGroupParams{
-		Ns:         ns,
-		Name:       groupName,
-		Permission: perm,
-	})
-	if err == nil && rows != 0 {
-		logger.Logger.WithFields(logrus.Fields{
-			"ns":     ns,
-			"action": "add_perm_to_group",
-		}).Info()
-	}
-	if rows != 0 {
-		applied = true
-		if propagate {
-			// TODO: For all entities in the group
-			// Do both of these in transaction
+	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		txQueries := query.New(tx)
+		rows, err := txQueries.AddPermissionToGroup(ctx, query.AddPermissionToGroupParams{
+			Ns:         ns,
+			Name:       groupName,
+			Permission: perm,
+		})
+		if err != nil {
+			return err
 		}
-	}
+		if err == nil && rows != 0 {
+			logger.Logger.WithFields(logrus.Fields{
+				"ns":     ns,
+				"action": "add_perm_to_group",
+			}).Info()
+		}
+		if rows != 0 {
+			applied = true
+			if propagate {
+				// TODO: For all entities in the group, log every change for billing
+				// Do both of these in transaction
+			}
+		}
+		return nil
+	})
 
 	return
 }
@@ -113,24 +131,31 @@ func RemovePermissionFromGroup(ns, groupName, perm string, propagate bool) (appl
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	rows, err := query.New(conn).RemovePermissionFromGroup(ctx, query.RemovePermissionFromGroupParams{
-		Ns:         ns,
-		Name:       groupName,
-		Permission: perm,
-	})
-	if err == nil && rows != 0 {
-		logger.Logger.WithFields(logrus.Fields{
-			"ns":     ns,
-			"action": "remove_perm_from_group",
-		}).Info()
-	}
-	if rows != 0 {
-		applied = true
-		if propagate {
-			// TODO: For all entities in the group
-			// Do both of these in transaction
+	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		txQueries := query.New(tx)
+		rows, err := txQueries.RemovePermissionFromGroup(ctx, query.RemovePermissionFromGroupParams{
+			Ns:         ns,
+			Name:       groupName,
+			Permission: perm,
+		})
+		if err != nil {
+			return err
 		}
-	}
+		if err == nil && rows != 0 {
+			logger.Logger.WithFields(logrus.Fields{
+				"ns":     ns,
+				"action": "remove_perm_from_group",
+			}).Info()
+		}
+		if rows != 0 {
+			applied = true
+			if propagate {
+				// TODO: For all entities in the group, log every change for billing
+				// Do both of these in transaction
+			}
+		}
+		return nil
+	})
 
 	return
 }
@@ -161,7 +186,7 @@ func ListEntitiesInPermissionGroup(ns, groupName, offset string) (entities []que
 	return
 }
 
-func AddMemberToPermissionGroup(ns, groupName, entity string) (applied bool, err error) {
+func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied bool, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -171,7 +196,32 @@ func AddMemberToPermissionGroup(ns, groupName, entity string) (applied bool, err
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	// TODO: Give them all the permissions if they do not exist in transaction
+	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		txQueries := query.New(tx)
+
+		err := txQueries.AddMemberToPermissionGroup(ctx, query.AddMemberToPermissionGroupParams{
+			GroupName: groupName,
+			Entity:    entity,
+			Ns:        ns,
+			Object:    object,
+		})
+		if err != nil {
+			if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
+				// Unique violation, it exists
+				applied = false
+				return nil
+			} else {
+				logger.Error("Error adding member to permission group")
+				return err
+			}
+		}
+
+		// TODO: propagate permissions from the group, log every change for billing
+
+		applied = true
+		return nil
+	})
+	return
 }
 
 func RemoveMemberFromPermissionGroup(ns, groupName, entity string) (applied bool, err error) {
@@ -184,5 +234,25 @@ func RemoveMemberFromPermissionGroup(ns, groupName, entity string) (applied bool
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	// TODO: Remove all of the permissions from the group if they exist in transaction
+	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
+		txQueries := query.New(tx)
+
+		rows, err := txQueries.RemoveMemberFromPermissionGroup(ctx, query.RemoveMemberFromPermissionGroupParams{
+			Ns:        ns,
+			GroupName: groupName,
+			Entity:    entity,
+		})
+		if err != nil {
+			logger.Error("Error removing member from permission group")
+			return err
+		}
+
+		if rows != 0 {
+			// TODO: propagate permissions from the group, log every change for billing
+		}
+
+		applied = true
+		return nil
+	})
+	return
 }
