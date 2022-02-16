@@ -84,10 +84,11 @@ AND object = $4;
 INSERT INTO permission_groups (ns, perms, name)
 VALUES ($1, $2, $3);
 
--- name: DeletePermissionGroup :execrows
+-- name: DeletePermissionGroup :one
 DELETE FROM permission_groups
 WHERE ns = $1
-AND name = $2;
+AND name = $2
+RETURNING perms;
 
 -- name: SelectPermissionGroup :one
 SELECT * FROM permission_groups

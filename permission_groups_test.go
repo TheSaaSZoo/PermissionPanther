@@ -195,8 +195,15 @@ func TestPermissionGroups(t *testing.T) {
 			utils.HandleTestError(t, fmt.Errorf("Not applied add permission 2"))
 		}
 
+		// Add another propagate for later delete
+		applied, err = AddPermissionToGroup("testns", "test_g_3", "TEST_PERM_D", true)
+		utils.HandleTestError(t, err)
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied add permission 2"))
+		}
+
 		// Add permission no propagate
-		applied, err = AddPermissionToGroup("testns", "test_g_3", "TEST_PERM_D", false)
+		applied, err = AddPermissionToGroup("testns", "test_g_3", "TEST_PERM_E", false)
 		utils.HandleTestError(t, err)
 		if !applied {
 			utils.HandleTestError(t, fmt.Errorf("Not applied add permission 3"))
@@ -206,7 +213,7 @@ func TestPermissionGroups(t *testing.T) {
 		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
 			Ns:         "testns",
 			Entity:     "test_ent_3",
-			Permission: "TEST_PERM_D",
+			Permission: "TEST_PERM_E",
 			Object:     "test_obj_3",
 		})
 		if err == nil {
@@ -250,6 +257,26 @@ func TestPermissionGroups(t *testing.T) {
 			Object:     "test_obj_3",
 		})
 		utils.HandleTestError(t, err)
+
+		// Delete permission group
+		applied, err = RemovePermissionGroup("testns", "test_g_3", true)
+		utils.HandleTestError(t, err)
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Failed to remove permission group"))
+		}
+
+		// Verify propagate
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_3",
+			Permission: "TEST_PERM_D",
+			Object:     "test_obj_3",
+		})
+		if err == nil {
+			utils.HandleTestError(t, fmt.Errorf("found the relation D"))
+		} else if err != pgx.ErrNoRows {
+			utils.HandleTestError(t, err)
+		}
 
 		if !applied {
 			utils.HandleTestError(t, fmt.Errorf("Not applied delete"))

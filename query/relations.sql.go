@@ -128,10 +128,11 @@ func (q *Queries) CheckRelationWildcard(ctx context.Context, arg CheckRelationWi
 	return column_1, err
 }
 
-const deletePermissionGroup = `-- name: DeletePermissionGroup :execrows
+const deletePermissionGroup = `-- name: DeletePermissionGroup :one
 DELETE FROM permission_groups
 WHERE ns = $1
 AND name = $2
+RETURNING perms
 `
 
 type DeletePermissionGroupParams struct {
@@ -139,12 +140,11 @@ type DeletePermissionGroupParams struct {
 	Name string
 }
 
-func (q *Queries) DeletePermissionGroup(ctx context.Context, arg DeletePermissionGroupParams) (int64, error) {
-	result, err := q.db.Exec(ctx, deletePermissionGroup, arg.Ns, arg.Name)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected(), nil
+func (q *Queries) DeletePermissionGroup(ctx context.Context, arg DeletePermissionGroupParams) ([]string, error) {
+	row := q.db.QueryRow(ctx, deletePermissionGroup, arg.Ns, arg.Name)
+	var perms []string
+	err := row.Scan(&perms)
+	return perms, err
 }
 
 const deleteRelation = `-- name: DeleteRelation :execrows

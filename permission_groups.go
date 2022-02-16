@@ -55,11 +55,13 @@ func RemovePermissionGroup(ns, groupName string, propagate bool) (applied bool, 
 	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		txQueries := query.New(tx)
 
-		rows, err := txQueries.DeletePermissionGroup(ctx, query.DeletePermissionGroupParams{
+		perms, err := txQueries.DeletePermissionGroup(ctx, query.DeletePermissionGroupParams{
 			Ns:   ns,
 			Name: groupName,
 		})
-		if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil
+		} else if err != nil {
 			return err
 		}
 		if err == nil {
@@ -69,11 +71,42 @@ func RemovePermissionGroup(ns, groupName string, propagate bool) (applied bool, 
 				"propagate": propagate,
 			}).Info()
 		}
-		if rows != 0 {
+		if len(perms) != 0 {
 			applied = true
 			if propagate {
-				// TODO: For all entities in the group, remove their permissions from the group if they exists, log every change for billing
-				// Do both of these in transaction
+				// Propagate changes to group members
+				var entities []query.PermissionGroupMembership
+				offset := ""
+				for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
+					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
+					if err != nil {
+						logger.Error("Error listing entities in permission group during remove permission propagation")
+						return err
+					}
+					for _, ent := range entities {
+						for _, perm := range perms {
+							_, err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
+								Ns:         ns,
+								Entity:     ent.Entity,
+								Permission: perm,
+								Object:     ent.Object,
+							})
+							if err != nil {
+								logger.Error("Error deleting relation during remove permission propagation")
+								return err
+							} else {
+								logger.Logger.WithFields(logrus.Fields{
+									"ns":     ns,
+									"action": "remove_permission_propagate",
+								}).Info()
+							}
+						}
+					}
+					// Set the offset if there is potentially another page
+					if len(entities) != 0 {
+						offset = entities[len(entities)-1].Entity
+					}
+				}
 			}
 		}
 		return nil
