@@ -211,34 +211,63 @@ export namespace RelationReq {
     }
 }
 
-export class PermissionGroupReq extends jspb.Message { 
+export class CreatePermissionGroupReq extends jspb.Message { 
     getKeyid(): string;
-    setKeyid(value: string): PermissionGroupReq;
+    setKeyid(value: string): CreatePermissionGroupReq;
     getKeysecret(): string;
-    setKeysecret(value: string): PermissionGroupReq;
+    setKeysecret(value: string): CreatePermissionGroupReq;
     getGroupname(): string;
-    setGroupname(value: string): PermissionGroupReq;
+    setGroupname(value: string): CreatePermissionGroupReq;
     clearPermissionsList(): void;
     getPermissionsList(): Array<string>;
-    setPermissionsList(value: Array<string>): PermissionGroupReq;
+    setPermissionsList(value: Array<string>): CreatePermissionGroupReq;
     addPermissions(value: string, index?: number): string;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): PermissionGroupReq.AsObject;
-    static toObject(includeInstance: boolean, msg: PermissionGroupReq): PermissionGroupReq.AsObject;
+    toObject(includeInstance?: boolean): CreatePermissionGroupReq.AsObject;
+    static toObject(includeInstance: boolean, msg: CreatePermissionGroupReq): CreatePermissionGroupReq.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: PermissionGroupReq, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): PermissionGroupReq;
-    static deserializeBinaryFromReader(message: PermissionGroupReq, reader: jspb.BinaryReader): PermissionGroupReq;
+    static serializeBinaryToWriter(message: CreatePermissionGroupReq, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): CreatePermissionGroupReq;
+    static deserializeBinaryFromReader(message: CreatePermissionGroupReq, reader: jspb.BinaryReader): CreatePermissionGroupReq;
 }
 
-export namespace PermissionGroupReq {
+export namespace CreatePermissionGroupReq {
     export type AsObject = {
         keyid: string,
         keysecret: string,
         groupname: string,
         permissionsList: Array<string>,
+    }
+}
+
+export class DeletePermissionGroupReq extends jspb.Message { 
+    getKeyid(): string;
+    setKeyid(value: string): DeletePermissionGroupReq;
+    getKeysecret(): string;
+    setKeysecret(value: string): DeletePermissionGroupReq;
+    getGroupname(): string;
+    setGroupname(value: string): DeletePermissionGroupReq;
+    getPropagate(): boolean;
+    setPropagate(value: boolean): DeletePermissionGroupReq;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): DeletePermissionGroupReq.AsObject;
+    static toObject(includeInstance: boolean, msg: DeletePermissionGroupReq): DeletePermissionGroupReq.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: DeletePermissionGroupReq, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): DeletePermissionGroupReq;
+    static deserializeBinaryFromReader(message: DeletePermissionGroupReq, reader: jspb.BinaryReader): DeletePermissionGroupReq;
+}
+
+export namespace DeletePermissionGroupReq {
+    export type AsObject = {
+        keyid: string,
+        keysecret: string,
+        groupname: string,
+        propagate: boolean,
     }
 }
 
@@ -249,10 +278,8 @@ export class ModifyPermissionGroupReq extends jspb.Message {
     setKeysecret(value: string): ModifyPermissionGroupReq;
     getGroupname(): string;
     setGroupname(value: string): ModifyPermissionGroupReq;
-    clearPermissionsList(): void;
-    getPermissionsList(): Array<string>;
-    setPermissionsList(value: Array<string>): ModifyPermissionGroupReq;
-    addPermissions(value: string, index?: number): string;
+    getPermission(): string;
+    setPermission(value: string): ModifyPermissionGroupReq;
     getPropagate(): boolean;
     setPropagate(value: boolean): ModifyPermissionGroupReq;
 
@@ -271,7 +298,7 @@ export namespace ModifyPermissionGroupReq {
         keyid: string,
         keysecret: string,
         groupname: string,
-        permissionsList: Array<string>,
+        permission: string,
         propagate: boolean,
     }
 }
@@ -332,8 +359,6 @@ export class PermissionGroupMembership extends jspb.Message {
     setGroupname(value: string): PermissionGroupMembership;
     getEntity(): string;
     setEntity(value: string): PermissionGroupMembership;
-    getNs(): string;
-    setNs(value: string): PermissionGroupMembership;
     getObject(): string;
     setObject(value: string): PermissionGroupMembership;
 
@@ -351,7 +376,6 @@ export namespace PermissionGroupMembership {
     export type AsObject = {
         groupname: string,
         entity: string,
-        ns: string,
         object: string,
     }
 }

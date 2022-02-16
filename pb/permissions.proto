@@ -62,7 +62,7 @@ message RelationReq {
   string object = 5;
 }
 
-message PermissionGroupReq {
+message CreatePermissionGroupReq {
   string keyID = 1;
   string keySecret = 2;
 
@@ -70,12 +70,20 @@ message PermissionGroupReq {
   repeated string permissions = 4;
 }
 
+message DeletePermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  bool propagate = 4;
+}
+
 message ModifyPermissionGroupReq {
   string keyID = 1;
   string keySecret = 2;
 
   string groupName = 3;
-  repeated string permissions = 4;
+  string permission = 4;
   bool propagate = 5;
 }
 
@@ -94,6 +102,5 @@ message ListPermissionGroupRes {
 message PermissionGroupMembership {
   string groupName = 1;
   string entity = 2;
-	string ns = 3;
 	string object = 4;
 }

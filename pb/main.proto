@@ -21,10 +21,10 @@ service PermissionPanther {
   rpc RemovePermission (RelationReq) returns (Applied);
 
   // Creates a permission group if it does not exist
-  rpc CreatePermissionGroup (PermissionGroupReq) returns (Applied);
+  rpc CreatePermissionGroup (CreatePermissionGroupReq) returns (Applied);
 
   // Deletes a permission group if it exists
-  rpc DeletePermissionGroup (PermissionGroupReq) returns (Applied);
+  rpc DeletePermissionGroup (DeletePermissionGroupReq) returns (Applied);
 
   // Adds one or more permissions a to group if it exists, and the permissions are not already in the group
   rpc AddPermissionToGroup (ModifyPermissionGroupReq) returns (Applied);

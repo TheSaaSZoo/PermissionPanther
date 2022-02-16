@@ -66,21 +66,21 @@ interface IPermissionPantherService_IRemovePermission extends grpc.MethodDefinit
     responseSerialize: grpc.serialize<pb_main_pb.Applied>;
     responseDeserialize: grpc.deserialize<pb_main_pb.Applied>;
 }
-interface IPermissionPantherService_ICreatePermissionGroup extends grpc.MethodDefinition<pb_permissions_pb.PermissionGroupReq, pb_main_pb.Applied> {
+interface IPermissionPantherService_ICreatePermissionGroup extends grpc.MethodDefinition<pb_permissions_pb.CreatePermissionGroupReq, pb_main_pb.Applied> {
     path: "/PermissionPanther/CreatePermissionGroup";
     requestStream: false;
     responseStream: false;
-    requestSerialize: grpc.serialize<pb_permissions_pb.PermissionGroupReq>;
-    requestDeserialize: grpc.deserialize<pb_permissions_pb.PermissionGroupReq>;
+    requestSerialize: grpc.serialize<pb_permissions_pb.CreatePermissionGroupReq>;
+    requestDeserialize: grpc.deserialize<pb_permissions_pb.CreatePermissionGroupReq>;
     responseSerialize: grpc.serialize<pb_main_pb.Applied>;
     responseDeserialize: grpc.deserialize<pb_main_pb.Applied>;
 }
-interface IPermissionPantherService_IDeletePermissionGroup extends grpc.MethodDefinition<pb_permissions_pb.PermissionGroupReq, pb_main_pb.Applied> {
+interface IPermissionPantherService_IDeletePermissionGroup extends grpc.MethodDefinition<pb_permissions_pb.DeletePermissionGroupReq, pb_main_pb.Applied> {
     path: "/PermissionPanther/DeletePermissionGroup";
     requestStream: false;
     responseStream: false;
-    requestSerialize: grpc.serialize<pb_permissions_pb.PermissionGroupReq>;
-    requestDeserialize: grpc.deserialize<pb_permissions_pb.PermissionGroupReq>;
+    requestSerialize: grpc.serialize<pb_permissions_pb.DeletePermissionGroupReq>;
+    requestDeserialize: grpc.deserialize<pb_permissions_pb.DeletePermissionGroupReq>;
     responseSerialize: grpc.serialize<pb_main_pb.Applied>;
     responseDeserialize: grpc.deserialize<pb_main_pb.Applied>;
 }
@@ -120,8 +120,8 @@ export interface IPermissionPantherServer {
     listObjectRelations: grpc.handleUnaryCall<pb_permissions_pb.ListObjectRelationsReq, pb_permissions_pb.RelationsResponse>;
     setPermission: grpc.handleUnaryCall<pb_permissions_pb.RelationReq, pb_main_pb.Applied>;
     removePermission: grpc.handleUnaryCall<pb_permissions_pb.RelationReq, pb_main_pb.Applied>;
-    createPermissionGroup: grpc.handleUnaryCall<pb_permissions_pb.PermissionGroupReq, pb_main_pb.Applied>;
-    deletePermissionGroup: grpc.handleUnaryCall<pb_permissions_pb.PermissionGroupReq, pb_main_pb.Applied>;
+    createPermissionGroup: grpc.handleUnaryCall<pb_permissions_pb.CreatePermissionGroupReq, pb_main_pb.Applied>;
+    deletePermissionGroup: grpc.handleUnaryCall<pb_permissions_pb.DeletePermissionGroupReq, pb_main_pb.Applied>;
     addPermissionToGroup: grpc.handleUnaryCall<pb_permissions_pb.ModifyPermissionGroupReq, pb_main_pb.Applied>;
     removePermissionFromGroup: grpc.handleUnaryCall<pb_permissions_pb.ModifyPermissionGroupReq, pb_main_pb.Applied>;
     listEntitiesInGroup: grpc.handleUnaryCall<pb_permissions_pb.ListPermissionGroupReq, pb_permissions_pb.ListPermissionGroupRes>;
@@ -143,12 +143,12 @@ export interface IPermissionPantherClient {
     removePermission(request: pb_permissions_pb.RelationReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    createPermissionGroup(request: pb_permissions_pb.PermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    createPermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    createPermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    deletePermissionGroup(request: pb_permissions_pb.PermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    deletePermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    deletePermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    createPermissionGroup(request: pb_permissions_pb.CreatePermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    createPermissionGroup(request: pb_permissions_pb.CreatePermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    createPermissionGroup(request: pb_permissions_pb.CreatePermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    deletePermissionGroup(request: pb_permissions_pb.DeletePermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    deletePermissionGroup(request: pb_permissions_pb.DeletePermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    deletePermissionGroup(request: pb_permissions_pb.DeletePermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     addPermissionToGroup(request: pb_permissions_pb.ModifyPermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     addPermissionToGroup(request: pb_permissions_pb.ModifyPermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     addPermissionToGroup(request: pb_permissions_pb.ModifyPermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
@@ -177,12 +177,12 @@ export class PermissionPantherClient extends grpc.Client implements IPermissionP
     public removePermission(request: pb_permissions_pb.RelationReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     public removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     public removePermission(request: pb_permissions_pb.RelationReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    public createPermissionGroup(request: pb_permissions_pb.PermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    public createPermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    public createPermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    public deletePermissionGroup(request: pb_permissions_pb.PermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    public deletePermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
-    public deletePermissionGroup(request: pb_permissions_pb.PermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    public createPermissionGroup(request: pb_permissions_pb.CreatePermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    public createPermissionGroup(request: pb_permissions_pb.CreatePermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    public createPermissionGroup(request: pb_permissions_pb.CreatePermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    public deletePermissionGroup(request: pb_permissions_pb.DeletePermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    public deletePermissionGroup(request: pb_permissions_pb.DeletePermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
+    public deletePermissionGroup(request: pb_permissions_pb.DeletePermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     public addPermissionToGroup(request: pb_permissions_pb.ModifyPermissionGroupReq, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     public addPermissionToGroup(request: pb_permissions_pb.ModifyPermissionGroupReq, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;
     public addPermissionToGroup(request: pb_permissions_pb.ModifyPermissionGroupReq, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pb_main_pb.Applied) => void): grpc.ClientUnaryCall;

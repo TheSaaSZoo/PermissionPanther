@@ -38,6 +38,28 @@ function deserialize_CheckDirectRes(buffer_arg) {
   return pb_permissions_pb.CheckDirectRes.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_CreatePermissionGroupReq(arg) {
+  if (!(arg instanceof pb_permissions_pb.CreatePermissionGroupReq)) {
+    throw new Error('Expected argument of type CreatePermissionGroupReq');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_CreatePermissionGroupReq(buffer_arg) {
+  return pb_permissions_pb.CreatePermissionGroupReq.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_DeletePermissionGroupReq(arg) {
+  if (!(arg instanceof pb_permissions_pb.DeletePermissionGroupReq)) {
+    throw new Error('Expected argument of type DeletePermissionGroupReq');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_DeletePermissionGroupReq(buffer_arg) {
+  return pb_permissions_pb.DeletePermissionGroupReq.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_ListEntityRelationsReq(arg) {
   if (!(arg instanceof pb_permissions_pb.ListEntityRelationsReq)) {
     throw new Error('Expected argument of type ListEntityRelationsReq');
@@ -91,17 +113,6 @@ function serialize_ModifyPermissionGroupReq(arg) {
 
 function deserialize_ModifyPermissionGroupReq(buffer_arg) {
   return pb_permissions_pb.ModifyPermissionGroupReq.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_PermissionGroupReq(arg) {
-  if (!(arg instanceof pb_permissions_pb.PermissionGroupReq)) {
-    throw new Error('Expected argument of type PermissionGroupReq');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_PermissionGroupReq(buffer_arg) {
-  return pb_permissions_pb.PermissionGroupReq.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_RelationReq(arg) {
@@ -193,10 +204,10 @@ createPermissionGroup: {
     path: '/PermissionPanther/CreatePermissionGroup',
     requestStream: false,
     responseStream: false,
-    requestType: pb_permissions_pb.PermissionGroupReq,
+    requestType: pb_permissions_pb.CreatePermissionGroupReq,
     responseType: pb_main_pb.Applied,
-    requestSerialize: serialize_PermissionGroupReq,
-    requestDeserialize: deserialize_PermissionGroupReq,
+    requestSerialize: serialize_CreatePermissionGroupReq,
+    requestDeserialize: deserialize_CreatePermissionGroupReq,
     responseSerialize: serialize_Applied,
     responseDeserialize: deserialize_Applied,
   },
@@ -205,10 +216,10 @@ deletePermissionGroup: {
     path: '/PermissionPanther/DeletePermissionGroup',
     requestStream: false,
     responseStream: false,
-    requestType: pb_permissions_pb.PermissionGroupReq,
+    requestType: pb_permissions_pb.DeletePermissionGroupReq,
     responseType: pb_main_pb.Applied,
-    requestSerialize: serialize_PermissionGroupReq,
-    requestDeserialize: deserialize_PermissionGroupReq,
+    requestSerialize: serialize_DeletePermissionGroupReq,
+    requestDeserialize: deserialize_DeletePermissionGroupReq,
     responseSerialize: serialize_Applied,
     responseDeserialize: deserialize_Applied,
   },
