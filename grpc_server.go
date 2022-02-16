@@ -172,13 +172,23 @@ func (server) SetPermission(ctx context.Context, in *pb.RelationReq) (out *pb.Ap
 		return
 	}
 
-	// TODO: Check if this is a permission or a group
-
-	out.Applied, err = UpsertRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
-	if err != nil {
-		logger.Error("Error upserting relation")
-		logger.Error(err.Error())
-		err = status.Errorf(codes.Internal, "Internal error")
+	// Check if this is a permission or a group
+	if in.Permission[0] == '$' {
+		// Permission Group
+		out.Applied, err = AddMemberToPermissionGroup(apiKey.Namespace, in.Permission[1:], in.Entity, in.Object)
+		if err != nil {
+			logger.Error("Error joining permission group")
+			logger.Error(err.Error())
+			err = status.Errorf(codes.Internal, "Internal error")
+		}
+	} else {
+		// Direct Permission
+		out.Applied, err = UpsertRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
+		if err != nil {
+			logger.Error("Error upserting relation")
+			logger.Error(err.Error())
+			err = status.Errorf(codes.Internal, "Internal error")
+		}
 	}
 
 	return
@@ -202,30 +212,39 @@ func (server) RemovePermission(ctx context.Context, in *pb.RelationReq) (out *pb
 		return
 	}
 
-	// TODO: Check if this is a permission or a group
-
-	out.Applied, err = DeleteRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
-	if err != nil {
-		logger.Error("Error deleting relation")
-		logger.Error(err.Error())
-		err = status.Errorf(codes.Internal, "Internal error")
+	if in.Permission[0] == '$' {
+		// Permission Group
+		out.Applied, err = RemoveMemberFromPermissionGroup(apiKey.Namespace, in.Permission[1:], in.Entity, in.Object)
+		if err != nil {
+			logger.Error("Error removing permission group")
+			logger.Error(err.Error())
+			err = status.Errorf(codes.Internal, "Internal error")
+		}
+	} else {
+		// Direct Permission
+		out.Applied, err = DeleteRelation(apiKey.Namespace, in.Object, in.Permission, in.Entity)
+		if err != nil {
+			logger.Error("Error deleting relation")
+			logger.Error(err.Error())
+			err = status.Errorf(codes.Internal, "Internal error")
+		}
 	}
 
 	return
 }
 
-// func (server) CreatePermissionGroup(ctx context.Context, in *pb.PermissionGroupReq) (out *pb.Applied, err error) {
-// 	out = &pb.Applied{}
-// }
+func (server) CreatePermissionGroup(ctx context.Context, in *pb.PermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}
 
-// func (server) DeletePermissionGroup(ctx context.Context, in *pb.PermissionGroupReq) (out *pb.Applied, err error) {
-// 	out = &pb.Applied{}
-// }
+func (server) DeletePermissionGroup(ctx context.Context, in *pb.PermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}
 
-// func (server) AddPermissionToGroup(ctx context.Context, in *pb.ModifyPermissionGroupReq) (out *pb.Applied, err error) {
-// 	out = &pb.Applied{}
-// }
+func (server) AddPermissionToGroup(ctx context.Context, in *pb.ModifyPermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}
 
-// func (server) RemovePermissionFromGroup(ctx context.Context, in *pb.ModifyPermissionGroupReq) (out *pb.Applied, err error) {
-// 	out = &pb.Applied{}
-// }
+func (server) RemovePermissionFromGroup(ctx context.Context, in *pb.ModifyPermissionGroupReq) (out *pb.Applied, err error) {
+	out = &pb.Applied{}
+}
