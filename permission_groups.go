@@ -79,7 +79,11 @@ func RemovePermissionGroup(ns, groupName string, propagate bool) (applied bool, 
 				var entities []query.PermissionGroupMembership
 				offset := ""
 				for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
-					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
+					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, query.ListEntitiesInPermissionGroupParams{
+						Entity:    offset,
+						Ns:        ns,
+						GroupName: groupName,
+					})
 					if err != nil {
 						logger.Error("Error listing entities in permission group during remove permission propagation")
 						return err
@@ -103,11 +107,12 @@ func RemovePermissionGroup(ns, groupName string, propagate bool) (applied bool, 
 						}
 						// Remove the membership
 						_, err = query.New(conn).RemoveMemberFromPermissionGroup(ctx, query.RemoveMemberFromPermissionGroupParams{
-							Ns:     ns,
-							Entity: ent.Entity,
+							Ns:        ns,
+							Entity:    ent.Entity,
+							GroupName: groupName,
 						})
 						if err != nil {
-							logger.Error("Error deleting relation during remove group propagation")
+							logger.Error("Error deleting membership during remove group propagation")
 							return err
 						} else {
 							logger.Logger.WithFields(logrus.Fields{
@@ -180,7 +185,11 @@ func AddPermissionToGroup(ns, groupName, perm string, propagate bool) (applied b
 				var entities []query.PermissionGroupMembership
 				offset := ""
 				for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
-					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
+					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, query.ListEntitiesInPermissionGroupParams{
+						Entity:    offset,
+						Ns:        ns,
+						GroupName: groupName,
+					})
 					if err != nil {
 						logger.Error("Error listing entities in permission group during remove permission propagation")
 						return err
@@ -248,7 +257,11 @@ func RemovePermissionFromGroup(ns, groupName, perm string, propagate bool) (appl
 				var entities []query.PermissionGroupMembership
 				offset := ""
 				for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
-					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
+					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, query.ListEntitiesInPermissionGroupParams{
+						Entity:    offset,
+						Ns:        ns,
+						GroupName: groupName,
+					})
 					if err != nil {
 						logger.Error("Error listing entities in permission group during remove permission propagation")
 						return err
@@ -293,7 +306,11 @@ func ListEntitiesInPermissionGroup(ns, groupName, offset string) (entities []que
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
 
-	entities, err = query.New(conn).ListEntitiesInPermissionGroup(ctx, offset)
+	entities, err = query.New(conn).ListEntitiesInPermissionGroup(ctx, query.ListEntitiesInPermissionGroupParams{
+		Entity:    offset,
+		Ns:        ns,
+		GroupName: groupName,
+	})
 
 	if err != nil {
 		logger.Error("Error getting permission group membership")

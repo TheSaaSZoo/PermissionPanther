@@ -125,4 +125,6 @@ AND entity = $3;
 SELECT *
 FROM permission_group_membership
 WHERE entity > $1
+AND ns = $2
+AND group_name = $3
 LIMIT 50;

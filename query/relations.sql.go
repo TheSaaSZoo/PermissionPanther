@@ -261,11 +261,19 @@ const listEntitiesInPermissionGroup = `-- name: ListEntitiesInPermissionGroup :m
 SELECT group_name, entity, ns, object
 FROM permission_group_membership
 WHERE entity > $1
+AND ns = $2
+AND group_name = $3
 LIMIT 50
 `
 
-func (q *Queries) ListEntitiesInPermissionGroup(ctx context.Context, entity string) ([]PermissionGroupMembership, error) {
-	rows, err := q.db.Query(ctx, listEntitiesInPermissionGroup, entity)
+type ListEntitiesInPermissionGroupParams struct {
+	Entity    string
+	Ns        string
+	GroupName string
+}
+
+func (q *Queries) ListEntitiesInPermissionGroup(ctx context.Context, arg ListEntitiesInPermissionGroupParams) ([]PermissionGroupMembership, error) {
+	rows, err := q.db.Query(ctx, listEntitiesInPermissionGroup, arg.Entity, arg.Ns, arg.GroupName)
 	if err != nil {
 		return nil, err
 	}
