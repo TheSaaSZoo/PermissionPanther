@@ -9,6 +9,7 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/crdb"
 	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/danthegoodman1/PermissionPanther/utils"
+	"github.com/jackc/pgx/v4"
 )
 
 func TestPermissionGroups(t *testing.T) {
@@ -72,6 +73,15 @@ func TestPermissionGroups(t *testing.T) {
 			utils.HandleTestError(t, fmt.Errorf("Not applied add member"))
 		}
 
+		// Verify can't do again
+		applied, err = AddMemberToPermissionGroup("testns", "test_g_2", "test_ent_2", "test_obj_2")
+		if err != ErrRollback {
+			utils.HandleTestError(t, err)
+		}
+		if applied {
+			utils.HandleTestError(t, fmt.Errorf("applied add member"))
+		}
+
 		// Get it to validate
 		conn, err := crdb.PGPool.Acquire(context.Background())
 		utils.HandleTestError(t, err)
@@ -90,49 +100,57 @@ func TestPermissionGroups(t *testing.T) {
 		})
 		utils.HandleTestError(t, err)
 
-		// TODO: Test propagation by checking the direct relation
-
-		// Remove the member
-		rows, err := query.New(conn).RemoveMemberFromPermissionGroup(context.Background(), query.RemoveMemberFromPermissionGroupParams{
-			Ns:        "testns",
-			GroupName: "test_g_2",
-			Entity:    "test_ent_2",
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_2",
+			Permission: "TEST_PERM",
+			Object:     "test_obj_2",
 		})
 		utils.HandleTestError(t, err)
 
-		if rows != 1 {
-			utils.HandleTestError(t, fmt.Errorf("Did not have 1 row when removing users from group"))
+		// Remove the member
+		applied, err = RemoveMemberFromPermissionGroup("testns", "test_g_2", "test_ent_2", "test_obj_2")
+		utils.HandleTestError(t, err)
+
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Did not apply removal"))
+		}
+
+		// Verify not applied
+		applied, err = RemoveMemberFromPermissionGroup("testns", "test_g_2", "test_ent_2", "test_obj_2")
+		utils.HandleTestError(t, err)
+
+		if applied {
+			utils.HandleTestError(t, fmt.Errorf("applied removal"))
+		}
+
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_2",
+			Permission: "test_g_2",
+			Object:     "test_obj_2",
+		})
+		if err == nil {
+			utils.HandleTestError(t, fmt.Errorf("found the relation"))
+		} else if err != pgx.ErrNoRows {
+			utils.HandleTestError(t, err)
+		}
+
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_2",
+			Permission: "TEST_PERM",
+			Object:     "test_obj_2",
+		})
+		if err == nil {
+			utils.HandleTestError(t, fmt.Errorf("found the relation"))
+		} else if err != pgx.ErrNoRows {
+			utils.HandleTestError(t, err)
 		}
 
 		// Delete the group
 		applied, err = RemovePermissionGroup("testns", "test_g_2", true)
 		utils.HandleTestError(t, err)
-
-		// _, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
-		// 	Ns:         "testns",
-		// 	Entity:     "test_ent_2",
-		// 	Permission: "test_g_2",
-		// 	Object:     "test_obj_2",
-		// })
-		// if err == nil {
-		// 	utils.HandleTestError(t, fmt.Errorf("found the relation"))
-		// } else if err != pgx.ErrNoRows {
-		// 	utils.HandleTestError(t, err)
-		// }
-
-		// _, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
-		// 	Ns:         "testns",
-		// 	Entity:     "test_ent_2",
-		// 	Permission: "TEST_PERM",
-		// 	Object:     "test_obj_2",
-		// })
-		// if err == nil {
-		// 	utils.HandleTestError(t, fmt.Errorf("found the relation"))
-		// } else if err != pgx.ErrNoRows {
-		// 	utils.HandleTestError(t, err)
-		// }
-
-		// TODO: comment in the above
 
 		if !applied {
 			utils.HandleTestError(t, fmt.Errorf("Not applied delete"))

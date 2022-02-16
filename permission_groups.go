@@ -5,11 +5,16 @@ import (
 
 	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgx"
 	"github.com/danthegoodman1/PermissionPanther/crdb"
+	"github.com/danthegoodman1/PermissionPanther/errs"
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
+)
+
+var (
+	ErrRollback = errs.Error("rollback")
 )
 
 func CreatePermissionGroup(ns, groupName string, perms []string) (applied bool, err error) {
@@ -228,7 +233,7 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 			if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
 				// Unique violation, it exists
 				applied = false
-				return nil
+				return ErrRollback
 			} else {
 				logger.Error("Error adding permission when trying to add to permission group")
 				return err
