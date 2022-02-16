@@ -189,18 +189,67 @@ func TestPermissionGroups(t *testing.T) {
 		utils.HandleTestError(t, err)
 
 		// Add another propagate for later delete
+		applied, err = AddPermissionToGroup("testns", "test_g_3", "TEST_PERM_C", true)
+		utils.HandleTestError(t, err)
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied add permission 2"))
+		}
 
 		// Add permission no propagate
+		applied, err = AddPermissionToGroup("testns", "test_g_3", "TEST_PERM_D", false)
+		utils.HandleTestError(t, err)
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied add permission 3"))
+		}
 
 		// Verify no propagate
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_3",
+			Permission: "TEST_PERM_D",
+			Object:     "test_obj_3",
+		})
+		if err == nil {
+			utils.HandleTestError(t, fmt.Errorf("found the relation"))
+		} else if err != pgx.ErrNoRows {
+			utils.HandleTestError(t, err)
+		}
 
 		// Remove permission propagate
+		applied, err = RemovePermissionFromGroup("testns", "test_g_3", "TEST_PERM_B", true)
+		utils.HandleTestError(t, err)
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied remove permission 1"))
+		}
 
 		// Verify propagate
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_3",
+			Permission: "TEST_PERM_B",
+			Object:     "test_obj_3",
+		})
+		if err == nil {
+			utils.HandleTestError(t, fmt.Errorf("found the relation"))
+		} else if err != pgx.ErrNoRows {
+			utils.HandleTestError(t, err)
+		}
 
 		// Remove permission no propagate
+		applied, err = RemovePermissionFromGroup("testns", "test_g_3", "TEST_PERM_C", false)
+		utils.HandleTestError(t, err)
+		if !applied {
+			utils.HandleTestError(t, fmt.Errorf("Not applied remove permission 2"))
+		}
 
 		// Verify still has permission
+		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
+			Ns:         "testns",
+			Entity:     "test_ent_3",
+			Permission: "TEST_PERM_C",
+			Object:     "test_obj_3",
+		})
+		utils.HandleTestError(t, err)
 
 		if !applied {
 			utils.HandleTestError(t, fmt.Errorf("Not applied delete"))
@@ -216,10 +265,3 @@ func TestPermissionGroups(t *testing.T) {
 		}
 	})
 }
-
-// Check add permission to group with both add to array and propagate
-// Check add permission to group with both add to array and propagate (for the 2 removes below)
-// Check add permission to group with both add to array and NO propagate
-// Check remove permission from group with array and propagate
-// Check remove permission from group with array and NO propagate
-// Pagination test with offset (can just be one, but make sure offset works)
