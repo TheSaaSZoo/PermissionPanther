@@ -138,8 +138,8 @@ func AddPermissionToGroup(ns, groupName, perm string, propagate bool) (applied b
 						}
 					}
 					// Set the offset if there is potentially another page
-					if len(entities) == 50 {
-						offset = entities[49].Entity
+					if len(entities) != 0 {
+						offset = entities[len(entities)-1].Entity
 					}
 				}
 			}
@@ -206,8 +206,8 @@ func RemovePermissionFromGroup(ns, groupName, perm string, propagate bool) (appl
 						}
 					}
 					// Set the offset if there is potentially another page
-					if len(entities) == 50 {
-						offset = entities[49].Entity
+					if len(entities) != 0 {
+						offset = entities[len(entities)-1].Entity
 					}
 				}
 			}
