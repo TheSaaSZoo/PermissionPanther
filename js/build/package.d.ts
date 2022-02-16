@@ -1,6 +1,5 @@
-import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
+import { CheckPermissionInput, CheckPermissionResponse, GroupMembership, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb';
-import { PermissionGroupMembership } from './pb/permissions_pb';
 export default class PermissionPanther {
     keyID: string;
     keySecret: string;
@@ -50,7 +49,7 @@ export default class PermissionPanther {
      * Lists entities in a permission group.
      * @param entityOffset If provided, the pagination will continue from this entity
      */
-    ListEntitiesInPermissionGroup(groupName: string, entityOffset?: string): Promise<PermissionGroupMembership[]>;
+    ListEntitiesInPermissionGroup(groupName: string, entityOffset?: string): Promise<GroupMembership[]>;
     /**
      * Removes a permission.
      * Returns whether the relation was deleted (existed).

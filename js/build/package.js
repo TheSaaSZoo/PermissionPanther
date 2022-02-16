@@ -289,7 +289,14 @@ class PermissionPanther {
                             reject(err);
                     }
                 }
-                resolve(res.getMembersList());
+                const rel = [];
+                for (const r of res.getMembersList()) {
+                    rel.push({
+                        entity: r.getEntity(),
+                        object: r.getObject()
+                    });
+                }
+                resolve(rel);
             });
         });
     }

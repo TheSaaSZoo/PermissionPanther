@@ -69,3 +69,7 @@ export interface Relationship {
     permission: string;
     object: string;
 }
+export interface GroupMembership {
+    entity: string;
+    object: string;
+}

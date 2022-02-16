@@ -1,6 +1,6 @@
 import * as grpc from '@grpc/grpc-js'
 
-import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
+import { CheckPermissionInput, CheckPermissionResponse, GroupMembership, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb'
 import { CheckDirectReq, CreatePermissionGroupReq, DeletePermissionGroupReq, ListEntityRelationsReq, ListObjectRelationsReq, ListPermissionGroupReq, ModifyPermissionGroupReq, PermissionGroupMembership, RelationReq } from './pb/permissions_pb'
 import { PermissionDenied } from "./errors";
@@ -266,7 +266,7 @@ export default class PermissionPanther {
    * Lists entities in a permission group.
    * @param entityOffset If provided, the pagination will continue from this entity
    */
-  async ListEntitiesInPermissionGroup(groupName: string, entityOffset?: string): Promise<PermissionGroupMembership[]> {
+  async ListEntitiesInPermissionGroup(groupName: string, entityOffset?: string): Promise<GroupMembership[]> {
     return new Promise((resolve, reject) => {
       const req = new ListPermissionGroupReq()
       req.setKeyid(this.keyID)
@@ -282,7 +282,14 @@ export default class PermissionPanther {
               reject(err)
           }
         }
-        resolve(res.getMembersList())
+        const rel: GroupMembership[] = []
+        for (const r of res.getMembersList()) {
+          rel.push({
+            entity: r.getEntity(),
+            object: r.getObject()
+          })
+        }
+        resolve(rel)
       })
     })
   }
