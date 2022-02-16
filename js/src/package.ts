@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js'
 
 import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb'
-import { CheckDirectReq, ListEntityRelationsReq, ListObjectRelationsReq, RelationReq } from './pb/permissions_pb'
+import { CheckDirectReq, CreatePermissionGroupReq, DeletePermissionGroupReq, ListEntityRelationsReq, ListObjectRelationsReq, ListPermissionGroupReq, ModifyPermissionGroupReq, PermissionGroupMembership, RelationReq } from './pb/permissions_pb'
 import { PermissionDenied } from "./errors";
 
 export default class PermissionPanther {
@@ -154,6 +154,135 @@ export default class PermissionPanther {
           }
         }
         resolve(res.getApplied())
+      })
+    })
+  }
+
+  /**
+   * Create a Permission Group. Returns whether it was created.
+   * @param initialPermissions The list of initial permissions to add to the group
+   */
+  async CreatePermissionGroup(groupName: string, initialPermissions?: string[]): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const req = new CreatePermissionGroupReq()
+      req.setGroupname(groupName)
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
+      req.setPermissionsList(initialPermissions || [])
+      this.client.createPermissionGroup(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+        }
+        resolve(res.getApplied())
+      })
+    })
+  }
+
+  /**
+   * @param initialPermissions The list of initial permissions to add to the group
+   * Returns whether it was created.
+   * @param propagate Whether after deleting the group, every member of this group will have their permissions removed that were included in the group. This has major performance implications for large groups.
+   * Delete a Permission Group. Returns whether the group was successfully deleted.
+   */
+  async DeletePermissionGroup(groupName: string, propagate: boolean): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const req = new DeletePermissionGroupReq()
+      req.setGroupname(groupName)
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
+      req.setPropagate(propagate)
+      this.client.deletePermissionGroup(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+        }
+        resolve(res.getApplied())
+      })
+    })
+  }
+
+  /**
+   * Adds a permission to a group. Returns whether the permission was added.
+   * @param propagate Whether after deleting the group, every member of this group will have their permissions removed that were included in the group. This has major performance implications for large groups.
+   */
+  async AddPermissionToGroup(groupName: string, permission: string, propagate: boolean): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const req = new ModifyPermissionGroupReq()
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
+      req.setGroupname(groupName)
+      req.setPermission(permission)
+      req.setPropagate(propagate)
+      this.client.addPermissionToGroup(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+        }
+        resolve(res.getApplied())
+      })
+    })
+  }
+
+  /**
+   * Removes a permission from a group. Returns whether the permission was removed.
+   * @param propagate Whether after deleting the group, every member of this group will have their permissions removed that were included in the group. This has major performance implications for large groups.
+   */
+  async RemovePermissionFromGroup(groupName: string, permission: string, propagate: boolean): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const req = new ModifyPermissionGroupReq()
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
+      req.setGroupname(groupName)
+      req.setPropagate(propagate)
+      req.setPermission(permission)
+      this.client.removePermissionFromGroup(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+        }
+        resolve(res.getApplied())
+      })
+    })
+  }
+
+  /**
+   * Lists entities in a permission group.
+   * @param entityOffset If provided, the pagination will continue from this entity
+   */
+  async ListEntitiesInPermissionGroup(groupName: string, entityOffset?: string): Promise<PermissionGroupMembership[]> {
+    return new Promise((resolve, reject) => {
+      const req = new ListPermissionGroupReq()
+      req.setKeyid(this.keyID)
+      req.setKeysecret(this.keySecret)
+      req.setGroupname(groupName)
+      req.setOffset(entityOffset || "")
+      this.client.listEntitiesInGroup(req, (err, res) => {
+        if (err) {
+          switch (err.code) {
+            case grpc.status.PERMISSION_DENIED:
+              reject(new PermissionDenied())
+            default:
+              reject(err)
+          }
+        }
+        resolve(res.getMembersList())
       })
     })
   }
