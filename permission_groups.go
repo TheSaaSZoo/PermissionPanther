@@ -112,7 +112,6 @@ func AddPermissionToGroup(ns, groupName, perm string, propagate bool) (applied b
 			applied = true
 			if propagate {
 				// TODO: For all entities in the group, log every change for billing
-				// Do both of these in transaction
 			}
 		}
 		return nil
@@ -151,7 +150,27 @@ func RemovePermissionFromGroup(ns, groupName, perm string, propagate bool) (appl
 			applied = true
 			if propagate {
 				// TODO: For all entities in the group, log every change for billing
-				// Do both of these in transaction
+				// entities := []query.PermissionGroupMembership{}
+				// offset := ""
+				// for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
+				// 	logger.Logger.WithFields(logrus.Fields{
+				// 		"ns":     ns,
+				// 		"action": "propagate_add_member",
+				// 	}).Info()
+				// 	entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
+				// 	for _, ent := range entities {
+				// 		err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
+				// 			Ns:         ns,
+				// 			Permission: permission,
+				// 			Object:     obj,
+				// 			Entity:     entity,
+				// 		})
+				// 	}
+				// 	// Set the offset
+				// 	if len(entities) > 0 {
+				// 		offset = entities[len(entities)-1].Entity
+				// 	}
+				// }
 			}
 		}
 		return nil
@@ -233,11 +252,41 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 			}
 		}
 
-		// TODO: propagate permissions from the group, log every change for billing
+		// Propagate permissions from the group to the entity for the object
+		group, err := txQueries.SelectPermissionGroup(ctx, query.SelectPermissionGroupParams{
+			Ns:   ns,
+			Name: groupName,
+		})
+		if err != nil {
+			return err
+		}
+		for _, perm := range group.Perms {
+			err = txQueries.InsertRelation(ctx, query.InsertRelationParams{
+				Ns:         ns,
+				Entity:     entity,
+				Permission: perm,
+				Object:     object,
+			})
+			if err != nil {
+				logger.Error("Error when trying to propagate add permission '%s' to entity '%s' for object '%s'", perm, entity, object)
+				return err
+			} else {
+				logger.Logger.WithFields(logrus.Fields{
+					"ns":     ns,
+					"action": "add_member_propagate",
+				}).Info()
+			}
+		}
 
 		applied = true
 		return nil
 	})
+	if err == nil {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "add_member",
+		}).Info()
+	}
 	return
 }
 
@@ -280,11 +329,41 @@ func RemoveMemberFromPermissionGroup(ns, groupName, entity, object string) (appl
 		}
 
 		if rows != 0 {
-			// TODO: propagate permissions from the group, log every change for billing
+			// Propagate permissions from the group to the entity for the object
+			group, err := txQueries.SelectPermissionGroup(ctx, query.SelectPermissionGroupParams{
+				Ns:   ns,
+				Name: groupName,
+			})
+			if err != nil {
+				return err
+			}
+			for _, perm := range group.Perms {
+				_, err = txQueries.DeleteRelation(ctx, query.DeleteRelationParams{
+					Ns:         ns,
+					Entity:     entity,
+					Permission: perm,
+					Object:     object,
+				})
+				if err != nil {
+					logger.Error("Error when trying to propagate remove permission '%s' to entity '%s' for object '%s'", perm, entity, object)
+					return err
+				} else {
+					logger.Logger.WithFields(logrus.Fields{
+						"ns":     ns,
+						"action": "remove_member_propagate",
+					}).Info()
+				}
+			}
 		}
 
 		applied = true
 		return nil
 	})
+	if err == nil {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "remove_member",
+		}).Info()
+	}
 	return
 }
