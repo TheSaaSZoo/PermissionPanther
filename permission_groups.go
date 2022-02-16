@@ -101,6 +101,20 @@ func RemovePermissionGroup(ns, groupName string, propagate bool) (applied bool, 
 								"action": "remove_permission_propagate",
 							}).Info()
 						}
+						// Remove the membership
+						_, err = query.New(conn).RemoveMemberFromPermissionGroup(ctx, query.RemoveMemberFromPermissionGroupParams{
+							Ns:     ns,
+							Entity: ent.Entity,
+						})
+						if err != nil {
+							logger.Error("Error deleting relation during remove group propagation")
+							return err
+						} else {
+							logger.Logger.WithFields(logrus.Fields{
+								"ns":     ns,
+								"action": "remove_permission_propagate",
+							}).Info()
+						}
 						for _, perm := range perms {
 							// remove all of the permission relations
 							_, err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
