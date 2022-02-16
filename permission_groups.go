@@ -5,16 +5,11 @@ import (
 
 	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgx"
 	"github.com/danthegoodman1/PermissionPanther/crdb"
-	"github.com/danthegoodman1/PermissionPanther/errs"
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
-)
-
-var (
-	ErrRollback = errs.Error("rollback")
 )
 
 func CreatePermissionGroup(ns, groupName string, perms []string) (applied bool, err error) {
@@ -126,7 +121,7 @@ func AddPermissionToGroup(ns, groupName, perm string, propagate bool) (applied b
 						return err
 					}
 					for _, ent := range entities {
-						rows, err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
+						_, err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
 							Ns:         ns,
 							Entity:     ent.Entity,
 							Permission: perm,
@@ -302,7 +297,7 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 			return err
 		}
 		for _, perm := range group.Perms {
-			rows, err = txQueries.InsertRelation(ctx, query.InsertRelationParams{
+			_, err = txQueries.InsertRelation(ctx, query.InsertRelationParams{
 				Ns:         ns,
 				Entity:     entity,
 				Permission: perm,

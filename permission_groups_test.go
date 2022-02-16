@@ -75,9 +75,7 @@ func TestPermissionGroups(t *testing.T) {
 
 		// Verify can't do again
 		applied, err = AddMemberToPermissionGroup("testns", "test_g_2", "test_ent_2", "test_obj_2")
-		if err != ErrRollback {
-			utils.HandleTestError(t, err)
-		}
+		utils.HandleTestError(t, err)
 		if applied {
 			utils.HandleTestError(t, fmt.Errorf("applied add member"))
 		}
