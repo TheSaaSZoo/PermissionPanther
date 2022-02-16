@@ -83,7 +83,11 @@ func TestPermissionGroups(t *testing.T) {
 		// Get it to validate
 		conn, err := crdb.PGPool.Acquire(context.Background())
 		utils.HandleTestError(t, err)
-		members, err := query.New(conn).ListEntitiesInPermissionGroup(context.Background(), "")
+		members, err := query.New(conn).ListEntitiesInPermissionGroup(context.Background(), query.ListEntitiesInPermissionGroupParams{
+			Entity:    "",
+			Ns:        "testns",
+			GroupName: "test_g_2",
+		})
 		utils.HandleTestError(t, err)
 		if len(members) != 1 {
 			utils.HandleTestError(t, fmt.Errorf("Failed to find single user in permission group"))
