@@ -74,6 +74,86 @@ export namespace PermissionPantherService {
         export { serialize_Applied as responseSerialize };
         export { deserialize_Applied as responseDeserialize };
     }
+    namespace createPermissionGroup {
+        const path_5: string;
+        export { path_5 as path };
+        const requestStream_5: boolean;
+        export { requestStream_5 as requestStream };
+        const responseStream_5: boolean;
+        export { responseStream_5 as responseStream };
+        const requestType_5: typeof pb_permissions_pb.PermissionGroupReq;
+        export { requestType_5 as requestType };
+        const responseType_5: typeof pb_main_pb.Applied;
+        export { responseType_5 as responseType };
+        export { serialize_PermissionGroupReq as requestSerialize };
+        export { deserialize_PermissionGroupReq as requestDeserialize };
+        export { serialize_Applied as responseSerialize };
+        export { deserialize_Applied as responseDeserialize };
+    }
+    namespace deletePermissionGroup {
+        const path_6: string;
+        export { path_6 as path };
+        const requestStream_6: boolean;
+        export { requestStream_6 as requestStream };
+        const responseStream_6: boolean;
+        export { responseStream_6 as responseStream };
+        const requestType_6: typeof pb_permissions_pb.PermissionGroupReq;
+        export { requestType_6 as requestType };
+        const responseType_6: typeof pb_main_pb.Applied;
+        export { responseType_6 as responseType };
+        export { serialize_PermissionGroupReq as requestSerialize };
+        export { deserialize_PermissionGroupReq as requestDeserialize };
+        export { serialize_Applied as responseSerialize };
+        export { deserialize_Applied as responseDeserialize };
+    }
+    namespace addPermissionToGroup {
+        const path_7: string;
+        export { path_7 as path };
+        const requestStream_7: boolean;
+        export { requestStream_7 as requestStream };
+        const responseStream_7: boolean;
+        export { responseStream_7 as responseStream };
+        const requestType_7: typeof pb_permissions_pb.ModifyPermissionGroupReq;
+        export { requestType_7 as requestType };
+        const responseType_7: typeof pb_main_pb.Applied;
+        export { responseType_7 as responseType };
+        export { serialize_ModifyPermissionGroupReq as requestSerialize };
+        export { deserialize_ModifyPermissionGroupReq as requestDeserialize };
+        export { serialize_Applied as responseSerialize };
+        export { deserialize_Applied as responseDeserialize };
+    }
+    namespace removePermissionFromGroup {
+        const path_8: string;
+        export { path_8 as path };
+        const requestStream_8: boolean;
+        export { requestStream_8 as requestStream };
+        const responseStream_8: boolean;
+        export { responseStream_8 as responseStream };
+        const requestType_8: typeof pb_permissions_pb.ModifyPermissionGroupReq;
+        export { requestType_8 as requestType };
+        const responseType_8: typeof pb_main_pb.Applied;
+        export { responseType_8 as responseType };
+        export { serialize_ModifyPermissionGroupReq as requestSerialize };
+        export { deserialize_ModifyPermissionGroupReq as requestDeserialize };
+        export { serialize_Applied as responseSerialize };
+        export { deserialize_Applied as responseDeserialize };
+    }
+    namespace listEntitiesInGroup {
+        const path_9: string;
+        export { path_9 as path };
+        const requestStream_9: boolean;
+        export { requestStream_9 as requestStream };
+        const responseStream_9: boolean;
+        export { responseStream_9 as responseStream };
+        const requestType_9: typeof pb_permissions_pb.ListPermissionGroupReq;
+        export { requestType_9 as requestType };
+        const responseType_9: typeof pb_permissions_pb.ListPermissionGroupRes;
+        export { responseType_9 as responseType };
+        export { serialize_ListPermissionGroupReq as requestSerialize };
+        export { deserialize_ListPermissionGroupReq as requestDeserialize };
+        export { serialize_ListPermissionGroupRes as responseSerialize };
+        export { deserialize_ListPermissionGroupRes as responseDeserialize };
+    }
 }
 export var PermissionPantherClient: grpc.ServiceClientConstructor;
 import pb_permissions_pb = require("../pb/permissions_pb.js");
@@ -92,5 +172,13 @@ declare function serialize_RelationReq(arg: any): Buffer;
 declare function deserialize_RelationReq(buffer_arg: any): pb_permissions_pb.RelationReq;
 declare function serialize_Applied(arg: any): Buffer;
 declare function deserialize_Applied(buffer_arg: any): pb_main_pb.Applied;
+declare function serialize_PermissionGroupReq(arg: any): Buffer;
+declare function deserialize_PermissionGroupReq(buffer_arg: any): pb_permissions_pb.PermissionGroupReq;
+declare function serialize_ModifyPermissionGroupReq(arg: any): Buffer;
+declare function deserialize_ModifyPermissionGroupReq(buffer_arg: any): pb_permissions_pb.ModifyPermissionGroupReq;
+declare function serialize_ListPermissionGroupReq(arg: any): Buffer;
+declare function deserialize_ListPermissionGroupReq(buffer_arg: any): pb_permissions_pb.ListPermissionGroupReq;
+declare function serialize_ListPermissionGroupRes(arg: any): Buffer;
+declare function deserialize_ListPermissionGroupRes(buffer_arg: any): pb_permissions_pb.ListPermissionGroupRes;
 import grpc = require("@grpc/grpc-js");
 export {};

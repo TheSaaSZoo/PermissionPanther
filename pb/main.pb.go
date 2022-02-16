@@ -74,7 +74,7 @@ var file_pb_main_proto_rawDesc = []byte{
 	0x14, 0x70, 0x62, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x23, 0x0a, 0x07, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64,
 	0x12, 0x18, 0x0a, 0x07, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x07, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x32, 0x9a, 0x04, 0x0a, 0x11, 0x50,
+	0x08, 0x52, 0x07, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x32, 0xe3, 0x04, 0x0a, 0x11, 0x50,
 	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x50, 0x61, 0x6e, 0x74, 0x68, 0x65, 0x72,
 	0x12, 0x39, 0x0a, 0x15, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x50,
 	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x0f, 0x2e, 0x43, 0x68, 0x65, 0x63,
@@ -108,8 +108,12 @@ var file_pb_main_proto_rawDesc = []byte{
 	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x46, 0x72, 0x6f, 0x6d, 0x47, 0x72, 0x6f,
 	0x75, 0x70, 0x12, 0x19, 0x2e, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x50, 0x65, 0x72, 0x6d, 0x69,
 	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x1a, 0x08, 0x2e,
-	0x41, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x41, 0x70, 0x70, 0x6c, 0x69, 0x65, 0x64, 0x12, 0x47, 0x0a, 0x13, 0x4c, 0x69, 0x73, 0x74, 0x45,
+	0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x49, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x17,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47,
+	0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x1a, 0x17, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x73,
+	0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -133,33 +137,37 @@ var file_pb_main_proto_goTypes = []interface{}{
 	(*RelationReq)(nil),              // 4: RelationReq
 	(*PermissionGroupReq)(nil),       // 5: PermissionGroupReq
 	(*ModifyPermissionGroupReq)(nil), // 6: ModifyPermissionGroupReq
-	(*CheckDirectRes)(nil),           // 7: CheckDirectRes
-	(*RelationsResponse)(nil),        // 8: RelationsResponse
+	(*ListPermissionGroupReq)(nil),   // 7: ListPermissionGroupReq
+	(*CheckDirectRes)(nil),           // 8: CheckDirectRes
+	(*RelationsResponse)(nil),        // 9: RelationsResponse
+	(*ListPermissionGroupRes)(nil),   // 10: ListPermissionGroupRes
 }
 var file_pb_main_proto_depIdxs = []int32{
-	1, // 0: PermissionPanther.CheckDirectPermission:input_type -> CheckDirectReq
-	2, // 1: PermissionPanther.ListEntityRelations:input_type -> ListEntityRelationsReq
-	3, // 2: PermissionPanther.ListObjectRelations:input_type -> ListObjectRelationsReq
-	4, // 3: PermissionPanther.SetPermission:input_type -> RelationReq
-	4, // 4: PermissionPanther.RemovePermission:input_type -> RelationReq
-	5, // 5: PermissionPanther.CreatePermissionGroup:input_type -> PermissionGroupReq
-	5, // 6: PermissionPanther.DeletePermissionGroup:input_type -> PermissionGroupReq
-	6, // 7: PermissionPanther.AddPermissionToGroup:input_type -> ModifyPermissionGroupReq
-	6, // 8: PermissionPanther.RemovePermissionFromGroup:input_type -> ModifyPermissionGroupReq
-	7, // 9: PermissionPanther.CheckDirectPermission:output_type -> CheckDirectRes
-	8, // 10: PermissionPanther.ListEntityRelations:output_type -> RelationsResponse
-	8, // 11: PermissionPanther.ListObjectRelations:output_type -> RelationsResponse
-	0, // 12: PermissionPanther.SetPermission:output_type -> Applied
-	0, // 13: PermissionPanther.RemovePermission:output_type -> Applied
-	0, // 14: PermissionPanther.CreatePermissionGroup:output_type -> Applied
-	0, // 15: PermissionPanther.DeletePermissionGroup:output_type -> Applied
-	0, // 16: PermissionPanther.AddPermissionToGroup:output_type -> Applied
-	0, // 17: PermissionPanther.RemovePermissionFromGroup:output_type -> Applied
-	9, // [9:18] is the sub-list for method output_type
-	0, // [0:9] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1,  // 0: PermissionPanther.CheckDirectPermission:input_type -> CheckDirectReq
+	2,  // 1: PermissionPanther.ListEntityRelations:input_type -> ListEntityRelationsReq
+	3,  // 2: PermissionPanther.ListObjectRelations:input_type -> ListObjectRelationsReq
+	4,  // 3: PermissionPanther.SetPermission:input_type -> RelationReq
+	4,  // 4: PermissionPanther.RemovePermission:input_type -> RelationReq
+	5,  // 5: PermissionPanther.CreatePermissionGroup:input_type -> PermissionGroupReq
+	5,  // 6: PermissionPanther.DeletePermissionGroup:input_type -> PermissionGroupReq
+	6,  // 7: PermissionPanther.AddPermissionToGroup:input_type -> ModifyPermissionGroupReq
+	6,  // 8: PermissionPanther.RemovePermissionFromGroup:input_type -> ModifyPermissionGroupReq
+	7,  // 9: PermissionPanther.ListEntitiesInGroup:input_type -> ListPermissionGroupReq
+	8,  // 10: PermissionPanther.CheckDirectPermission:output_type -> CheckDirectRes
+	9,  // 11: PermissionPanther.ListEntityRelations:output_type -> RelationsResponse
+	9,  // 12: PermissionPanther.ListObjectRelations:output_type -> RelationsResponse
+	0,  // 13: PermissionPanther.SetPermission:output_type -> Applied
+	0,  // 14: PermissionPanther.RemovePermission:output_type -> Applied
+	0,  // 15: PermissionPanther.CreatePermissionGroup:output_type -> Applied
+	0,  // 16: PermissionPanther.DeletePermissionGroup:output_type -> Applied
+	0,  // 17: PermissionPanther.AddPermissionToGroup:output_type -> Applied
+	0,  // 18: PermissionPanther.RemovePermissionFromGroup:output_type -> Applied
+	10, // 19: PermissionPanther.ListEntitiesInGroup:output_type -> ListPermissionGroupRes
+	10, // [10:20] is the sub-list for method output_type
+	0,  // [0:10] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_pb_main_proto_init() }

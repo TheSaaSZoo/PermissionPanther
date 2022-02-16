@@ -248,3 +248,9 @@ func (server) AddPermissionToGroup(ctx context.Context, in *pb.ModifyPermissionG
 func (server) RemovePermissionFromGroup(ctx context.Context, in *pb.ModifyPermissionGroupReq) (out *pb.Applied, err error) {
 	out = &pb.Applied{}
 }
+
+func (server) ListEntitiesInGroup(ctx context.Context, in *pb.ListPermissionGroupReq) (out *pb.ListPermissionGroupRes, err error) {
+	out = &pb.ListPermissionGroupRes{
+		Members: make([]*pb.PermissionGroupMembership, 0),
+	}
+}

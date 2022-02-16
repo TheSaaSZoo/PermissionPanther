@@ -78,3 +78,22 @@ message ModifyPermissionGroupReq {
   repeated string permissions = 4;
   bool propagate = 5;
 }
+
+message ListPermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  string offset = 4;
+}
+
+message ListPermissionGroupRes {
+  repeated PermissionGroupMembership members = 2;
+}
+
+message PermissionGroupMembership {
+  string groupName = 1;
+  string entity = 2;
+	string ns = 3;
+	string object = 4;
+}

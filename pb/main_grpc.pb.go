@@ -36,6 +36,7 @@ type PermissionPantherClient interface {
 	AddPermissionToGroup(ctx context.Context, in *ModifyPermissionGroupReq, opts ...grpc.CallOption) (*Applied, error)
 	// Removes one or more permissions to a group if it exists, and the permissions are in the group
 	RemovePermissionFromGroup(ctx context.Context, in *ModifyPermissionGroupReq, opts ...grpc.CallOption) (*Applied, error)
+	ListEntitiesInGroup(ctx context.Context, in *ListPermissionGroupReq, opts ...grpc.CallOption) (*ListPermissionGroupRes, error)
 }
 
 type permissionPantherClient struct {
@@ -127,6 +128,15 @@ func (c *permissionPantherClient) RemovePermissionFromGroup(ctx context.Context,
 	return out, nil
 }
 
+func (c *permissionPantherClient) ListEntitiesInGroup(ctx context.Context, in *ListPermissionGroupReq, opts ...grpc.CallOption) (*ListPermissionGroupRes, error) {
+	out := new(ListPermissionGroupRes)
+	err := c.cc.Invoke(ctx, "/PermissionPanther/ListEntitiesInGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PermissionPantherServer is the server API for PermissionPanther service.
 // All implementations must embed UnimplementedPermissionPantherServer
 // for forward compatibility
@@ -149,6 +159,7 @@ type PermissionPantherServer interface {
 	AddPermissionToGroup(context.Context, *ModifyPermissionGroupReq) (*Applied, error)
 	// Removes one or more permissions to a group if it exists, and the permissions are in the group
 	RemovePermissionFromGroup(context.Context, *ModifyPermissionGroupReq) (*Applied, error)
+	ListEntitiesInGroup(context.Context, *ListPermissionGroupReq) (*ListPermissionGroupRes, error)
 	mustEmbedUnimplementedPermissionPantherServer()
 }
 
@@ -182,6 +193,9 @@ func (UnimplementedPermissionPantherServer) AddPermissionToGroup(context.Context
 }
 func (UnimplementedPermissionPantherServer) RemovePermissionFromGroup(context.Context, *ModifyPermissionGroupReq) (*Applied, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemovePermissionFromGroup not implemented")
+}
+func (UnimplementedPermissionPantherServer) ListEntitiesInGroup(context.Context, *ListPermissionGroupReq) (*ListPermissionGroupRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListEntitiesInGroup not implemented")
 }
 func (UnimplementedPermissionPantherServer) mustEmbedUnimplementedPermissionPantherServer() {}
 
@@ -358,6 +372,24 @@ func _PermissionPanther_RemovePermissionFromGroup_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PermissionPanther_ListEntitiesInGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPermissionGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionPantherServer).ListEntitiesInGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PermissionPanther/ListEntitiesInGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionPantherServer).ListEntitiesInGroup(ctx, req.(*ListPermissionGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PermissionPanther_ServiceDesc is the grpc.ServiceDesc for PermissionPanther service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -400,6 +432,10 @@ var PermissionPanther_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemovePermissionFromGroup",
 			Handler:    _PermissionPanther_RemovePermissionFromGroup_Handler,
+		},
+		{
+			MethodName: "ListEntitiesInGroup",
+			Handler:    _PermissionPanther_ListEntitiesInGroup_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
