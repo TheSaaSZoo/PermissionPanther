@@ -68,9 +68,10 @@ WHERE ns = $1
 AND object = $2
 AND permission = $3;
 
--- name: InsertRelation :exec
+-- name: InsertRelation :execrows
 INSERT INTO relations (ns, entity, permission, object)
-VALUES ($1, $2, $3, $4);
+VALUES ($1, $2, $3, $4)
+ON CONFLICT DO NOTHING;
 
 -- name: DeleteRelation :execrows
 DELETE FROM relations

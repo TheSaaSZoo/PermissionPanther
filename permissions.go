@@ -10,7 +10,6 @@ import (
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/pb"
 	"github.com/danthegoodman1/PermissionPanther/query"
-	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 )
@@ -263,29 +262,23 @@ func UpsertRelation(ns, obj, permission, entity string) (done bool, err error) {
 	}
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
-	err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
+	rows, err := query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
 		Ns:         ns,
 		Permission: permission,
 		Object:     obj,
 		Entity:     entity,
 	})
 
-	if err == nil {
-		logger.Logger.WithFields(logrus.Fields{
-			"ns":     ns,
-			"action": "upsert_relation",
-		}).Info()
-	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
-		logger.Logger.WithFields(logrus.Fields{
-			"ns":     ns,
-			"action": "upsert_relation",
-		}).Info()
-		return false, nil
-	} else if err != nil {
+	if err != nil {
 		logger.Error("Error inserting relation")
+	} else {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "upsert_relation",
+		}).Info()
 	}
 
-	return true, nil
+	return rows != 0, nil
 }
 
 func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {

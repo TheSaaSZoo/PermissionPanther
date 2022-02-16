@@ -116,7 +116,37 @@ func AddPermissionToGroup(ns, groupName, perm string, propagate bool) (applied b
 		if rows != 0 {
 			applied = true
 			if propagate {
-				// TODO: For all entities in the group, log every change for billing
+				// Propagate changes to group members
+				var entities []query.PermissionGroupMembership
+				offset := ""
+				for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
+					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
+					if err != nil {
+						logger.Error("Error listing entities in permission group during remove permission propagation")
+						return err
+					}
+					for _, ent := range entities {
+						rows, err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
+							Ns:         ns,
+							Entity:     ent.Entity,
+							Permission: perm,
+							Object:     ent.Object,
+						})
+						if err != nil {
+							logger.Error("Error inserting relation during remove permission propagation")
+							return err
+						} else {
+							logger.Logger.WithFields(logrus.Fields{
+								"ns":     ns,
+								"action": "add_permission_propagate",
+							}).Info()
+						}
+					}
+					// Set the offset if there is potentially another page
+					if len(entities) == 50 {
+						offset = entities[49].Entity
+					}
+				}
 			}
 		}
 		return nil
@@ -154,28 +184,37 @@ func RemovePermissionFromGroup(ns, groupName, perm string, propagate bool) (appl
 		if rows != 0 {
 			applied = true
 			if propagate {
-				// TODO: For all entities in the group, log every change for billing
-				// entities := []query.PermissionGroupMembership{}
-				// offset := ""
-				// for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
-				// 	logger.Logger.WithFields(logrus.Fields{
-				// 		"ns":     ns,
-				// 		"action": "propagate_add_member",
-				// 	}).Info()
-				// 	entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
-				// 	for _, ent := range entities {
-				// 		err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
-				// 			Ns:         ns,
-				// 			Permission: permission,
-				// 			Object:     obj,
-				// 			Entity:     entity,
-				// 		})
-				// 	}
-				// 	// Set the offset
-				// 	if len(entities) > 0 {
-				// 		offset = entities[len(entities)-1].Entity
-				// 	}
-				// }
+				// Propagate changes to group members
+				var entities []query.PermissionGroupMembership
+				offset := ""
+				for moreItems := true; moreItems; moreItems = (len(entities) != 0) {
+					entities, err = txQueries.ListEntitiesInPermissionGroup(ctx, offset)
+					if err != nil {
+						logger.Error("Error listing entities in permission group during remove permission propagation")
+						return err
+					}
+					for _, ent := range entities {
+						_, err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
+							Ns:         ns,
+							Entity:     ent.Entity,
+							Permission: perm,
+							Object:     ent.Object,
+						})
+						if err != nil {
+							logger.Error("Error deleting relation during remove permission propagation")
+							return err
+						} else {
+							logger.Logger.WithFields(logrus.Fields{
+								"ns":     ns,
+								"action": "remove_permission_propagate",
+							}).Info()
+						}
+					}
+					// Set the offset if there is potentially another page
+					if len(entities) == 50 {
+						offset = entities[49].Entity
+					}
+				}
 			}
 		}
 		return nil
@@ -223,21 +262,18 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		txQueries := query.New(tx)
 
-		err := txQueries.InsertRelation(ctx, query.InsertRelationParams{
+		rows, err := txQueries.InsertRelation(ctx, query.InsertRelationParams{
 			Ns:         ns,
 			Entity:     entity,
 			Permission: groupName,
 			Object:     object,
 		})
 		if err != nil {
-			if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
-				// Unique violation, it exists
-				applied = false
-				return ErrRollback
-			} else {
-				logger.Error("Error adding permission when trying to add to permission group")
-				return err
-			}
+			logger.Error("Error adding permission when trying to add to permission group")
+			return err
+		} else if rows == 0 {
+			// Already done it
+			return nil
 		}
 
 		err = txQueries.AddMemberToPermissionGroup(ctx, query.AddMemberToPermissionGroupParams{
@@ -266,7 +302,7 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 			return err
 		}
 		for _, perm := range group.Perms {
-			err = txQueries.InsertRelation(ctx, query.InsertRelationParams{
+			rows, err = txQueries.InsertRelation(ctx, query.InsertRelationParams{
 				Ns:         ns,
 				Entity:     entity,
 				Permission: perm,

@@ -231,9 +231,10 @@ func (q *Queries) InsertPermissionGroup(ctx context.Context, arg InsertPermissio
 	return err
 }
 
-const insertRelation = `-- name: InsertRelation :exec
+const insertRelation = `-- name: InsertRelation :execrows
 INSERT INTO relations (ns, entity, permission, object)
 VALUES ($1, $2, $3, $4)
+ON CONFLICT DO NOTHING
 `
 
 type InsertRelationParams struct {
@@ -243,14 +244,17 @@ type InsertRelationParams struct {
 	Object     string
 }
 
-func (q *Queries) InsertRelation(ctx context.Context, arg InsertRelationParams) error {
-	_, err := q.db.Exec(ctx, insertRelation,
+func (q *Queries) InsertRelation(ctx context.Context, arg InsertRelationParams) (int64, error) {
+	result, err := q.db.Exec(ctx, insertRelation,
 		arg.Ns,
 		arg.Entity,
 		arg.Permission,
 		arg.Object,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const listEntitiesInPermissionGroup = `-- name: ListEntitiesInPermissionGroup :many

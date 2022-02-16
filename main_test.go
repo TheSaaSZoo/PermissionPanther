@@ -63,7 +63,7 @@ func SetupCRDB() {
 
 	queries := query.New(conn)
 
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj1",
 		Ns:         "testns",
 		Entity:     "user1",
@@ -71,7 +71,7 @@ func SetupCRDB() {
 	})
 	HandleError(err)
 	// Group
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj2",
 		Ns:         "testns",
 		Entity:     "~obj1#access",
@@ -79,7 +79,7 @@ func SetupCRDB() {
 	})
 	HandleError(err)
 	// Group
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj3",
 		Ns:         "testns",
 		Entity:     "~obj2#access",
@@ -87,7 +87,7 @@ func SetupCRDB() {
 	})
 	HandleError(err)
 	// Group
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj4",
 		Ns:         "testns",
 		Entity:     "~obj3#access",
@@ -95,7 +95,7 @@ func SetupCRDB() {
 	})
 	HandleError(err)
 	// Group
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj5",
 		Ns:         "testns",
 		Entity:     "~obj4#access",
@@ -103,7 +103,7 @@ func SetupCRDB() {
 	})
 	HandleError(err)
 	// Group
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj6",
 		Ns:         "testns",
 		Entity:     "~obj5#access",
@@ -113,7 +113,7 @@ func SetupCRDB() {
 
 	// User 2 relations
 	// Direct
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj1",
 		Ns:         "testns",
 		Entity:     "user2",
@@ -121,7 +121,7 @@ func SetupCRDB() {
 	})
 	HandleError(err)
 	// Direct
-	err = queries.InsertRelation(ctx, query.InsertRelationParams{
+	_, err = queries.InsertRelation(ctx, query.InsertRelationParams{
 		Object:     "obj2",
 		Ns:         "testns",
 		Entity:     "user2",
