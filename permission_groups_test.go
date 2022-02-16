@@ -93,7 +93,7 @@ func TestPermissionGroups(t *testing.T) {
 		_, err = query.New(conn).CheckRelationDirect(context.Background(), query.CheckRelationDirectParams{
 			Ns:         "testns",
 			Entity:     "test_ent_2",
-			Permission: "test_g_2",
+			Permission: "$test_g_2",
 			Object:     "test_obj_2",
 		})
 		utils.HandleTestError(t, err)
@@ -290,5 +290,6 @@ func TestPermissionGroups(t *testing.T) {
 		if !applied {
 			utils.HandleTestError(t, fmt.Errorf("Not applied create"))
 		}
+
 	})
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgx"
 	"github.com/danthegoodman1/PermissionPanther/crdb"
@@ -84,7 +85,24 @@ func RemovePermissionGroup(ns, groupName string, propagate bool) (applied bool, 
 						return err
 					}
 					for _, ent := range entities {
+						// Remove the group relation
+						_, err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
+							Ns:         ns,
+							Entity:     ent.Entity,
+							Permission: fmt.Sprintf("$%s", groupName),
+							Object:     ent.Object,
+						})
+						if err != nil {
+							logger.Error("Error deleting relation during remove group propagation")
+							return err
+						} else {
+							logger.Logger.WithFields(logrus.Fields{
+								"ns":     ns,
+								"action": "remove_permission_propagate",
+							}).Info()
+						}
 						for _, perm := range perms {
+							// remove all of the permission relations
 							_, err = query.New(conn).DeleteRelation(ctx, query.DeleteRelationParams{
 								Ns:         ns,
 								Entity:     ent.Entity,
@@ -290,10 +308,11 @@ func AddMemberToPermissionGroup(ns, groupName, entity, object string) (applied b
 	err = crdbpgx.ExecuteTx(ctx, conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		txQueries := query.New(tx)
 
+		// Give the permission group name
 		rows, err := txQueries.InsertRelation(ctx, query.InsertRelationParams{
 			Ns:         ns,
 			Entity:     entity,
-			Permission: groupName,
+			Permission: fmt.Sprintf("$%s", groupName),
 			Object:     object,
 		})
 		if err != nil {
@@ -375,7 +394,7 @@ func RemoveMemberFromPermissionGroup(ns, groupName, entity, object string) (appl
 		rows, err := txQueries.DeleteRelation(ctx, query.DeleteRelationParams{
 			Ns:         ns,
 			Entity:     entity,
-			Permission: groupName,
+			Permission: fmt.Sprintf("$%s", groupName),
 			Object:     object,
 		})
 		if err != nil {

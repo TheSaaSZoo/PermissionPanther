@@ -183,4 +183,18 @@ export default class PermissionPanther {
       })
     })
   }
+
+  /**
+   * Give all permissions defined within this group, if it exists
+   */
+  PermissionGroup(groupName: string): string {
+    return `$${groupName}`
+  }
+
+  /**
+   * Inherit relationships from another permission on an object
+   */
+  Inherit(permission: string, object: string): string {
+    return `~${object}#${permission}`
+  }
 }

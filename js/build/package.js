@@ -194,5 +194,17 @@ class PermissionPanther {
             });
         });
     }
+    /**
+     * Give all permissions defined within this group, if it exists
+     */
+    PermissionGroup(groupName) {
+        return `$${groupName}`;
+    }
+    /**
+     * Inherit relationships from another permission on an object
+     */
+    Inherit(permission, object) {
+        return `~${object}#${permission}`;
+    }
 }
 exports.default = PermissionPanther;

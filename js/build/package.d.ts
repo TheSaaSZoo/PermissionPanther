@@ -28,4 +28,12 @@ export default class PermissionPanther {
      * Returns whether the relation was deleted (existed).
      */
     RemovePermission(input: Relationship): Promise<unknown>;
+    /**
+     * Give all permissions defined within this group, if it exists
+     */
+    PermissionGroup(groupName: string): string;
+    /**
+     * Inherit relationships from another permission on an object
+     */
+    Inherit(permission: string, object: string): string;
 }
