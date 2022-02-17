@@ -29,7 +29,7 @@ message ListEntityRelationsReq {
   // Optional, if not provided then we will list all permissions
   string permission = 4;
 
-  string offset = 5;
+  int32 offset = 5;
 }
 
 message ListObjectRelationsReq {
@@ -39,8 +39,8 @@ message ListObjectRelationsReq {
   string object = 3;
   // Optional, if not provided then we will list all permissions
   string permission = 4;
-  // Base64 encoded scylla offset
-  string offset = 5;
+
+  int32 offset = 5;
 }
 
 message RelationsResponse {

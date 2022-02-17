@@ -76,8 +76,8 @@ export class ListEntityRelationsReq extends jspb.Message {
     setEntity(value: string): ListEntityRelationsReq;
     getPermission(): string;
     setPermission(value: string): ListEntityRelationsReq;
-    getOffset(): string;
-    setOffset(value: string): ListEntityRelationsReq;
+    getOffset(): number;
+    setOffset(value: number): ListEntityRelationsReq;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListEntityRelationsReq.AsObject;
@@ -95,7 +95,7 @@ export namespace ListEntityRelationsReq {
         keysecret: string,
         entity: string,
         permission: string,
-        offset: string,
+        offset: number,
     }
 }
 
@@ -108,8 +108,8 @@ export class ListObjectRelationsReq extends jspb.Message {
     setObject(value: string): ListObjectRelationsReq;
     getPermission(): string;
     setPermission(value: string): ListObjectRelationsReq;
-    getOffset(): string;
-    setOffset(value: string): ListObjectRelationsReq;
+    getOffset(): number;
+    setOffset(value: number): ListObjectRelationsReq;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListObjectRelationsReq.AsObject;
@@ -127,7 +127,7 @@ export namespace ListObjectRelationsReq {
         keysecret: string,
         object: string,
         permission: string,
-        offset: string,
+        offset: number,
     }
 }
 

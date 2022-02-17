@@ -116,7 +116,7 @@ func (server) ListEntityRelations(ctx context.Context, in *pb.ListEntityRelation
 		return
 	}
 
-	out.Relations, err = ListEntityPermissions(apiKey.Namespace, in.Entity, in.Permission)
+	out.Relations, err = ListEntityPermissions(apiKey.Namespace, in.Entity, in.Permission, in.Offset)
 	if err != nil {
 		logger.Error("Error listing entity permissions")
 		logger.Error(err.Error())
@@ -144,7 +144,7 @@ func (server) ListObjectRelations(ctx context.Context, in *pb.ListObjectRelation
 		return
 	}
 
-	out.Relations, err = ListObjectPermissions(apiKey.Namespace, in.Object, in.Permission)
+	out.Relations, err = ListObjectPermissions(apiKey.Namespace, in.Object, in.Permission, in.Offset)
 	if err != nil {
 		logger.Error("Error listing object permissions")
 		logger.Error(err.Error())

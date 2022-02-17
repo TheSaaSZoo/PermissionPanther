@@ -105,7 +105,6 @@ class PermissionPanther {
                     });
                 }
                 resolve({
-                    offset: "",
                     relations: rel
                 });
             });
@@ -144,7 +143,6 @@ class PermissionPanther {
                     });
                 }
                 resolve({
-                    offset: "",
                     relations: rel
                 });
             });

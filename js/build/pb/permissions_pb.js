@@ -706,7 +706,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
             keysecret: jspb.Message.getFieldWithDefault(msg, 2, ""),
             entity: jspb.Message.getFieldWithDefault(msg, 3, ""),
             permission: jspb.Message.getFieldWithDefault(msg, 4, ""),
-            offset: jspb.Message.getFieldWithDefault(msg, 5, "")
+            offset: jspb.Message.getFieldWithDefault(msg, 5, 0)
         };
         if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -755,7 +755,7 @@ proto.ListEntityRelationsReq.deserializeBinaryFromReader = function (msg, reader
                 msg.setPermission(value);
                 break;
             case 5:
-                var value = /** @type {string} */ (reader.readString());
+                var value = /** @type {number} */ (reader.readInt32());
                 msg.setOffset(value);
                 break;
             default:
@@ -800,8 +800,8 @@ proto.ListEntityRelationsReq.serializeBinaryToWriter = function (message, writer
         writer.writeString(4, f);
     }
     f = message.getOffset();
-    if (f.length > 0) {
-        writer.writeString(5, f);
+    if (f !== 0) {
+        writer.writeInt32(5, f);
     }
 };
 /**
@@ -861,18 +861,18 @@ proto.ListEntityRelationsReq.prototype.setPermission = function (value) {
     return jspb.Message.setProto3StringField(this, 4, value);
 };
 /**
- * optional string offset = 5;
- * @return {string}
+ * optional int32 offset = 5;
+ * @return {number}
  */
 proto.ListEntityRelationsReq.prototype.getOffset = function () {
-    return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+    return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.ListEntityRelationsReq} returns this
  */
 proto.ListEntityRelationsReq.prototype.setOffset = function (value) {
-    return jspb.Message.setProto3StringField(this, 5, value);
+    return jspb.Message.setProto3IntField(this, 5, value);
 };
 if (jspb.Message.GENERATE_TO_OBJECT) {
     /**
@@ -905,7 +905,7 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
             keysecret: jspb.Message.getFieldWithDefault(msg, 2, ""),
             object: jspb.Message.getFieldWithDefault(msg, 3, ""),
             permission: jspb.Message.getFieldWithDefault(msg, 4, ""),
-            offset: jspb.Message.getFieldWithDefault(msg, 5, "")
+            offset: jspb.Message.getFieldWithDefault(msg, 5, 0)
         };
         if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -954,7 +954,7 @@ proto.ListObjectRelationsReq.deserializeBinaryFromReader = function (msg, reader
                 msg.setPermission(value);
                 break;
             case 5:
-                var value = /** @type {string} */ (reader.readString());
+                var value = /** @type {number} */ (reader.readInt32());
                 msg.setOffset(value);
                 break;
             default:
@@ -999,8 +999,8 @@ proto.ListObjectRelationsReq.serializeBinaryToWriter = function (message, writer
         writer.writeString(4, f);
     }
     f = message.getOffset();
-    if (f.length > 0) {
-        writer.writeString(5, f);
+    if (f !== 0) {
+        writer.writeInt32(5, f);
     }
 };
 /**
@@ -1060,18 +1060,18 @@ proto.ListObjectRelationsReq.prototype.setPermission = function (value) {
     return jspb.Message.setProto3StringField(this, 4, value);
 };
 /**
- * optional string offset = 5;
- * @return {string}
+ * optional int32 offset = 5;
+ * @return {number}
  */
 proto.ListObjectRelationsReq.prototype.getOffset = function () {
-    return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+    return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.ListObjectRelationsReq} returns this
  */
 proto.ListObjectRelationsReq.prototype.setOffset = function (value) {
-    return jspb.Message.setProto3StringField(this, 5, value);
+    return jspb.Message.setProto3IntField(this, 5, value);
 };
 /**
  * List of repeated fields within this message type.

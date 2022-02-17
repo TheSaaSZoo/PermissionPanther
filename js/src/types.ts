@@ -58,10 +58,7 @@ export interface ListEntityRelationsInput {
    */
   permission?: string
 
-  /**
-   * NOT IMPLEMENTED - Pagination offset, use the previous result's `offset` to continue paginating.
-   */
-  offset?: string
+  offset?: number
 }
 
 export interface ListObjectRelationsInput {
@@ -72,19 +69,11 @@ export interface ListObjectRelationsInput {
    */
   permission?: string
 
-  /**
-   * NOT IMPLEMENTED - Pagination offset, use the previous result's `offset` to continue paginating.
-   */
-  offset?: string
+  offset?: number
 }
 
 export interface ListRelationsResponse {
   relations: Relationship[]
-
-  /**
-   * NOT IMPLEMENTED - Pagination offset, set in the next request to get the next page of results.
-   */
-  offset: string
 }
 
 export interface Relationship {

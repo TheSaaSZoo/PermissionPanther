@@ -157,7 +157,7 @@ func GetPermissionGroups(ns, obj, permission string) ([]query.Relation, error) {
 	return r, nil
 }
 
-func ListEntityPermissions(ns, entity string, permission string) (relations []*pb.Relation, err error) {
+func ListEntityPermissions(ns, entity, permission string, offset int32) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -174,12 +174,14 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 		r, err = query.New(conn).ListEntityRelations(ctx, query.ListEntityRelationsParams{
 			Ns:     ns,
 			Entity: entity,
+			Offset: offset,
 		})
 	} else {
 		r, err = query.New(conn).ListEntityRelationsWithPermission(ctx, query.ListEntityRelationsWithPermissionParams{
 			Ns:         ns,
 			Entity:     entity,
 			Permission: permission,
+			Offset:     offset,
 		})
 	}
 
@@ -205,7 +207,7 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 	return
 }
 
-func ListObjectPermissions(ns, object string, permission string) (relations []*pb.Relation, err error) {
+func ListObjectPermissions(ns, object, permission string, offset int32) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -222,12 +224,14 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 		r, err = query.New(conn).ListObjectRelations(ctx, query.ListObjectRelationsParams{
 			Ns:     ns,
 			Object: object,
+			Offset: offset,
 		})
 	} else {
 		r, err = query.New(conn).ListObjectRelationsWithPermission(ctx, query.ListObjectRelationsWithPermissionParams{
 			Ns:         ns,
 			Object:     object,
 			Permission: permission,
+			Offset:     offset,
 		})
 	}
 

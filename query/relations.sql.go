@@ -302,15 +302,18 @@ SELECT object, entity, permission, ns
 FROM relations
 WHERE ns = $1
 AND entity = $2
+LIMIT 50
+OFFSET $3
 `
 
 type ListEntityRelationsParams struct {
 	Ns     string
 	Entity string
+	Offset int32
 }
 
 func (q *Queries) ListEntityRelations(ctx context.Context, arg ListEntityRelationsParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listEntityRelations, arg.Ns, arg.Entity)
+	rows, err := q.db.Query(ctx, listEntityRelations, arg.Ns, arg.Entity, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -340,16 +343,24 @@ FROM relations
 WHERE ns = $1
 AND entity = $2
 AND permission = $3
+LIMIT 50
+OFFSET $4
 `
 
 type ListEntityRelationsWithPermissionParams struct {
 	Ns         string
 	Entity     string
 	Permission string
+	Offset     int32
 }
 
 func (q *Queries) ListEntityRelationsWithPermission(ctx context.Context, arg ListEntityRelationsWithPermissionParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listEntityRelationsWithPermission, arg.Ns, arg.Entity, arg.Permission)
+	rows, err := q.db.Query(ctx, listEntityRelationsWithPermission,
+		arg.Ns,
+		arg.Entity,
+		arg.Permission,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -378,15 +389,18 @@ SELECT object, entity, permission, ns
 FROM relations
 WHERE ns = $1
 AND object = $2
+LIMIT 50
+OFFSET $3
 `
 
 type ListObjectRelationsParams struct {
 	Ns     string
 	Object string
+	Offset int32
 }
 
 func (q *Queries) ListObjectRelations(ctx context.Context, arg ListObjectRelationsParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listObjectRelations, arg.Ns, arg.Object)
+	rows, err := q.db.Query(ctx, listObjectRelations, arg.Ns, arg.Object, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -416,16 +430,24 @@ FROM relations
 WHERE ns = $1
 AND object = $2
 AND permission = $3
+LIMIT 50
+OFFSET $4
 `
 
 type ListObjectRelationsWithPermissionParams struct {
 	Ns         string
 	Object     string
 	Permission string
+	Offset     int32
 }
 
 func (q *Queries) ListObjectRelationsWithPermission(ctx context.Context, arg ListObjectRelationsWithPermissionParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listObjectRelationsWithPermission, arg.Ns, arg.Object, arg.Permission)
+	rows, err := q.db.Query(ctx, listObjectRelationsWithPermission,
+		arg.Ns,
+		arg.Object,
+		arg.Permission,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}

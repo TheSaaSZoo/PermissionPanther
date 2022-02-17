@@ -91,7 +91,6 @@ export default class PermissionPanther {
           })
         }
         resolve({
-          offset: "",
           relations: rel
         })
       })
@@ -131,7 +130,6 @@ export default class PermissionPanther {
           })
         }
         resolve({
-          offset: "",
           relations: rel
         })
       })

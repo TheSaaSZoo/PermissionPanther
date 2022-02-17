@@ -46,27 +46,35 @@ AND object = $3;
 SELECT *
 FROM relations
 WHERE ns = $1
-AND entity = $2;
+AND entity = $2
+LIMIT 50
+OFFSET $3;
 
 -- name: ListEntityRelationsWithPermission :many
 SELECT *
 FROM relations
 WHERE ns = $1
 AND entity = $2
-AND permission = $3;
+AND permission = $3
+LIMIT 50
+OFFSET $4;
 
 -- name: ListObjectRelations :many
 SELECT *
 FROM relations
 WHERE ns = $1
-AND object = $2;
+AND object = $2
+LIMIT 50
+OFFSET $3;
 
 -- name: ListObjectRelationsWithPermission :many
 SELECT *
 FROM relations
 WHERE ns = $1
 AND object = $2
-AND permission = $3;
+AND permission = $3
+LIMIT 50
+OFFSET $4;
 
 -- name: InsertRelation :execrows
 INSERT INTO relations (ns, entity, permission, object)
