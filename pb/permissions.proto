@@ -29,7 +29,7 @@ message ListEntityRelationsReq {
   // Optional, if not provided then we will list all permissions
   string permission = 4;
 
-  string offset = 5;
+  int32 offset = 5;
 }
 
 message ListObjectRelationsReq {
@@ -39,8 +39,8 @@ message ListObjectRelationsReq {
   string object = 3;
   // Optional, if not provided then we will list all permissions
   string permission = 4;
-  // Base64 encoded scylla offset
-  string offset = 5;
+
+  int32 offset = 5;
 }
 
 message RelationsResponse {
@@ -60,4 +60,47 @@ message RelationReq {
   string entity = 3;
   string permission = 4;
   string object = 5;
+}
+
+message CreatePermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  repeated string permissions = 4;
+}
+
+message DeletePermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  bool propagate = 4;
+}
+
+message ModifyPermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  string permission = 4;
+  bool propagate = 5;
+}
+
+message ListPermissionGroupReq {
+  string keyID = 1;
+  string keySecret = 2;
+
+  string groupName = 3;
+  string offset = 4;
+}
+
+message ListPermissionGroupRes {
+  repeated PermissionGroupMembership members = 2;
+}
+
+message PermissionGroupMembership {
+  string groupName = 1;
+  string entity = 2;
+	string object = 4;
 }

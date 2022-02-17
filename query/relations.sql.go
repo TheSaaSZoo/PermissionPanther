@@ -7,6 +7,51 @@ import (
 	"context"
 )
 
+const addMemberToPermissionGroup = `-- name: AddMemberToPermissionGroup :exec
+INSERT INTO permission_group_membership (group_name, entity, ns, object)
+VALUES ($1, $2, $3, $4)
+`
+
+type AddMemberToPermissionGroupParams struct {
+	GroupName string
+	Entity    string
+	Ns        string
+	Object    string
+}
+
+func (q *Queries) AddMemberToPermissionGroup(ctx context.Context, arg AddMemberToPermissionGroupParams) error {
+	_, err := q.db.Exec(ctx, addMemberToPermissionGroup,
+		arg.GroupName,
+		arg.Entity,
+		arg.Ns,
+		arg.Object,
+	)
+	return err
+}
+
+const addPermissionToGroup = `-- name: AddPermissionToGroup :execrows
+UPDATE permission_groups
+SET perms = array_append(perms, $3)
+WHERE array_position(perms, $3) IS NULL
+AND ns = $2
+AND name = $1
+`
+
+type AddPermissionToGroupParams struct {
+	Name       string
+	Ns         string
+	Permission interface{}
+}
+
+// Adds a permission if it does not exist
+func (q *Queries) AddPermissionToGroup(ctx context.Context, arg AddPermissionToGroupParams) (int64, error) {
+	result, err := q.db.Exec(ctx, addPermissionToGroup, arg.Name, arg.Ns, arg.Permission)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const checkRelationDirect = `-- name: CheckRelationDirect :one
 SELECT 1
 FROM relations
@@ -83,6 +128,25 @@ func (q *Queries) CheckRelationWildcard(ctx context.Context, arg CheckRelationWi
 	return column_1, err
 }
 
+const deletePermissionGroup = `-- name: DeletePermissionGroup :one
+DELETE FROM permission_groups
+WHERE ns = $1
+AND name = $2
+RETURNING perms
+`
+
+type DeletePermissionGroupParams struct {
+	Ns   string
+	Name string
+}
+
+func (q *Queries) DeletePermissionGroup(ctx context.Context, arg DeletePermissionGroupParams) ([]string, error) {
+	row := q.db.QueryRow(ctx, deletePermissionGroup, arg.Ns, arg.Name)
+	var perms []string
+	err := row.Scan(&perms)
+	return perms, err
+}
+
 const deleteRelation = `-- name: DeleteRelation :execrows
 DELETE FROM relations
 WHERE ns = $1
@@ -151,9 +215,26 @@ func (q *Queries) GetGroupRelations(ctx context.Context, arg GetGroupRelationsPa
 	return items, nil
 }
 
-const insertRelation = `-- name: InsertRelation :exec
+const insertPermissionGroup = `-- name: InsertPermissionGroup :exec
+INSERT INTO permission_groups (ns, perms, name)
+VALUES ($1, $2, $3)
+`
+
+type InsertPermissionGroupParams struct {
+	Ns    string
+	Perms []string
+	Name  string
+}
+
+func (q *Queries) InsertPermissionGroup(ctx context.Context, arg InsertPermissionGroupParams) error {
+	_, err := q.db.Exec(ctx, insertPermissionGroup, arg.Ns, arg.Perms, arg.Name)
+	return err
+}
+
+const insertRelation = `-- name: InsertRelation :execrows
 INSERT INTO relations (ns, entity, permission, object)
 VALUES ($1, $2, $3, $4)
+ON CONFLICT DO NOTHING
 `
 
 type InsertRelationParams struct {
@@ -163,14 +244,57 @@ type InsertRelationParams struct {
 	Object     string
 }
 
-func (q *Queries) InsertRelation(ctx context.Context, arg InsertRelationParams) error {
-	_, err := q.db.Exec(ctx, insertRelation,
+func (q *Queries) InsertRelation(ctx context.Context, arg InsertRelationParams) (int64, error) {
+	result, err := q.db.Exec(ctx, insertRelation,
 		arg.Ns,
 		arg.Entity,
 		arg.Permission,
 		arg.Object,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const listEntitiesInPermissionGroup = `-- name: ListEntitiesInPermissionGroup :many
+SELECT group_name, entity, ns, object
+FROM permission_group_membership
+WHERE entity > $1
+AND ns = $2
+AND group_name = $3
+LIMIT 50
+`
+
+type ListEntitiesInPermissionGroupParams struct {
+	Entity    string
+	Ns        string
+	GroupName string
+}
+
+func (q *Queries) ListEntitiesInPermissionGroup(ctx context.Context, arg ListEntitiesInPermissionGroupParams) ([]PermissionGroupMembership, error) {
+	rows, err := q.db.Query(ctx, listEntitiesInPermissionGroup, arg.Entity, arg.Ns, arg.GroupName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PermissionGroupMembership
+	for rows.Next() {
+		var i PermissionGroupMembership
+		if err := rows.Scan(
+			&i.GroupName,
+			&i.Entity,
+			&i.Ns,
+			&i.Object,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listEntityRelations = `-- name: ListEntityRelations :many
@@ -178,15 +302,18 @@ SELECT object, entity, permission, ns
 FROM relations
 WHERE ns = $1
 AND entity = $2
+LIMIT 50
+OFFSET $3
 `
 
 type ListEntityRelationsParams struct {
 	Ns     string
 	Entity string
+	Offset int32
 }
 
 func (q *Queries) ListEntityRelations(ctx context.Context, arg ListEntityRelationsParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listEntityRelations, arg.Ns, arg.Entity)
+	rows, err := q.db.Query(ctx, listEntityRelations, arg.Ns, arg.Entity, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -216,16 +343,24 @@ FROM relations
 WHERE ns = $1
 AND entity = $2
 AND permission = $3
+LIMIT 50
+OFFSET $4
 `
 
 type ListEntityRelationsWithPermissionParams struct {
 	Ns         string
 	Entity     string
 	Permission string
+	Offset     int32
 }
 
 func (q *Queries) ListEntityRelationsWithPermission(ctx context.Context, arg ListEntityRelationsWithPermissionParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listEntityRelationsWithPermission, arg.Ns, arg.Entity, arg.Permission)
+	rows, err := q.db.Query(ctx, listEntityRelationsWithPermission,
+		arg.Ns,
+		arg.Entity,
+		arg.Permission,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -254,15 +389,18 @@ SELECT object, entity, permission, ns
 FROM relations
 WHERE ns = $1
 AND object = $2
+LIMIT 50
+OFFSET $3
 `
 
 type ListObjectRelationsParams struct {
 	Ns     string
 	Object string
+	Offset int32
 }
 
 func (q *Queries) ListObjectRelations(ctx context.Context, arg ListObjectRelationsParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listObjectRelations, arg.Ns, arg.Object)
+	rows, err := q.db.Query(ctx, listObjectRelations, arg.Ns, arg.Object, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -292,16 +430,24 @@ FROM relations
 WHERE ns = $1
 AND object = $2
 AND permission = $3
+LIMIT 50
+OFFSET $4
 `
 
 type ListObjectRelationsWithPermissionParams struct {
 	Ns         string
 	Object     string
 	Permission string
+	Offset     int32
 }
 
 func (q *Queries) ListObjectRelationsWithPermission(ctx context.Context, arg ListObjectRelationsWithPermissionParams) ([]Relation, error) {
-	rows, err := q.db.Query(ctx, listObjectRelationsWithPermission, arg.Ns, arg.Object, arg.Permission)
+	rows, err := q.db.Query(ctx, listObjectRelationsWithPermission,
+		arg.Ns,
+		arg.Object,
+		arg.Permission,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -323,4 +469,66 @@ func (q *Queries) ListObjectRelationsWithPermission(ctx context.Context, arg Lis
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeMemberFromPermissionGroup = `-- name: RemoveMemberFromPermissionGroup :execrows
+DELETE FROM permission_group_membership
+WHERE ns = $1
+AND group_name = $2
+AND entity = $3
+`
+
+type RemoveMemberFromPermissionGroupParams struct {
+	Ns        string
+	GroupName string
+	Entity    string
+}
+
+func (q *Queries) RemoveMemberFromPermissionGroup(ctx context.Context, arg RemoveMemberFromPermissionGroupParams) (int64, error) {
+	result, err := q.db.Exec(ctx, removeMemberFromPermissionGroup, arg.Ns, arg.GroupName, arg.Entity)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const removePermissionFromGroup = `-- name: RemovePermissionFromGroup :execrows
+UPDATE permission_groups
+SET perms = array_remove(perms, $3)
+WHERE array_position(perms, $3) IS NOT NULL
+AND ns = $2
+AND name = $1
+`
+
+type RemovePermissionFromGroupParams struct {
+	Name       string
+	Ns         string
+	Permission interface{}
+}
+
+// Removes a permission if it exists
+func (q *Queries) RemovePermissionFromGroup(ctx context.Context, arg RemovePermissionFromGroupParams) (int64, error) {
+	result, err := q.db.Exec(ctx, removePermissionFromGroup, arg.Name, arg.Ns, arg.Permission)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const selectPermissionGroup = `-- name: SelectPermissionGroup :one
+SELECT name, ns, perms FROM permission_groups
+WHERE ns = $1
+AND name = $2
+`
+
+type SelectPermissionGroupParams struct {
+	Ns   string
+	Name string
+}
+
+func (q *Queries) SelectPermissionGroup(ctx context.Context, arg SelectPermissionGroupParams) (PermissionGroup, error) {
+	row := q.db.QueryRow(ctx, selectPermissionGroup, arg.Ns, arg.Name)
+	var i PermissionGroup
+	err := row.Scan(&i.Name, &i.Ns, &i.Perms)
+	return i, err
 }

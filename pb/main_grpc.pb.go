@@ -28,6 +28,15 @@ type PermissionPantherClient interface {
 	SetPermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*Applied, error)
 	// Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
 	RemovePermission(ctx context.Context, in *RelationReq, opts ...grpc.CallOption) (*Applied, error)
+	// Creates a permission group if it does not exist
+	CreatePermissionGroup(ctx context.Context, in *CreatePermissionGroupReq, opts ...grpc.CallOption) (*Applied, error)
+	// Deletes a permission group if it exists
+	DeletePermissionGroup(ctx context.Context, in *DeletePermissionGroupReq, opts ...grpc.CallOption) (*Applied, error)
+	// Adds one or more permissions a to group if it exists, and the permissions are not already in the group
+	AddPermissionToGroup(ctx context.Context, in *ModifyPermissionGroupReq, opts ...grpc.CallOption) (*Applied, error)
+	// Removes one or more permissions to a group if it exists, and the permissions are in the group
+	RemovePermissionFromGroup(ctx context.Context, in *ModifyPermissionGroupReq, opts ...grpc.CallOption) (*Applied, error)
+	ListEntitiesInGroup(ctx context.Context, in *ListPermissionGroupReq, opts ...grpc.CallOption) (*ListPermissionGroupRes, error)
 }
 
 type permissionPantherClient struct {
@@ -83,6 +92,51 @@ func (c *permissionPantherClient) RemovePermission(ctx context.Context, in *Rela
 	return out, nil
 }
 
+func (c *permissionPantherClient) CreatePermissionGroup(ctx context.Context, in *CreatePermissionGroupReq, opts ...grpc.CallOption) (*Applied, error) {
+	out := new(Applied)
+	err := c.cc.Invoke(ctx, "/PermissionPanther/CreatePermissionGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionPantherClient) DeletePermissionGroup(ctx context.Context, in *DeletePermissionGroupReq, opts ...grpc.CallOption) (*Applied, error) {
+	out := new(Applied)
+	err := c.cc.Invoke(ctx, "/PermissionPanther/DeletePermissionGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionPantherClient) AddPermissionToGroup(ctx context.Context, in *ModifyPermissionGroupReq, opts ...grpc.CallOption) (*Applied, error) {
+	out := new(Applied)
+	err := c.cc.Invoke(ctx, "/PermissionPanther/AddPermissionToGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionPantherClient) RemovePermissionFromGroup(ctx context.Context, in *ModifyPermissionGroupReq, opts ...grpc.CallOption) (*Applied, error) {
+	out := new(Applied)
+	err := c.cc.Invoke(ctx, "/PermissionPanther/RemovePermissionFromGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *permissionPantherClient) ListEntitiesInGroup(ctx context.Context, in *ListPermissionGroupReq, opts ...grpc.CallOption) (*ListPermissionGroupRes, error) {
+	out := new(ListPermissionGroupRes)
+	err := c.cc.Invoke(ctx, "/PermissionPanther/ListEntitiesInGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PermissionPantherServer is the server API for PermissionPanther service.
 // All implementations must embed UnimplementedPermissionPantherServer
 // for forward compatibility
@@ -97,6 +151,15 @@ type PermissionPantherServer interface {
 	SetPermission(context.Context, *RelationReq) (*Applied, error)
 	// Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
 	RemovePermission(context.Context, *RelationReq) (*Applied, error)
+	// Creates a permission group if it does not exist
+	CreatePermissionGroup(context.Context, *CreatePermissionGroupReq) (*Applied, error)
+	// Deletes a permission group if it exists
+	DeletePermissionGroup(context.Context, *DeletePermissionGroupReq) (*Applied, error)
+	// Adds one or more permissions a to group if it exists, and the permissions are not already in the group
+	AddPermissionToGroup(context.Context, *ModifyPermissionGroupReq) (*Applied, error)
+	// Removes one or more permissions to a group if it exists, and the permissions are in the group
+	RemovePermissionFromGroup(context.Context, *ModifyPermissionGroupReq) (*Applied, error)
+	ListEntitiesInGroup(context.Context, *ListPermissionGroupReq) (*ListPermissionGroupRes, error)
 	mustEmbedUnimplementedPermissionPantherServer()
 }
 
@@ -118,6 +181,21 @@ func (UnimplementedPermissionPantherServer) SetPermission(context.Context, *Rela
 }
 func (UnimplementedPermissionPantherServer) RemovePermission(context.Context, *RelationReq) (*Applied, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemovePermission not implemented")
+}
+func (UnimplementedPermissionPantherServer) CreatePermissionGroup(context.Context, *CreatePermissionGroupReq) (*Applied, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePermissionGroup not implemented")
+}
+func (UnimplementedPermissionPantherServer) DeletePermissionGroup(context.Context, *DeletePermissionGroupReq) (*Applied, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePermissionGroup not implemented")
+}
+func (UnimplementedPermissionPantherServer) AddPermissionToGroup(context.Context, *ModifyPermissionGroupReq) (*Applied, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddPermissionToGroup not implemented")
+}
+func (UnimplementedPermissionPantherServer) RemovePermissionFromGroup(context.Context, *ModifyPermissionGroupReq) (*Applied, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemovePermissionFromGroup not implemented")
+}
+func (UnimplementedPermissionPantherServer) ListEntitiesInGroup(context.Context, *ListPermissionGroupReq) (*ListPermissionGroupRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListEntitiesInGroup not implemented")
 }
 func (UnimplementedPermissionPantherServer) mustEmbedUnimplementedPermissionPantherServer() {}
 
@@ -222,6 +300,96 @@ func _PermissionPanther_RemovePermission_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PermissionPanther_CreatePermissionGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePermissionGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionPantherServer).CreatePermissionGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PermissionPanther/CreatePermissionGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionPantherServer).CreatePermissionGroup(ctx, req.(*CreatePermissionGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PermissionPanther_DeletePermissionGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePermissionGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionPantherServer).DeletePermissionGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PermissionPanther/DeletePermissionGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionPantherServer).DeletePermissionGroup(ctx, req.(*DeletePermissionGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PermissionPanther_AddPermissionToGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyPermissionGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionPantherServer).AddPermissionToGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PermissionPanther/AddPermissionToGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionPantherServer).AddPermissionToGroup(ctx, req.(*ModifyPermissionGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PermissionPanther_RemovePermissionFromGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyPermissionGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionPantherServer).RemovePermissionFromGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PermissionPanther/RemovePermissionFromGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionPantherServer).RemovePermissionFromGroup(ctx, req.(*ModifyPermissionGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PermissionPanther_ListEntitiesInGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPermissionGroupReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionPantherServer).ListEntitiesInGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PermissionPanther/ListEntitiesInGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionPantherServer).ListEntitiesInGroup(ctx, req.(*ListPermissionGroupReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PermissionPanther_ServiceDesc is the grpc.ServiceDesc for PermissionPanther service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +416,26 @@ var PermissionPanther_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemovePermission",
 			Handler:    _PermissionPanther_RemovePermission_Handler,
+		},
+		{
+			MethodName: "CreatePermissionGroup",
+			Handler:    _PermissionPanther_CreatePermissionGroup_Handler,
+		},
+		{
+			MethodName: "DeletePermissionGroup",
+			Handler:    _PermissionPanther_DeletePermissionGroup_Handler,
+		},
+		{
+			MethodName: "AddPermissionToGroup",
+			Handler:    _PermissionPanther_AddPermissionToGroup_Handler,
+		},
+		{
+			MethodName: "RemovePermissionFromGroup",
+			Handler:    _PermissionPanther_RemovePermissionFromGroup_Handler,
+		},
+		{
+			MethodName: "ListEntitiesInGroup",
+			Handler:    _PermissionPanther_ListEntitiesInGroup_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -6,16 +6,20 @@ import (
 	"time"
 
 	"github.com/danthegoodman1/PermissionPanther/crdb"
+	"github.com/danthegoodman1/PermissionPanther/errs"
 	"github.com/danthegoodman1/PermissionPanther/logger"
 	"github.com/danthegoodman1/PermissionPanther/pb"
 	"github.com/danthegoodman1/PermissionPanther/query"
-	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 )
 
 const (
 	QueryTimeout = 10 * time.Second
+)
+
+var (
+	ErrNotFound = errs.Error("not found")
 )
 
 // Finds at what recursion level a permission exists
@@ -110,12 +114,12 @@ func CheckPermissionDirect(ns, obj, permission, entity string) (bool, error) {
 			logger.Error("Error getting direct relation %+v", params)
 			return false, err
 		}
+	} else {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "check_direct",
+		}).Info()
 	}
-
-	logger.Logger.WithFields(logrus.Fields{
-		"ns":     ns,
-		"action": "check_direct",
-	}).Info()
 
 	return true, nil
 }
@@ -142,23 +146,22 @@ func GetPermissionGroups(ns, obj, permission string) ([]query.Relation, error) {
 	if err != nil {
 		logger.Error("Error getting group relations %+v", params)
 		return []query.Relation{}, err
+	} else {
+		logger.Logger.WithFields(logrus.Fields{
+			"ns":     ns,
+			"action": "check_groups",
+			"length": len(r),
+		}).Info()
 	}
-
-	logger.Logger.WithFields(logrus.Fields{
-		"ns":     ns,
-		"action": "check_groups",
-		"length": len(r),
-	}).Info()
 
 	return r, nil
 }
 
-func ListEntityPermissions(ns, entity string, permission string) (relations []*pb.Relation, err error) {
+func ListEntityPermissions(ns, entity, permission string, offset int32) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
-		logger.Error(err.Error())
 		return []*pb.Relation{}, err
 	}
 
@@ -171,20 +174,14 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 		r, err = query.New(conn).ListEntityRelations(ctx, query.ListEntityRelationsParams{
 			Ns:     ns,
 			Entity: entity,
+			Offset: offset,
 		})
 	} else {
 		r, err = query.New(conn).ListEntityRelationsWithPermission(ctx, query.ListEntityRelationsWithPermissionParams{
 			Ns:         ns,
 			Entity:     entity,
 			Permission: permission,
-		})
-	}
-
-	for _, e := range r {
-		relations = append(relations, &pb.Relation{
-			Entity:     e.Entity,
-			Permission: e.Permission,
-			Object:     e.Object,
+			Offset:     offset,
 		})
 	}
 
@@ -195,17 +192,26 @@ func ListEntityPermissions(ns, entity string, permission string) (relations []*p
 			"length":         len(r),
 			"has_permission": permission != "",
 		}).Info()
+	} else {
+		return
+	}
+
+	for _, e := range r {
+		relations = append(relations, &pb.Relation{
+			Entity:     e.Entity,
+			Permission: e.Permission,
+			Object:     e.Object,
+		})
 	}
 
 	return
 }
 
-func ListObjectPermissions(ns, object string, permission string) (relations []*pb.Relation, err error) {
+func ListObjectPermissions(ns, object, permission string, offset int32) (relations []*pb.Relation, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
-		logger.Error(err.Error())
 		return []*pb.Relation{}, err
 	}
 
@@ -218,20 +224,14 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 		r, err = query.New(conn).ListObjectRelations(ctx, query.ListObjectRelationsParams{
 			Ns:     ns,
 			Object: object,
+			Offset: offset,
 		})
 	} else {
 		r, err = query.New(conn).ListObjectRelationsWithPermission(ctx, query.ListObjectRelationsWithPermissionParams{
 			Ns:         ns,
 			Object:     object,
 			Permission: permission,
-		})
-	}
-
-	for _, e := range r {
-		relations = append(relations, &pb.Relation{
-			Entity:     e.Entity,
-			Permission: e.Permission,
-			Object:     e.Object,
+			Offset:     offset,
 		})
 	}
 
@@ -242,6 +242,16 @@ func ListObjectPermissions(ns, object string, permission string) (relations []*p
 			"length":         len(r),
 			"has_permission": permission != "",
 		}).Info()
+	} else {
+		return
+	}
+
+	for _, e := range r {
+		relations = append(relations, &pb.Relation{
+			Entity:     e.Entity,
+			Permission: e.Permission,
+			Object:     e.Object,
+		})
 	}
 
 	return
@@ -252,29 +262,27 @@ func UpsertRelation(ns, obj, permission, entity string) (done bool, err error) {
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
-		logger.Error(err.Error())
 		return false, err
 	}
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
 	defer cancelFunc()
-	err = query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
+	rows, err := query.New(conn).InsertRelation(ctx, query.InsertRelationParams{
 		Ns:         ns,
 		Permission: permission,
 		Object:     obj,
 		Entity:     entity,
 	})
 
-	if err == nil {
+	if err != nil {
+		logger.Error("Error inserting relation")
+	} else {
 		logger.Logger.WithFields(logrus.Fields{
 			"ns":     ns,
 			"action": "upsert_relation",
 		}).Info()
-	} else if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
-		// Upsert, no bill
-		return false, nil
 	}
 
-	return true, nil
+	return rows != 0, nil
 }
 
 func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {
@@ -282,7 +290,6 @@ func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {
 	defer conn.Release()
 	if err != nil {
 		logger.Error("Error acquiring pool connection")
-		logger.Error(err.Error())
 		return false, err
 	}
 	ctx, cancelFunc := context.WithTimeout(context.Background(), QueryTimeout)
@@ -295,12 +302,13 @@ func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {
 		Entity:     entity,
 	})
 
-	if err == nil && rows != 0 {
+	if err == nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"ns":     ns,
 			"action": "delete_relation",
 		}).Info()
-	} else if rows == 0 {
+	}
+	if rows == 0 {
 		return false, nil
 	}
 

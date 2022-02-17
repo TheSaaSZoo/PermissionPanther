@@ -1,4 +1,4 @@
-import { CheckPermissionInput, CheckPermissionResponse, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
+import { CheckPermissionInput, CheckPermissionResponse, GroupMembership, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb';
 export default class PermissionPanther {
     keyID: string;
@@ -24,8 +24,43 @@ export default class PermissionPanther {
      */
     SetPermission(input: Relationship): Promise<boolean>;
     /**
+     * Create a Permission Group. Returns whether it was created.
+     * @param initialPermissions The list of initial permissions to add to the group
+     */
+    CreatePermissionGroup(groupName: string, initialPermissions?: string[]): Promise<boolean>;
+    /**
+     * @param initialPermissions The list of initial permissions to add to the group
+     * Returns whether it was created.
+     * @param propagate Whether after deleting the group, every member of this group will have their permissions removed that were included in the group. This has major performance implications for large groups.
+     * Delete a Permission Group. Returns whether the group was successfully deleted.
+     */
+    DeletePermissionGroup(groupName: string, propagate: boolean): Promise<boolean>;
+    /**
+     * Adds a permission to a group. Returns whether the permission was added.
+     * @param propagate Whether after deleting the group, every member of this group will have their permissions removed that were included in the group. This has major performance implications for large groups.
+     */
+    AddPermissionToGroup(groupName: string, permission: string, propagate: boolean): Promise<boolean>;
+    /**
+     * Removes a permission from a group. Returns whether the permission was removed.
+     * @param propagate Whether after deleting the group, every member of this group will have their permissions removed that were included in the group. This has major performance implications for large groups.
+     */
+    RemovePermissionFromGroup(groupName: string, permission: string, propagate: boolean): Promise<boolean>;
+    /**
+     * Lists entities in a permission group.
+     * @param entityOffset If provided, the pagination will continue from this entity
+     */
+    ListEntitiesInPermissionGroup(groupName: string, entityOffset?: string): Promise<GroupMembership[]>;
+    /**
      * Removes a permission.
      * Returns whether the relation was deleted (existed).
      */
     RemovePermission(input: Relationship): Promise<unknown>;
+    /**
+     * Give all permissions defined within this group, if it exists
+     */
+    PermissionGroup(groupName: string): string;
+    /**
+     * Inherit relationships from another permission on an object
+     */
+    Inherit(permission: string, object: string): string;
 }

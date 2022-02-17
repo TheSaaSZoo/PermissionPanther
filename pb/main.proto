@@ -19,6 +19,20 @@ service PermissionPanther {
 
   // Will remove a permission for an entity on an object. If the permission does not exist it is a no-op.
   rpc RemovePermission (RelationReq) returns (Applied);
+
+  // Creates a permission group if it does not exist
+  rpc CreatePermissionGroup (CreatePermissionGroupReq) returns (Applied);
+
+  // Deletes a permission group if it exists
+  rpc DeletePermissionGroup (DeletePermissionGroupReq) returns (Applied);
+
+  // Adds one or more permissions a to group if it exists, and the permissions are not already in the group
+  rpc AddPermissionToGroup (ModifyPermissionGroupReq) returns (Applied);
+
+  // Removes one or more permissions to a group if it exists, and the permissions are in the group
+  rpc RemovePermissionFromGroup (ModifyPermissionGroupReq) returns (Applied);
+
+  rpc ListEntitiesInGroup (ListPermissionGroupReq) returns (ListPermissionGroupRes);
 }
 
 message Applied {
