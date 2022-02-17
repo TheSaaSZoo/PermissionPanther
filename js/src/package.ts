@@ -70,6 +70,9 @@ export default class PermissionPanther {
       if (input.permission) {
         req.setPermission(input.permission)
       }
+      if (input.offset) {
+        req.setOffset(input.offset)
+      }
       this.client.listEntityRelations(req, (err, res) => {
         if (err) {
           switch (err.code) {
@@ -106,6 +109,9 @@ export default class PermissionPanther {
       req.setObject(input.object)
       if (input.permission) {
         req.setPermission(input.permission)
+      }
+      if (input.offset) {
+        req.setOffset(input.offset)
       }
       this.client.listObjectRelations(req, (err, res) => {
         if (err) {
