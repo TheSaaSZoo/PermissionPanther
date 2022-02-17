@@ -1,6 +1,8 @@
 # PermissionPanther
 Permissions for killer apps
 
+https://permissionpanther.com
+
 ## What is Permission Panther?
 
 Permission Panther is a simple and highly scalable Relationship Based Access Control (ReBAC) service.
