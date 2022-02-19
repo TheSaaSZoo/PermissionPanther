@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js'
 
 import { CheckPermissionInput, CheckPermissionResponse, GroupMembership, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb'
-import { CheckDirectReq, CreatePermissionGroupReq, DeletePermissionGroupReq, ListEntityRelationsReq, ListObjectRelationsReq, ListPermissionGroupReq, ModifyPermissionGroupReq, PermissionGroupMembership, RelationReq } from './pb/permissions_pb'
+import { CheckDirectReq, CreatePermissionGroupReq, DeletePermissionGroupReq, ListEntityRelationsReq, ListObjectRelationsReq, ListPermissionGroupReq, ModifyPermissionGroupReq, RelationReq } from './pb/permissions_pb'
 import { PermissionDenied } from "./errors";
 
 export default class PermissionPanther {

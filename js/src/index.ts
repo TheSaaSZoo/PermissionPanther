@@ -1,3 +1,3 @@
-import PermissionPanther from "./package";
+import PermissionPantherClient from "./package";
 
-export {PermissionPanther}
+export {PermissionPantherClient}
