@@ -1,6 +1,6 @@
 import * as grpc from '@grpc/grpc-js'
 
-import { CheckPermissionInput, CheckPermissionResponse, GroupMembership, ListEntityRelationsInput, ListObjectRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
+import { CheckPermissionInput, CheckPermissionResponse, GroupMembership, ListRelationsInput, ListRelationsResponse, PantherConfig, Relationship } from "./types";
 import { PermissionPantherClient } from './pb/main_grpc_pb'
 import { CheckDirectReq, CreatePermissionGroupReq, DeletePermissionGroupReq, ListEntityRelationsReq, ListObjectRelationsReq, ListPermissionGroupReq, ModifyPermissionGroupReq, RelationReq } from './pb/permissions_pb'
 import { PermissionDenied } from "./errors";
@@ -24,18 +24,18 @@ export default class PermissionPanther {
   /**
    * Checks whether an entity has a permission on an object. Optionally specify explicity deny permission, and group inheritance checks.
    */
-  async CheckPermission(input: CheckPermissionInput): Promise<CheckPermissionResponse> {
+  async CheckPermission(entity: string, permission: string, object: string, options?: CheckPermissionInput): Promise<CheckPermissionResponse> {
     return new Promise((resolve, reject) => {
       const req = new CheckDirectReq()
       req.setKeyid(this.keyID)
       req.setKeysecret(this.keySecret)
-      req.setEntity(input.entity)
-      req.setPermission(input.permission)
-      req.setObject(input.object)
-      if (input.denyPermission) {
-        req.setDenypermission(input.denyPermission)
+      req.setEntity(entity)
+      req.setPermission(permission)
+      req.setObject(object)
+      if (options?.denyPermission) {
+        req.setDenypermission(options.denyPermission)
       }
-      if (input.inheritance === false) {
+      if (options?.inheritance === false) {
         req.setRecursive(false)
       } else {
         req.setRecursive(true)
@@ -61,17 +61,17 @@ export default class PermissionPanther {
   /**
    * Lists an entity's relations to find what objects they have permission on. Optionally specify a `permission` to look for objects that the entity has a specific permission on.
    */
-  async ListEntityRelations(input: ListEntityRelationsInput): Promise<ListRelationsResponse> {
+  async ListEntityRelations(entity: string, options?: ListRelationsInput): Promise<ListRelationsResponse> {
     return new Promise((resolve, reject) => {
       const req = new ListEntityRelationsReq()
       req.setKeyid(this.keyID)
       req.setKeysecret(this.keySecret)
-      req.setEntity(input.entity)
-      if (input.permission) {
-        req.setPermission(input.permission)
+      req.setEntity(entity)
+      if (options?.permission) {
+        req.setPermission(options.permission)
       }
-      if (input.offset) {
-        req.setOffset(input.offset)
+      if (options?.offset) {
+        req.setOffset(options.offset)
       }
       this.client.listEntityRelations(req, (err, res) => {
         if (err) {
@@ -100,17 +100,17 @@ export default class PermissionPanther {
   /**
    * Lists an object's relations to find what entities have permission on it. Optionally specify a `permission` to look for entities who have a specific permission on the object.
    */
-  async ListObjectRelations(input: ListObjectRelationsInput): Promise<ListRelationsResponse> {
+  async ListObjectRelations(object: string, options?: ListRelationsInput): Promise<ListRelationsResponse> {
     return new Promise((resolve, reject) => {
       const req = new ListObjectRelationsReq()
       req.setKeyid(this.keyID)
       req.setKeysecret(this.keySecret)
-      req.setObject(input.object)
-      if (input.permission) {
-        req.setPermission(input.permission)
+      req.setObject(object)
+      if (options?.permission) {
+        req.setPermission(options.permission)
       }
-      if (input.offset) {
-        req.setOffset(input.offset)
+      if (options?.offset) {
+        req.setOffset(options.offset)
       }
       this.client.listObjectRelations(req, (err, res) => {
         if (err) {
@@ -140,14 +140,14 @@ export default class PermissionPanther {
    * Sets a permission.
    * Returns whether the relation was created (did not exist).
    */
-  async SetPermission(input: Relationship): Promise<boolean> {
+  async SetPermission(entity: string, permission: string, object: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const req = new RelationReq()
-      req.setEntity(input.entity)
+      req.setEntity(entity)
       req.setKeyid(this.keyID)
       req.setKeysecret(this.keySecret)
-      req.setObject(input.object)
-      req.setPermission(input.permission)
+      req.setObject(object)
+      req.setPermission(permission)
       this.client.setPermission(req, (err, res) => {
         if (err) {
           switch (err.code) {
@@ -302,14 +302,14 @@ export default class PermissionPanther {
    * Removes a permission.
    * Returns whether the relation was deleted (existed).
    */
-  async RemovePermission(input: Relationship) {
+  async RemovePermission(entity: string, permission: string, object: string) {
     return new Promise((resolve, reject) => {
       const req = new RelationReq()
-      req.setEntity(input.entity)
+      req.setEntity(entity)
       req.setKeyid(this.keyID)
       req.setKeysecret(this.keySecret)
-      req.setObject(input.object)
-      req.setPermission(input.permission)
+      req.setObject(object)
+      req.setPermission(permission)
       this.client.removePermission(req, (err, res) => {
         if (err) {
           switch (err.code) {
