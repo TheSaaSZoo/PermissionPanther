@@ -257,7 +257,7 @@ func ListObjectPermissions(ns, object, permission string, offset int32) (relatio
 	return
 }
 
-func UpsertRelation(ns, obj, permission, entity string) (done bool, err error) {
+func UpsertRelation(ns, obj, permission, entity string) (applied bool, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -277,15 +277,16 @@ func UpsertRelation(ns, obj, permission, entity string) (done bool, err error) {
 		logger.Error("Error inserting relation")
 	} else {
 		logger.Logger.WithFields(logrus.Fields{
-			"ns":     ns,
-			"action": "upsert_relation",
+			"ns":      ns,
+			"action":  "upsert_relation",
+			"applied": rows != 0,
 		}).Info()
 	}
 
 	return rows != 0, nil
 }
 
-func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {
+func DeleteRelation(ns, obj, permission, entity string) (applied bool, err error) {
 	conn, err := crdb.PGPool.Acquire(context.Background())
 	defer conn.Release()
 	if err != nil {
@@ -304,8 +305,9 @@ func DeleteRelation(ns, obj, permission, entity string) (done bool, err error) {
 
 	if err == nil {
 		logger.Logger.WithFields(logrus.Fields{
-			"ns":     ns,
-			"action": "delete_relation",
+			"ns":      ns,
+			"action":  "delete_relation",
+			"applied": rows != 0,
 		}).Info()
 	}
 	if rows == 0 {
