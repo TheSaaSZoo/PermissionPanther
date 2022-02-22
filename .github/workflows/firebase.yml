@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build Docusaurus
-        working-directory: docs_web
+        working-directory: ./docs_web
         run: npm run build
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
