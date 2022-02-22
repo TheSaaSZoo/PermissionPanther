@@ -4,10 +4,13 @@ on:
     branches:
       - master
 jobs:
-  Explore-GitHub-Actions:
+  push_master:
     runs-on: ubuntu-latest
     steps:
       - name: Build Docusaurus
         run: cd docs_web && npm run build
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          channelId: live
