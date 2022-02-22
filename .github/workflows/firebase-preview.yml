@@ -15,8 +15,9 @@ jobs:
       - name: Build Docusaurus
         working-directory: docs_web
         run: npm run build
-      - name: Deploy to Firebase Hosting
+      - name: Deploy (Preview) to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SA }}"
           expires: 30d
+          repoToken: "${{secrets.GITHUB_TOKEN}}"
