@@ -5,11 +5,11 @@ on:
       - main
       - add-docs-website
 jobs:
-  push_master:
+  Build-And-Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Build Docusaurus
-        run: cd docs_web && npm run build
+        run: ls && cd docs_web && npm run build
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
