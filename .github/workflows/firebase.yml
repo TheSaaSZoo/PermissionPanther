@@ -1,0 +1,13 @@
+name: Deploy Docs Website
+on:
+  push:
+    branches:
+      - master
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Docusaurus
+        run: cd docs_web && npm run buil\
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
