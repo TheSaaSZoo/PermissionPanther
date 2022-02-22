@@ -2,7 +2,8 @@ name: Deploy Docs Website
 on:
   push:
     branches:
-      - master
+      - main
+      - add-docs-website
 jobs:
   push_master:
     runs-on: ubuntu-latest
