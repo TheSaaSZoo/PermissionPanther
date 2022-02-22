@@ -20,4 +20,4 @@ jobs:
         with:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SA }}"
           expires: 30d
-          repoToken: "${{secrets.GITHUB_TOKEN}}"
+          channelId: 'pr-${{ github.event.number }}-${{ github.event.pull_request.head.ref }}'
