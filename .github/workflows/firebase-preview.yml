@@ -1,8 +1,6 @@
 name: Deploy Docs Website
 on:
-  push:
-    branches:
-      - main
+  push
 jobs:
   Build-And-Deploy:
     runs-on: ubuntu-latest
@@ -21,4 +19,4 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SA }}"
-          channelId: live
+          expires: 30d
