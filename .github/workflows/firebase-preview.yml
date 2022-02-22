@@ -1,6 +1,6 @@
 name: Deploy Docs Website
 on:
-  push
+  pull_request
 jobs:
   Build-And-Deploy:
     runs-on: ubuntu-latest
@@ -21,3 +21,4 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SA }}"
           expires: 30d
           channelId: 'pr-${{ github.event.number }}-${{ github.event.pull_request.head.ref }}'
+          repoToken: "${{secrets.GITHUB_TOKEN}}"
