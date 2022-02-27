@@ -15,6 +15,8 @@ If you have a consistent URL pattern, middleware is the most convenient place to
 
 Lets say we have the following API that allows users to share files with their friends and colleagues.
 
+We can create middleware, that based on a predictable URL scheme, can check whether a user has a given permission on an object in just a few lines of code:
+
 ```js
 const {PermissionPantherClient} = require('permissionpanther')
 const client = new PermissionPanther('UXVI4...', 'vsfQE...')
@@ -35,7 +37,15 @@ async function CheckPermissionMiddleware(req, res, next) {
 }
 
 app.get('/view/{objectID}', CheckPermissionMiddleware, async (req, res) => {
-  // At this point we know they have permissions to `view` the file.
+  // A user can pull the file content, and any associated metadata
+})
+
+app.post('/comment/{objectID}', CheckPermissionMiddleware, async (req, res) => {
+  // A user can create a new comment on the file
+})
+
+app.delete('/delete/{objectID}', CheckPermissionMiddleware, async (req, res) => {
+  // A user can delete the file
 })
 
 ```
