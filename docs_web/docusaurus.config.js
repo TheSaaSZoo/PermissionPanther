@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Permission Panther',
-  tagline: 'Permission for Killer Apps',
+  tagline: 'Permissions For Killer Apps',
   url: 'https://permissionpanther.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',

@@ -4,12 +4,11 @@ import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
+    title: 'Permission Groups and Inheritance',
     Svg: require('../../static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Repeating yourself sucks. Use <a href="/docs/getting-started/concepts#permission-groups">Permission Groups</a> and <a href="/docs/getting-started/concepts#inheritance-and-recursion">Inheritance</a> to make integration a breeze.
       </>
     ),
   },
@@ -18,18 +17,16 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Spend less time on permissions, and more time building your awesome app.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'For The Love Of Open Source',
     Svg: require('../../static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Permission Panther is Open Source, because everyone should know how their apps work.
       </>
     ),
   },
@@ -42,7 +39,7 @@ function Feature({Svg, title, description}) {
         <Svg className={styles.featureSvg} alt={title} />
       </div>
       <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
+        <h3 className={clsx(styles.feature__title)}>{title}</h3>
         <p>{description}</p>
       </div>
     </div>

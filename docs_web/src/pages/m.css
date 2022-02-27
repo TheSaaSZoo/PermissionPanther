@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500&family=Signika:wght@300;400;500;600;700&display=swap');
+
+.hero__title {
+  font-family: 'Signika', sans-serif;
+}
+
+.hero__subtitle {
+  font-family: 'Signika', sans-serif;
+}
+
+p {
+  font-family: 'Mulish', sans-serif;
+  font-weight: 500;
+}
+
+h1 {
+  font-family: 'Signika', sans-serif;
+}
+
+h2 {
+  font-family: 'Signika', sans-serif;
+}

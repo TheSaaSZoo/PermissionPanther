@@ -9,3 +9,7 @@
   height: 200px;
   width: 200px;
 }
+
+.feature__title {
+  font-family: 'Signika', sans-serif;
+}
