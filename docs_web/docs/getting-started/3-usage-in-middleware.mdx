@@ -1,0 +1,41 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Usage in Middleware
+
+Permission Panther was designed to be implemented directly in your route handlers, or in middleware.
+
+If you have a consistent URL pattern, middleware is the most convenient place to place your checks.
+
+## Example ExpressJS Middleware
+
+Lets say we have the following API that allows users to share files with their friends and colleagues.
+
+```js
+const {PermissionPantherClient} = require('permissionpanther')
+const client = new PermissionPanther('UXVI4...', 'vsfQE...')
+
+const app = require('express')()
+
+async function CheckPermissionMiddleware(req, res, next) {
+  // Based on the URL scheme check permissions
+  const action = req.originalURL.split('/')[1]
+  const check = await client.CheckPermission(req.user.id, action, req.params.objectID)
+  if !check.valid {
+    // They do not have permission to perform this action
+    return res.sendStatus(403)
+  } else {
+    // They have permission, continue
+    next()
+  }
+}
+
+app.get('/view/{objectID}', CheckPermissionMiddleware, async (req, res) => {
+  // At this point we know they have permissions to `view` the file.
+})
+
+```
