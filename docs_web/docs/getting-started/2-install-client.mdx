@@ -69,9 +69,15 @@ func hellowlrld() {
 <TabItem value="js" label="NodeJS/TypeScript">
 
 ```js
-function helloWorld() {
-  console.log('Hello, world!');
-}
+await client.SetPermission("user_a", "READ", "my awesome file")
+
+const read = await client.CheckPermission("user_a", "READ", "my awesome file")
+console.log(read.valid)
+// true
+
+const del = await client.CheckPermission("evil user", "DELETE", "my awesome file")
+console.log(del.valid)
+// false
 ```
 
 </TabItem>
