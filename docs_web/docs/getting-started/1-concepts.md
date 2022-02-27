@@ -46,7 +46,7 @@ First, we want to ensure that users are members of a given organization with the
 await client.SetPermission("user_a", "MEMBER", "org_a")
 ```
 
-Next, we want to make an an **Inheritance** relation that permits anyone who is a `MEMBER` of the owning organization can `VIEW` a given repository.
+Next, we want to make an an **Inheritance** relation that permits anyone who is a `MEMBER` of the owning organization can `VIEW` a given repository. We can do this by using a special entity that will define this relation as an **Inheritance** relation.
 
 ```js
 await client.SetPermission(client.Inherit("MEMBER", "org_a"), "VIEW", "repo_a")
