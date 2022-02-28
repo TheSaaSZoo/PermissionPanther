@@ -30,6 +30,19 @@ For example, if we wanted to give the user `example_user` permission to `READ` t
 ("example_user", "READ", "my_awesome_file")
 ```
 
+In Permission Panther, using the NodeJS client library, that would look like:
+
+```js
+await client.SetPermission("example_user", "READ", "my_awesome_file")
+```
+
+Now we can check it like:
+
+```js
+const check = await client.CheckPermission("example_user", "READ", "my_awesome_file")
+console.log(check.valid) // true
+```
+
 A lack of a relation is an implicit denial, so you can be assured that users only have access if we have declared it so.
 
 ## Inheritance and Recursion
