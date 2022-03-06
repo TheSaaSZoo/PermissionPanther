@@ -24,7 +24,20 @@ Relations link an `entity` to an `object` by a `permission`. This is the basic b
 (entity, permission, object)
 ```
 
-For example, if we wanted to give the user `example_user` permission to `READ` the object `my_awesome_file`, that might look like:
+### Entity
+
+The `entity` is the thing you are giving a `permission` to, usually a user or service account, but could also be a sentient doughnut if that's what you're working with. You can put any string in the `entity` field that starts with a letter less than ASCII code `~`, since that is how we encode inheritance.
+
+### Permission
+
+A `permission` is the action that you are permitting (or explicitly denying) on an `object`. For example a `permission` might be `READ`, `DELETE`, `INVITE`, `UPLOAD`, etc. You can put any string in the `permission` field except for string that start with `$`, since that is how we encode permission groups.
+### Object
+
+An `object` is what you give permission to. This might be a project namespace, a git repo, a physical door, or a row in a database.
+
+
+
+For example, if we wanted to give the user `example_user` permission to `READ` the a file with the ID `my_awesome_file`, that might look like:
 
 ```
 ("example_user", "READ", "my_awesome_file")
@@ -36,7 +49,7 @@ In Permission Panther, using the NodeJS client library, that would look like:
 await client.SetPermission("example_user", "READ", "my_awesome_file")
 ```
 
-Now we can check it like:
+Now we can check it:
 
 ```js
 const check = await client.CheckPermission("example_user", "READ", "my_awesome_file")
