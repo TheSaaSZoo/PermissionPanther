@@ -89,6 +89,7 @@ Now, we can check if a given user has `VIEW` on a repository:
 
 ```js
 await client.CheckPermission("user_a", "VIEW", "repo_a")
+// {valid: true}
 ```
 
 :::caution
@@ -133,10 +134,12 @@ If a user wants to create a pull request on the repository, we can now check the
 
 ```js
 await client.CheckPermission("user_a", "CREATE_PR", "repo_a")
+// {valid: true}
 ```
 
 We can also check whether the user belongs to this permission group:
 
 ```js
 await client.CheckPermission("user_a", client.PermissionGroup("MAINTAINER"), "repo_a")
+// {valid: true}
 ```
