@@ -51,7 +51,7 @@ For example, we might give a user access to view a private GitHub repo with the 
 
 ## **ReBAC Enables Functionality Not Found In Other Authorization Systems**
 
-Some of the most important features are **inheritance, fine-grained permission, and future-proofing.**
+Some of the most important features are **inheritance, fine-grained permissions, permission groups, and future-proofing.**
 
 ### **Inheritance**
 
@@ -73,9 +73,17 @@ For example, when branch protections are enabled for the `main` branch, by defau
 
 The object `my_repo#branch#main` scopes down to a specific branch in a specific repo.
 
-This also means that permissions do not inherit other permissions. For example, if you want to combine `read` and `write` access to an `editor` and `owner` role, then your application needs to know the order of permissions to check (first check if a user has `read`, if not check whether they have `commentor`, if not check whether they have `editor`, if not check whether they have `owner`). Complex implementations of ReBAC include permission based inheritance as well, but this comes at the expense of complex schema crafting.
+### Permission Inheritance
 
-### Future-Proofing
+RBAC has no natural sense of permission inheritance. For example, if you want to combine `read` and `write` access to an `editor` and `owner` role, then your application needs to know the order of permissions to check (first check if a user has `read`, if not check whether they have `commentor`, if not check whether they have `editor`, if not check whether they have `owner`).
+
+Complex implementations of ReBAC include permission based inheritance as well, but this comes at the expense of complex schema crafting.
+
+A simpler approach is to expand a special permission into multiple, [this is how Permission Panther approaches this requirement, with "Permission Groups"](/docs/getting-started/concepts#permission-groups) so that we don't need complex schemas for simple expressions.
+
+One might consider this a "role", however an inline RBAC solution could require a preposterous amount of changes to a code base to add another permission or role. By simply modifying the permissions that a Permission Group expands to, without a single code change we can enable existing Permission Groups to inherit new permissions for recently added features, while having the flexibility to require new permissions for them as well.
+
+### Future-Proofing, sort of...
 
 Since the three components, `entity`, `permission`, and `object` can be any arbitrary data, this gives us the functionality to add future features without making any changes to our authorization system.
 
@@ -83,23 +91,25 @@ Let’s say that when GitHub decided to add their new Codespaces, they had previ
 
 With ReBAC, access controls for Codespaces are as simple as another relation tuple. Imagine you have a Codespace, and you want to invite one of your colleagues to code with you, but not give them access to the terminal. This can be expressed with the relation tuple (`colleague_user_id`, `code`, `codespace_id`). By specifying the `code` permission, we only give them access to edit code. If we want to give them access to the terminal later, we can create another tuple where the permission is `terminal`.
 
+What if we wanted to enable all maintainers to create Codespaces while both having the granularity of the `create_codespace` permission, but without having to find all maintainers and update their permissions? A simple Permission Group of `maintainer` mean that all we have to do is add the `create_codespace` permission to the group.
+
 ## **To understand the needs for ReBAC, let’s look at an example we are all intimately familiar with: Google Drive.**
 
-Say you’ve got an English paper to write with a group of classmates. You create the Google Doc, and invite your classmates to work on it with you. Because this Google Doc was created by you, we initially create the relation (`you`, `owner`, `your_google_doc`) to establish you as the owner.
+Say you’ve got an English paper to write with a group of classmates. You create the Google Doc, and invite your classmates to work on it with you. Because this Google Doc was created by you, we initially create the relation (`you`, `#owner`, `your_google_doc`) to establish you as the owner. The `#owner` Permission Group gives you access to not only `read` and `write`, but to `delete`, `invite`, and `move` the file.
 
-Now we send out a few invites that look like (`{group member email}`, `editor`, `your_google_doc`). This gives your group members the ability to edit that Google Doc.
+Now we send out a few invites that look like (`{group member email}`, `#editor`, `your_google_doc`). This gives your group members the ability to edit that Google Doc. Now they can `read`, `write`, and `comment` through the `#editor` Permission Group.
 
-The paper is now due, and your professor has asked every group to pair with another to peer review everyone’s papers. Rather than print multiple copies of each paper to give to reviewers like it’s 2003, you instead invite those reviewers to have the `commenter` permission, like (`{reviewer}`, `commenter`, `your_google_doc`).
+The paper is now due, and your professor has asked every group to pair with another to peer review everyone’s papers. Rather than print multiple copies of each paper to give to reviewers like it’s 2003, you instead invite those reviewers to have the `#commenter` permission group, like (`{reviewer}`, `#commenter`, `your_google_doc`). The `#commenter` Permission Group might expand to `read` and `comment`, since there is no reason they need to `write`.
 
 After grading, your professor decides that these will be your groups for all assigments for the rest of the semester. Since you are going to be getting a lot of assignments, you now create a folder for all of your assignments, and give your group members permission to edit the folder, thus the permission to edit everything inside.
 
-This is called **inheritance.** In order to do this with relations, let’s create the relation between all your group mates and that folder: (`{group member email}`, `editor`, `your_folder`). Now every time a new item is created, or put in that folder, we only have to make the relation (`~editor#your_folder`, `editor`, `{new_file}`).
+This is where we can deploy **inheritance.** In order to do this with relations, let’s create the relation between all your group mates and that folder: (`{group member email}`, `#editor`, `your_folder`). Now every time a new item is created, or put in that folder, **we only have to make the relation** (`~editor#your_folder`, `#editor`, `{new_file}`).
 
-In this relation, `~editor#your_folder` is a new entity format that means **“anyone who has the `editor` permission on the object `your_folder`”**. This relation now allows all new files to inherit previously established editor permission grants from the folder!
+In this relation, `~editor#your_folder` is a new entity format that means **“anyone who has the `#editor` permission on the object `your_folder`”**. This relation now allows all new files to inherit previously established editor permission grants from the folder!
 
-Since you will be given a random peer review group for every assignment, you will still be leveraging the relations to individual files for `commenter` access, rather than the entire folder.
+Since you will be given a random peer review group for every assignment, you will still be leveraging the relations to individual files for `#commenter` access, rather than the entire folder.
 
-Yes, your admin panel for your Raspberry Pi temperature sensor can work just fine with `viewer` and `admin` privileges (the object you are giving permission for is implicitly the temperature sensor), but simple RBAC does not suffice for platforms like Google Drive. If you are an `editor`, you have to be an editor of **something**. We need to have **relations** between our entities, permission, and objects.
+Yes, the admin panel for your Raspberry Pi temperature sensor can work just fine with `viewer` and `admin` privileges (the object you are giving permission for is implicitly the temperature sensor), but simple RBAC does not suffice for platforms like Google Drive. If you are an `#editor`, you have to be an editor of **something**. We need to have **relations** between our entities, permission, and objects.
 
 This is a super simple example, but ReBAC usage gets far more complex, but it can also get even more simple:
 
@@ -115,10 +125,10 @@ To find all people you follow, you would query for all relations that have `enti
 
 **In summary, ReBAC includes important features over RBAC:**
 
-- **Inheritance** - “Who ever has the editor permission of this folder, also has the editor permission for all files inside that folder”
+- **Inheritance** - “Who ever has the `editor` permission of this folder, also has the `editor` permission for all files inside that folder”, or "Who ever is an `editor` can `read`, `write`, etc."
 - **Fine-grained Scoping and Future-proofing** - Since an `object` can be anything, we can reduce permissions down to what ever access level we want, or anything we want, without changing the way our code works.
 
-## The problem with existing ReBAC solutions: they’re grossly complex
+## The problem with existing ReBAC solutions: they’re overly complex
 
 There are a few solutions out there the solve the ReBAC problem: SpiceDB, Ory Keto, Cerbos, and Warrant being some of them. I hate all of them in their own special way.
 
@@ -132,17 +142,22 @@ With Warrant, you still need to define a schema (albeit far simpler than SpiceDB
 
 With Cerbos you still also need to define a complex schema, and are forced to host it yourself!
 
-## You Never Saw This Coming! Introducing Permission Panther: Permissions For Killer Apps/Permissions Platform For Developers Who Want To Spend Less Time On Permissions
+Existing solutions "solve" the problem, but in such a way that the solution is inaccessible for those who don't already understand ReBAC. They provide a solution to ReBAC experts who don't want to continuously re-write ReBAC solutions, but miss the mark on making it available to the greater developer audience, the digital nomad who needs a solution in the next 15 minutes, or the CS major freshman.
 
-I’m super excited to announce a love-letter to authroization of a project, Permission Panther.
+
+## Introducing Permission Panther: The Permissions Platform For Developers Who Want To Spend Less Time On Permissions
+
+_You Never Saw This Coming..._
+
+I’m super excited to announce a love-letter to authroization of a project, Permission Panther - The Permissions Platform For Killer Apps.
 
 The goal of Permission Panther was super simple:
 
 1. Build ReBAC in such a way that any developer can implement it in minutes, not days
-2. ReBAC without schemas, while maintaining inheritance
+2. ReBAC without schemas, while enabling inheritance for permission and objects
 3. The ability to list relations in both directions: What objects does an entity have permissions on? And what entities have permissions on this object?
-4. Open source! Host it yourself with just a single binary/container, and a few environment variables!
-5. A managed offering with pricing that any project can afford (that means a really generous free tier!)
+4. Open source, host it yourself with just a single binary/container, and a few environment variables!
+5. A managed offering with pricing that any project can afford (that means really generous free usage)
 6. A really, really small codebase - only include required functionality and reduce the opportunity for bugs
 
 **Some features I have on the backburner:**
