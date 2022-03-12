@@ -24,11 +24,16 @@ const main_grpc_pb_1 = require("./pb/main_grpc_pb");
 const permissions_pb_1 = require("./pb/permissions_pb");
 const errors_1 = require("./errors");
 class PermissionPanther {
-    constructor(config) {
-        this.keyID = config.keyID;
-        this.keySecret = config.keySecret;
-        this.target = config.endpoint;
-        if (config.insecure === true) {
+    constructor(keyId, keySecret, config) {
+        this.keyID = keyId;
+        this.keySecret = keySecret;
+        if (config === null || config === void 0 ? void 0 : config.endpoint) {
+            this.target = config.endpoint;
+        }
+        else {
+            this.target = 'https://api.permissionpanther.com';
+        }
+        if ((config === null || config === void 0 ? void 0 : config.insecure) === true) {
             this.client = new main_grpc_pb_1.PermissionPantherClient(this.target, grpc.credentials.createInsecure());
         }
         else {

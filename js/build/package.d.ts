@@ -5,7 +5,7 @@ export default class PermissionPanther {
     keySecret: string;
     target: string;
     client: PermissionPantherClient;
-    constructor(config: PantherConfig);
+    constructor(keyId: string, keySecret: string, config?: PantherConfig);
     /**
      * Checks whether an entity has a permission on an object. Optionally specify explicity deny permission, and group inheritance checks.
      */

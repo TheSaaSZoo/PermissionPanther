@@ -1,6 +1,4 @@
 export interface PantherConfig {
-    keyID: string;
-    keySecret: string;
     endpoint: string;
     insecure?: boolean;
 }

@@ -10,11 +10,15 @@ export default class PermissionPanther {
   keySecret: string
   target: string
   client: PermissionPantherClient
-  constructor(config: PantherConfig) {
-    this.keyID = config.keyID
-    this.keySecret = config.keySecret
-    this.target = config.endpoint
-    if (config.insecure === true) {
+  constructor(keyId: string, keySecret: string, config?: PantherConfig) {
+    this.keyID = keyId
+    this.keySecret = keySecret
+    if (config?.endpoint) {
+      this.target = config.endpoint
+    } else {
+      this.target = 'https://api.permissionpanther.com'
+    }
+    if (config?.insecure === true) {
       this.client = new PermissionPantherClient(this.target, grpc.credentials.createInsecure())
     } else {
       this.client = new PermissionPantherClient(this.target, grpc.credentials.createSsl())
