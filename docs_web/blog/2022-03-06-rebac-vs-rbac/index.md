@@ -111,7 +111,7 @@ Don't let you code look like this when it could look like:
 - Does the user have `VIEW`? If not...
 - They don't have access
 
-**That's it, no matter how many Permission Groups/Roles or unique permissions exist, you can always check the same permission.**
+**That's it, no matter how many Permission Groups/Roles or unique permissions exist, you can always check the same permission for an action.**
 
 ### Future-Proofing, sort of...
 
