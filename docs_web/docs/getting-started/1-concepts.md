@@ -12,9 +12,21 @@ Permission Panther keeps permissions extremely simple, but there are a few thing
 
 For example someone might be a 'user', 'admin', or 'owner'.
 
-As you can see, these simple roles are overly permissive and don't allow for substantial control over what users have access to.
+RBAC has many limits:
+
+1. It doesn’t scale
+2. Roles are too permissive and don’t allow for fine-grained control
+3. Users and Roles are implicit, which constrains available use cases
 
 **ReBAC**, or Relationship-Based Access Control is a method of authorizing users by what permissions they have on an individual object. This is done with [Relations](#relations) (see below).
+
+ReBAC has many advantages over RBAC:
+
+- **Inheritance** - “Who ever has the `editor` permission of this folder, also has the `editor` permission for all files inside that folder”, or "Who ever is an `editor` can `read`, `write`, etc."
+- **Fine-grained scoping and future-proofing** - Since an `object` can be anything, we can reduce permissions down to what ever access level we want, or anything we want, without changing the way our code works.
+- **Always check for the same permission** - If you are checking if someone can view something, always check for the `view` permission. No more checking lots of potential roles and conditions that could change over time.
+
+Check out [this blog post](/blog/rbac-vs-rebac) for more details about how RBAC and ReBAC differ.
 
 ## Relations
 
