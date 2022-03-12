@@ -160,7 +160,7 @@ The goal of Permission Panther was super simple:
 5. A managed offering with pricing that any project can afford (that means really generous free usage)
 6. A really, really small codebase - only include required functionality and reduce the opportunity for bugs
 
-**Some features I have on the backburner:**
+**Some Feature Coming Soon:**
 
 - Relation TTLs - automatically expire a relation after a certain amount of time. Useful if you want to give support agents temporary access to customer data, or if you only want certain personnel to have access to a given part of a building for the day.
 - Wildcard support for entities, permissions, and objects - functionality is done and tested, just not exposed as I am still exploring how developers might want to access this, balancing performance costs and under-opinionating systems
