@@ -25,6 +25,7 @@ ReBAC has many advantages over RBAC:
 - **Inheritance** - “Who ever has the `editor` permission of this folder, also has the `editor` permission for all files inside that folder”, or "Who ever is an `editor` can `read`, `write`, etc."
 - **Fine-grained scoping and future-proofing** - Since an `object` can be anything, we can reduce permissions down to what ever access level we want, or anything we want, without changing the way our code works.
 - **Always check for the same permission** - If you are checking if someone can view something, always check for the `view` permission. No more checking lots of potential roles and conditions that could change over time.
+- **Everything RBAC can do, and more** - With Permission Groups, you can define roles that inherit a set of permissions. Now you have all the features of RBAC, with so much more, without having to check multiple roles for a certain action.
 
 Check out [this blog post](/blog/rbac-vs-rebac) for more details about how RBAC and ReBAC differ.
 
@@ -116,11 +117,31 @@ Each recursion of an inheritance check should take (in the common case), 1-3ms. 
 
 ## Permission Groups
 
-Sometimes individual permissions are too specific, and you might want to give a user a set of permissions instead.
+Sometimes individual permissions are too specific, and you might want to give a user a set of permissions instead, or a "group". This is where ReBAC inherits the main appeal of RBAC.
 
 For example, what if we wanted to give a `MAINTAINER` permission to all repositories that allowed them to `VIEW`, `WRITE`, `CREATE_PR`, `APPROVE_PR`, and more?
 
 Rather than making many inheritance relations for each permission and repository, we can define a [Permission Group](#permission-groups) that includes multiple permissions under one.
+
+Nobody wants to write code that looks like:
+
+- Are they a `VIEWER`? If not...
+- Are they a `MAINTAINER`? If not...
+- Are they an `ADMIN`? If not...
+- Are they an `OWNER`? If not...
+- Are they a `VIEWER` of the owning organization? If not...
+- Are they a `MAINTAINER` of the owning organization? If not...
+- Are they an `ADMIN` of the owning organization? If not...
+- Are they an `OWNER` of the owning organization? If not...
+- They don't have access
+
+Don't let you code look like this when it could look like:
+
+- Does the user have `VIEW`? If not...
+- They don't have access
+
+**That's it, no matter how many Permission Groups or unique permissions exist, you can always check the same permission.**
+
 
 First we define the Permission Group:
 

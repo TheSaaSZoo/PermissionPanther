@@ -29,6 +29,8 @@ In fact this is actually how Kubernetes uses it. They call it RBAC, but it’s a
 
 When Google introduced Zanzibar in 2019, they gave us a look under the covers on how their most extreme services like Google Drive are able to handle billions of users while offering highly expressive permissions for individual documents, folders, shared drives, and entire organizations.
 
+So yeah, ReBAC can do everything that RBAC can do, but also far more, and using less code.
+
 ### **In Order to Understand ReBAC, We Have to Understand 3 Simple Components: Entities, Permissions, and Objects**
 
 While these three components have different names depending on the implemenation, and may be abstracted to higher level components, the functionality is the definition of ReBAC.
@@ -83,6 +85,24 @@ A simpler approach is to expand a special permission into multiple, [this is how
 
 One might consider this a "role", however an inline RBAC solution could require a preposterous amount of changes to a code base to add another permission or role. By simply modifying the permissions that a Permission Group expands to, without a single code change we can enable existing Permission Groups to inherit new permissions for recently added features, while having the flexibility to require new permissions for them as well.
 
+This is where ReBAC can do everything that RBAC can do.
+
+Nobody wants to write code that looks like:
+
+- Are they a `VIEWER`? If not...
+- Are they a `COMMENTOR`? If not...
+- Are they a `EDITOR`? If not...
+- Are they an `ADMIN`? If not...
+- Are they an `OWNER`? If not...
+- They don't have access
+
+Don't let you code look like this when it could look like:
+
+- Does the user have `VIEW`? If not...
+- They don't have access
+
+**That's it, no matter how many Permission Groups/Roles or unique permissions exist, you can always check the same permission.**
+
 ### Future-Proofing, sort of...
 
 Since the three components, `entity`, `permission`, and `object` can be any arbitrary data, this gives us the functionality to add future features without making any changes to our authorization system.
@@ -119,7 +139,7 @@ When you make a post, you create the inherited relation (`~follow#{your_id}`, `v
 
 You can also use this relation mapping to list your followers, or who you follow:
 
-To list your followers, you would query for all relations that have `object = {your_id}`} and `permission = 'follow'`.
+To list your followers, you would query for all relations that have `object = {your_id}` and `permission = 'follow'`.
 
 To find all people you follow, you would query for all relations that have `entity = {your_id}` and `permission = 'follow'`.
 
