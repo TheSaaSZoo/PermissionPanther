@@ -162,6 +162,7 @@ The goal of Permission Panther was super simple:
 
 **Some features I have on the backburner:**
 
+- Relation TTLs - automatically expire a relation after a certain amount of time. Useful if you want to give support agents temporary access to customer data, or if you only want certain personnel to have access to a given part of a building for the day.
 - Wildcard support for entities, permissions, and objects - functionality is done and tested, just not exposed as I am still exploring how developers might want to access this, balancing performance costs and under-opinionating systems
 - Multi-region projects (store relation tuples in the region closest to where they are most frequently accessed)
-- Recursion caching - if a user has access to a document that’s in 30 nested folders, we don’t want to run 30 recursive checks every time
+- Recursion caching - if a user has access to a document that’s in 30 nested folders, we don’t want to run 30 recursive checks every time. Intelligent caching that will resolve these to single KV lookups while also being able to purge the cache when the inheritance chain might have been modified.
