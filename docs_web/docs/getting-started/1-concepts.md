@@ -155,3 +155,7 @@ We can also check whether the user belongs to this permission group:
 await client.CheckPermission("user_a", client.PermissionGroup("MAINTAINER"), "repo_a")
 // {valid: true}
 ```
+
+:::note
+Nested Permission Groups are not currently supported. This functionality is target for a future release.
+:::
