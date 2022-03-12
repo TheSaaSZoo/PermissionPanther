@@ -5,7 +5,7 @@ sidebar_position: 4
 # Install the Server
 
 :::tip
-If you don't want to manage the server and database yourself, [we have an amazing managed offering with a generous free tier](https://permissionpanther.com).
+If you don't want to manage the server and database yourself, [we are working on an amazing managed offering with a generous free tier](https://permissionpanther.com).
 :::
 If you want to setup Permission Panther to run on your own infrastructure, the steps are simple.
 
@@ -64,3 +64,7 @@ Then, you can deploy the manifests:
 ```
 kubectl apply -f ./
 ```
+
+## GCP Cloud Run
+
+Cloud Run can be a great way to run small to medium sized deployments (at large scale k8s is suggested for cost effectiveness).
