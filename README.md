@@ -1,11 +1,22 @@
 # PermissionPanther
-Permissions for killer apps
+The permissions platform for developers who want to spend less time on permissions.
+
+Permissions for killer apps.
 
 https://permissionpanther.com
 
 ## What is Permission Panther?
 
-Permission Panther is a simple and highly scalable Relationship Based Access Control (ReBAC) service.
+Permission Panther is a simple and highly scalable Relationship Based Access Control (ReBAC) platform that allows to you spend less time on permissions and more time on your code.
+
+## Why another ReBAC solution? How does it compare to others?
+
+Check out [our awesome blog post for more](https://docs.permissionpanther.com/blog/rbac-vs-rebac), but in short, existing solution are no easier to understand and maintain than custom code. We wanted to build a platform that could:
+
+- Set and check access in one line of code
+- Is accessible to every developer
+- Was the most simple part of any codebase, and as easy to use as any other package
+- Scale with the apps it protects
 
 ## Environment Variables
 

@@ -78,6 +78,8 @@ I asked myself:
 >
 > What if permissions was the most simple part of any code base, and as easy to use as any other package?
 
+I knew there had to be a better way, and I wanted to make it.
+
 This is how my journey into ReBAC and access control began, and why I built [Permission Panther](https://github.com/TheSaaSZoo/PermissionPanther).
 
 But before we talk about [Permission Panther](https://github.com/TheSaaSZoo/PermissionPanther), first let's talk about what ReBAC is.
@@ -243,11 +245,10 @@ I’m super excited to announce a love-letter to authroization of a project, Per
 The goal of Permission Panther was super simple:
 
 1. Build ReBAC in such a way that any developer can implement it in minutes, not days
-2. ReBAC without schemas, while enabling inheritance for permission and objects
+2. ReBAC without schemas or entity definitions, while enabling inheritance for permission and objects
 3. The ability to list relations in both directions: What objects does an entity have permissions on? And what entities have permissions on this object?
 4. Open source, host it yourself with just a single binary/container, and a few environment variables!
-5. A managed offering with pricing that any project can afford (that means really generous free usage)
-6. A really, really small codebase - only include required functionality and reduce the opportunity for bugs
+5. [A managed offering](https://permissionpanther.com) with pricing that any project can afford (that means really generous free usage)
 
 **Some Feature Coming Soon:**
 
