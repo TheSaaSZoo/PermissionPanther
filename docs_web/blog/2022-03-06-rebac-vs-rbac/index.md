@@ -54,9 +54,11 @@ if (await client.CheckPermission(user.ID, "VIEW", resource.ID).valid) {
 }
 ```
 
-After researching it sounded like ReBAC was the solution here, so I looked at existing open source solutions like SpiceDB, Cerbos, and Oso, but the effort to learn and maintain such a system seemed no more fruitful than my long code.
+After researching, it sounded like ReBAC was the solution here.
 
-I didn't want to learn someone else's schema and definition language, just so I could reduce a few lines of code down to a few less. That seemed like an enormous waste of time.
+I looked at existing open source solutions like SpiceDB, Cerbos, and Oso, but the efforts to learn and maintain such a system seemed no more fruitful than my long code.
+
+I didn't want to learn someone else's schema and definition language just so I could reduce a few lines of code down to a few less. That seemed like an enormous waste of time.
 
 There was also Ory Keto, but it's in such early access, and still seemed overly complex to both configure and use.
 
