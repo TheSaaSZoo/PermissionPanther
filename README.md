@@ -5,7 +5,7 @@ Permissions for killer apps.
 
 [Docs](https://docs.permissionpather.com)
 
-[Check out our managed offering!](https://permissionpanther.com)
+[Check out our managed offering with generous free usage!](https://permissionpanther.com)
 
 ## What is Permission Panther?
 
@@ -20,6 +20,51 @@ Check out [our awesome blog post for more](https://docs.permissionpanther.com/bl
 - Required no schemas or entity definitions
 - Was the most simple part of any codebase, and as easy to use as any other package
 - Scale with the apps it protects
+
+We wanted to build a solution that prevents this:
+
+```js
+// First check if they are invited explicitly
+let role = await getUserInvited(user.Org, resource.ID) // database call
+
+if (role && [
+      "viewer",
+      "writer",
+      "editor",
+      "editor",
+      "admin",
+      "viewer"
+    ].includes(role)) {
+    // They can view
+}
+
+if (resource.Org == user.Org) {
+  // Check if they are part of the owning organization
+  role = await getUserOrgRole(user.ID) // database call
+  if (role && [
+        "viewer",
+        "writer",
+        "editor",
+        "editor",
+        "admin",
+        "viewer"
+      ].includes(role)) {
+    // They can view
+  }
+}
+
+// They cannot view
+```
+
+And enables this:
+
+```js
+if (await client.CheckPermission(user.ID, "VIEW", resource.ID).valid) {
+  // They can view
+} else {
+  // They cannot view
+}
+```
 
 ## Features
 
