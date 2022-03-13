@@ -29,10 +29,10 @@ tasks:
     silent: true
   js:
     cmds:
-       - grpc_tools_node_protoc --js_out=import_style=commonjs,binary:./js/src
+       - grpc_tools_node_protoc --js_out=import_style=commonjs,binary:../PermissionPantherJSClient/src
         --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts
-        --grpc_out=grpc_js:./js/src
-        --ts_out=./js/src
+        --grpc_out=grpc_js:../PermissionPantherJSClient/src
+        --ts_out=../PermissionPantherJSClient/src
         pb/*.proto
     silent: true
   docker:
