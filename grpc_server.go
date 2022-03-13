@@ -4,8 +4,8 @@ import (
 	"context"
 	"net"
 
-	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/pb"
+	"github.com/TheSaaSZoo/PermissionPanther/logger"
+	"github.com/TheSaaSZoo/PermissionPanther/pb"
 	"github.com/jackc/pgx/v4"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

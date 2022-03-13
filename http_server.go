@@ -9,10 +9,10 @@ import (
 
 	_ "net/http/pprof"
 
-	"github.com/danthegoodman1/PermissionPanther/crdb"
-	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/query"
-	"github.com/danthegoodman1/PermissionPanther/utils"
+	"github.com/TheSaaSZoo/PermissionPanther/crdb"
+	"github.com/TheSaaSZoo/PermissionPanther/logger"
+	"github.com/TheSaaSZoo/PermissionPanther/query"
+	"github.com/TheSaaSZoo/PermissionPanther/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	nanoid "github.com/matoous/go-nanoid/v2"

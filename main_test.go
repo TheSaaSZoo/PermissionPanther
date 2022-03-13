@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/danthegoodman1/PermissionPanther/crdb"
-	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/query"
+	"github.com/TheSaaSZoo/PermissionPanther/crdb"
+	"github.com/TheSaaSZoo/PermissionPanther/logger"
+	"github.com/TheSaaSZoo/PermissionPanther/query"
 	"github.com/sirupsen/logrus"
 )
 

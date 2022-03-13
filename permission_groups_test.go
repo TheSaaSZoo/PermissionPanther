@@ -6,9 +6,9 @@ import (
 	"log"
 	"testing"
 
-	"github.com/danthegoodman1/PermissionPanther/crdb"
-	"github.com/danthegoodman1/PermissionPanther/query"
-	"github.com/danthegoodman1/PermissionPanther/utils"
+	"github.com/TheSaaSZoo/PermissionPanther/crdb"
+	"github.com/TheSaaSZoo/PermissionPanther/query"
+	"github.com/TheSaaSZoo/PermissionPanther/utils"
 	"github.com/jackc/pgx/v4"
 )
 

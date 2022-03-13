@@ -5,7 +5,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/danthegoodman1/PermissionPanther/utils"
+	"github.com/TheSaaSZoo/PermissionPanther/utils"
 )
 
 func TestPermissions(t *testing.T) {

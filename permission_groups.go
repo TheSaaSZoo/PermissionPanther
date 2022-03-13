@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/TheSaaSZoo/PermissionPanther/crdb"
+	"github.com/TheSaaSZoo/PermissionPanther/logger"
+	"github.com/TheSaaSZoo/PermissionPanther/query"
 	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgx"
-	"github.com/danthegoodman1/PermissionPanther/crdb"
-	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/query"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"

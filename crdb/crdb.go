@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/utils"
+	"github.com/TheSaaSZoo/PermissionPanther/logger"
+	"github.com/TheSaaSZoo/PermissionPanther/utils"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 

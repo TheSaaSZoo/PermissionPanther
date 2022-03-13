@@ -57,7 +57,7 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/danthegoodman1/PermissionPanther',
+            href: 'https://github.com/TheSaaSZoo/PermissionPanther',
             label: 'GitHub',
             position: 'right',
           },

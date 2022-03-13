@@ -1,4 +1,4 @@
-module github.com/danthegoodman1/PermissionPanther
+module github.com/TheSaaSZoo/PermissionPanther
 
 go 1.17
 
