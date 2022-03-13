@@ -3,9 +3,9 @@ The permissions platform for developers who want to spend less time on permissio
 
 Permissions for killer apps.
 
-[Docs](https://docs.permissionpather.com)
+[Docs](https://docs.permissionpather.com?ref=gh)
 
-[Check out our managed offering with generous free usage!](https://permissionpanther.com)
+[Check out our managed offering with generous free usage!](https://permissionpanther.com?ref=gh)
 
 ## What is Permission Panther?
 
@@ -13,7 +13,7 @@ Permission Panther is a simple and highly scalable Relationship Based Access Con
 
 ## Why another ReBAC solution? How does it compare to others?
 
-Check out [our awesome blog post for more](https://docs.permissionpanther.com/blog/rbac-vs-rebac), but in short, existing solution are no easier to understand and maintain than custom code. We wanted to build a platform that could:
+Check out [our awesome blog post for more](https://docs.permissionpanther.com/blog/rbac-vs-rebac?ref=gh), but in short, existing solution are no easier to understand and maintain than custom code. We wanted to build a platform that could:
 
 - Set and check access in one line of code
 - Is accessible to every developer
@@ -73,4 +73,10 @@ if (await client.CheckPermission(user.ID, "VIEW", resource.ID).valid) {
 - **Always check for the same permission** - If you are checking if someone can view something, always check for the `view` permission. No more checking lots of potential roles and conditions that could change over time.
 - **Everything RBAC can do, and more** - With Permission Groups, you can define roles that inherit a set of permissions. Now you have all the features of RBAC, with so much more, without having to check multiple roles for a certain action.
 
-See the [Concepts](https://docs.permissionpanther.com/docs/getting-started/concepts) docs for more.
+See the [Concepts](https://docs.permissionpanther.com/docs/getting-started/concepts?ref=gh) docs for more.
+
+## Install and Host
+
+[See the self-hosting guide](https://docs.permissionpanther.com/docs/getting-started/install-server?ref=gh) to deploy.
+
+You can also check out our [managed offering](https://permissionpanther.com?ref=gh) if you don't want to worry about the database, scaling, or updating.
