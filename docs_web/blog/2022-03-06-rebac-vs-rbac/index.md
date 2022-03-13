@@ -7,21 +7,80 @@ tags: [rbac, rebac]
 
 # RBAC is Dead, Long Live ReBAC.
 
-## Titles
+### Why ReBAC?
 
-- make/ing authorization/permissions great again
-- RBAC is dead. All hail the new king
-- You’re doing permissions/authorization wrong, stop it
+Like many developers, I found myself implementing access control in one of my projects. My code looked roughly like this:
 
-RBAC has many problems
+```js
+// First check if they are invited explicitly
+let role = await getUserInvited(user.Org, resource.ID) // database call
 
-1. It doesn’t scale
-2. Roles are too permissive and don’t allow for fine-grained control
-3. Users and Roles are implicit, which constrains available use cases
+if (role && [
+      "viewer",
+      "writer",
+      "editor",
+      "editor",
+      "admin",
+      "viewer"
+    ].includes(role)) {
+    // They can view
+}
 
-Short difference between authentication and authorization. When I say “auth” going forward, I am referring to authorization.
+if (resource.Org == user.Org) {
+  // Check if they are part of the owning organization
+  role = await getUserOrgRole(user.ID) // database call
+  if (role && [
+        "viewer",
+        "writer",
+        "editor",
+        "editor",
+        "admin",
+        "viewer"
+      ].includes(role)) {
+    // They can view
+  }
+}
 
-ReBAC can do the same thing as RBAC, but so much more.
+// They cannot view
+```
+
+When I really thought my code could look like this:
+
+```js
+if (await client.CheckPermission(user.ID, "VIEW", resource.ID).valid) {
+  // They can view
+} else {
+  // They cannot view
+}
+```
+
+After researching it sounded like ReBAC was the solution here, so I looked at existing open source solutions like SpiceDB, Cerbos, and Oso, but the effort to learn and maintain such a system seemed no more fruitful than my long code.
+
+I didn't want to learn someone else's schema and definition language, just so I could reduce a few lines of code down to a few less. That seemed like an enormous waste of time.
+
+There was also Ory Keto, but it's in such early access, and still seemed overly complex to both configure and use.
+
+I didn't want to write schemas, entity definitions, or anything like that, I just wanted to know if this user could `VIEW` the resource it was requesting. That didn't seem like a lot to ask for.
+
+Why is this so hard? I know lots of other developers that to solve permissions and access control in their projects, what do they do? I decided to ask some fellow developers on how they implemented access control in their products.
+
+The answer, lots of custom code. Some built extensive conditional statements like mine, some built their own ReBAC solutions specific to their needs, **but everyone spent a lot of time yak shaving to build their permissions systems with the same thought: "None of the existing solutions are any easier to learn or use than writing it myself."**
+
+This issue kept bothering me, since I knew us developers wanted to spend less time on permissions and more time on the core functionality of what we were creating.
+
+I asked myself:
+
+> What if I could set and check permissions with one line of code?
+>
+> What if there was a solution that solves the challenges existing solutions attempt to, but is accessible to every developer?
+>
+> What if there was a solution that scales with the app it protects, and has the flexibility to fit nearly any access control requirements?
+>
+> What if permissions was the most simple part of any code base, and as easy to use as any other package?
+
+This is how my journey into ReBAC and access control began, and why I built [Permission Panther](https://github.com/TheSaaSZoo/PermissionPanther).
+
+But before we talk about [Permission Panther](https://github.com/TheSaaSZoo/PermissionPanther), first let's talk about what ReBAC is.
 
 ### **A simple way think about ReBAC is: RBAC per resource.**
 
