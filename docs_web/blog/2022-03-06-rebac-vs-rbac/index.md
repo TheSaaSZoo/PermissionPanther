@@ -7,7 +7,7 @@ tags: [rbac, rebac]
 
 # RBAC is Dead, Long Live ReBAC.
 
-### Why ReBAC?
+## Why ReBAC?
 
 Like many developers, I found myself implementing access control in one of my projects. My code looked roughly like this:
 
@@ -82,7 +82,7 @@ This is how my journey into ReBAC and access control began, and why I built [Per
 
 But before we talk about [Permission Panther](https://github.com/TheSaaSZoo/PermissionPanther), first let's talk about what ReBAC is.
 
-### **A simple way think about ReBAC is: RBAC per resource.**
+## A simple way think about ReBAC is: RBAC per resource.
 
 In fact this is actually how Kubernetes uses it. They call it RBAC, but it’s actually ReBAC (since it is per resource, but I am still inclined to call it RBAC due to how simple the permissions are).
 
@@ -90,19 +90,19 @@ When Google introduced Zanzibar in 2019, they gave us a look under the covers on
 
 So yeah, ReBAC can do everything that RBAC can do, but also far more, and using less code.
 
-### **In Order to Understand ReBAC, We Have to Understand 3 Simple Components: Entities, Permissions, and Objects**
+## In Order to Understand ReBAC, We Have to Understand 3 Simple Components: Entities, Permissions, and Objects
 
 While these three components have different names depending on the implemenation, and may be abstracted to higher level components, the functionality is the definition of ReBAC.
 
-### **Entities**
+### Entities
 
 When we give someone a permission to something, the “someone” is an entity. For example, a GitHub user.
 
-### **Permissions**
+### Permissions
 
 We need to define what an entity can do to an object, and that’s where the permission comes in. For example, some permissions might be `view`, `write`, `delete`.
 
-### **Objects**
+### Objects
 
 The thing we are giving a permission for. For example, a GitHub repository.
 
@@ -110,11 +110,11 @@ These three components tie together to make a relation tuple. Going forward we w
 
 For example, we might give a user access to view a private GitHub repo with the relation (`user_id`, `read`, `repo_id`).
 
-## **ReBAC Enables Functionality Not Found In Other Authorization Systems**
+## ReBAC Enables Functionality Not Found In Other Authorization Systems
 
 Some of the most important features are **inheritance, fine-grained permissions, permission groups, and future-proofing.**
 
-### **Inheritance**
+### Inheritance
 
 Inheritance gives ReBAC the ability to allow entity-object relations to be inherited by other objects. Using the format above, we might have a GitHub org of `my awesome org`, and a repo inside that org called `bug-free code`.
 
@@ -182,7 +182,7 @@ With ReBAC, access controls for Codespaces are as simple as another relation tup
 
 What if we wanted to enable all maintainers to create Codespaces while both having the granularity of the `create_codespace` permission, but without having to find all maintainers and update their permissions? A simple Permission Group of `maintainer` mean that all we have to do is add the `create_codespace` permission to the group.
 
-## **To understand the needs for ReBAC, let’s look at an example we are all intimately familiar with: Google Drive.**
+## To understand the needs for ReBAC, let’s look at an example we are all intimately familiar with: Google Drive.
 
 Say you’ve got an English paper to write with a group of classmates. You create the Google Doc, and invite your classmates to work on it with you. Because this Google Doc was created by you, we initially create the relation (`you`, `#owner`, `your_google_doc`) to establish you as the owner. The `#owner` Permission Group gives you access to not only `read` and `write`, but to `delete`, `invite`, and `move` the file.
 
