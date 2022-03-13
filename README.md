@@ -73,6 +73,8 @@ if (await client.CheckPermission(user.ID, "VIEW", resource.ID).valid) {
 - **Always check for the same permission** - If you are checking if someone can view something, always check for the `view` permission. No more checking lots of potential roles and conditions that could change over time.
 - **Everything RBAC can do, and more** - With Permission Groups, you can define roles that inherit a set of permissions. Now you have all the features of RBAC, with so much more, without having to check multiple roles for a certain action.
 
+See the [Concepts](https://docs.permissionpanther.com/docs/getting-started/concepts) docs for more.
+
 ## Environment Variables
 
 ### `CACHE_TTL`
