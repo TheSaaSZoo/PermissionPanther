@@ -110,10 +110,19 @@ We need to define what an entity can do to an object, and that’s where the per
 
 The thing we are giving a permission for. For example, a GitHub repository.
 
-These three components tie together to make a relation tuple. Going forward we will do this in the format of (`entity`, `permission`, `object`).
+## Relations
 
-For example, we might give a user access to view a private GitHub repo with the relation (`user_id`, `read`, `repo_id`).
+Entities, Permissions, and Objects come together to form a **Relation**, the foundation of relationship-based access control. Going forward we will do this in the format of `(entity, permission, object)`.
 
+In its simplest form, a Relation joins an `entity` and `object` with a `permission` like so:
+
+![relation](./relation.png)
+
+Following this graph of relations is how we find who has a `permission` on what. If there is not a specifically named arrow (`permission`) connecting the `entity` and `object`, then they implicitly do not have the `permission` on that `object`.
+
+For example, we might give a user access to view a private GitHub repo with the relation `(user_id, read, repo_id)`:
+
+![gh-relation](./gh-relation.png)
 ## ReBAC Enables Functionality Not Found In Other Authorization Systems
 
 Some of the most important features are **inheritance, fine-grained permissions, permission groups, and future-proofing.**
@@ -124,9 +133,9 @@ Inheritance gives ReBAC the ability to allow entity-object relations to be inher
 
 In order to give everyone in the GitHub org the default permission to view all of its repositories, we can create the following set of relations:
 
-Every time a user is added to the org, we create the relation (`{new_user}`, `read`, `my awesome org`).
+Every time a user is added to the org, we create the relation `({new_user}, read, my awesome org)`.
 
-Now, when ever we create a repo inside that org, we only need to create the relation (`~read#my awesome org`, `read`, `{new repository}`). The entity `~read#my awesome org` converts to “any entity that has the `read` permission on the object `my awesome org`. **In effect, the new repository inherits read permissions from the org.**
+Now, when ever we create a repo inside that org, we only need to create the relation `(~read#my awesome org, read, {new repository})`. The entity `~read#my awesome org` converts to “any entity that has the `read` permission on the object `my awesome org`. **In effect, the new repository inherits read permissions from the org.**
 
 ### Fine-grained Permissions
 
@@ -134,7 +143,7 @@ Creating a simple set of roles such as `read`, `write`, and `owner` for somethin
 
 Think about how GitHub manages permissions for public and private repos, access to repos within orgs, permission by branch, or access to run GitHub actions.
 
-For example, when branch protections are enabled for the `main` branch, by default nobody can write to it. Instead, users with write permissions have to be listed. This relation might look like: (`{user_id}`, `write`, `my_repo#branch#main`).
+For example, when branch protections are enabled for the `main` branch, by default nobody can write to it. Instead, users with write permissions have to be listed. This relation might look like: `({user_id}, write, my_repo#branch#main)`.
 
 The object `my_repo#branch#main` scopes down to a specific branch in a specific repo.
 
@@ -182,21 +191,21 @@ Since the three components, `entity`, `permission`, and `object` can be any arbi
 
 Let’s say that when GitHub decided to add their new Codespaces, they had previously had a auth system that was hard-coded to repos and organizations. This would have been a nightmare for the engineering team to either add in another system for Codespaces, or re-write the system to use ReBAC instead.
 
-With ReBAC, access controls for Codespaces are as simple as another relation tuple. Imagine you have a Codespace, and you want to invite one of your colleagues to code with you, but not give them access to the terminal. This can be expressed with the relation tuple (`colleague_user_id`, `code`, `codespace_id`). By specifying the `code` permission, we only give them access to edit code. If we want to give them access to the terminal later, we can create another tuple where the permission is `terminal`.
+With ReBAC, access controls for Codespaces are as simple as another relation tuple. Imagine you have a Codespace, and you want to invite one of your colleagues to code with you, but not give them access to the terminal. This can be expressed with the relation tuple `(colleague_user_id, code, codespace_id)`. By specifying the `code` permission, we only give them access to edit code. If we want to give them access to the terminal later, we can create another tuple where the permission is `terminal`.
 
 What if we wanted to enable all maintainers to create Codespaces while both having the granularity of the `create_codespace` permission, but without having to find all maintainers and update their permissions? A simple Permission Group of `maintainer` mean that all we have to do is add the `create_codespace` permission to the group.
 
 ## To understand the needs for ReBAC, let’s look at an example we are all intimately familiar with: Google Drive.
 
-Say you’ve got an English paper to write with a group of classmates. You create the Google Doc, and invite your classmates to work on it with you. Because this Google Doc was created by you, we initially create the relation (`you`, `#owner`, `your_google_doc`) to establish you as the owner. The `#owner` Permission Group gives you access to not only `read` and `write`, but to `delete`, `invite`, and `move` the file.
+Say you’ve got an English paper to write with a group of classmates. You create the Google Doc, and invite your classmates to work on it with you. Because this Google Doc was created by you, we initially create the relation `(you, #owner, your_google_doc)` to establish you as the owner. The `#owner` Permission Group gives you access to not only `read` and `write`, but to `delete`, `invite`, and `move` the file.
 
 Now we send out a few invites that look like (`{group member email}`, `#editor`, `your_google_doc`). This gives your group members the ability to edit that Google Doc. Now they can `read`, `write`, and `comment` through the `#editor` Permission Group.
 
-The paper is now due, and your professor has asked every group to pair with another to peer review everyone’s papers. Rather than print multiple copies of each paper to give to reviewers like it’s 2003, you instead invite those reviewers to have the `#commenter` permission group, like (`{reviewer}`, `#commenter`, `your_google_doc`). The `#commenter` Permission Group might expand to `read` and `comment`, since there is no reason they need to `write`.
+The paper is now due, and your professor has asked every group to pair with another to peer review everyone’s papers. Rather than print multiple copies of each paper to give to reviewers like it’s 2003, you instead invite those reviewers to have the `#commenter` permission group, like `({reviewer}, #commenter, your_google_doc)`. The `#commenter` Permission Group might expand to `read` and `comment`, since there is no reason they need to `write`.
 
 After grading, your professor decides that these will be your groups for all assigments for the rest of the semester. Since you are going to be getting a lot of assignments, you now create a folder for all of your assignments, and give your group members permission to edit the folder, thus the permission to edit everything inside.
 
-This is where we can deploy **inheritance.** In order to do this with relations, let’s create the relation between all your group mates and that folder: (`{group member email}`, `#editor`, `your_folder`). Now every time a new item is created, or put in that folder, **we only have to make the relation** (`~editor#your_folder`, `#editor`, `{new_file}`).
+This is where we can deploy **inheritance.** In order to do this with relations, let’s create the relation between all your group mates and that folder: `({group member email}, #editor, your_folder)`. Now every time a new item is created, or put in that folder, **we only have to make the relation** `(~editor#your_folder, #editor, {new_file})`.
 
 In this relation, `~editor#your_folder` is a new entity format that means **“anyone who has the `#editor` permission on the object `your_folder`”**. This relation now allows all new files to inherit previously established editor permission grants from the folder!
 
@@ -206,9 +215,9 @@ Yes, the admin panel for your Raspberry Pi temperature sensor can work just fine
 
 This is a super simple example, but ReBAC usage gets far more complex, but it can also get even more simple:
 
-Another simple example is private Instagram accounts. Anytime you accept a follow request, the following relation is created: (`{follower_id}`, `follow`, `{your_id}`). In this case, both the `entity` and the `object` are users.
+Another simple example is private Instagram accounts. Anytime you accept a follow request, the following relation is created: `({follower_id}, follow, {your_id})`. In this case, both the `entity` and the `object` are users.
 
-When you make a post, you create the inherited relation (`~follow#{your_id}`, `view`, `{post_id}`). This set of relations says “anyone who follows me is allowed to view this post”.
+When you make a post, you create the inherited relation `(~follow#{your_id}, view, {post_id})`. This set of relations says “anyone who follows me is allowed to view this post”.
 
 You can also use this relation mapping to list your followers, or who you follow:
 

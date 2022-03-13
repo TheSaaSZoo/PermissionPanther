@@ -37,6 +37,12 @@ Relations link an `entity` to an `object` by a `permission`. This is the basic b
 (entity, permission, object)
 ```
 
+In its most simple form, a Relation joins an `entity` and `object` with a `permission` like so:
+
+![relation](../../blog/2022-03-06-rebac-vs-rbac/relation.png)
+
+Following this graph of relations is how we find who has a `permission` on what. If there is not a specifically named arrow (`permission`) connecting the `entity` and `object`, then they implicitly do not have the `permission` on that `object`.
+
 ### Entity
 
 The `entity` is the thing you are giving a `permission` to, usually a user or service account, but could also be a sentient doughnut if that's what you're working with. You can put any string in the `entity` field that starts with a letter less than ASCII code `~`, since that is how we encode inheritance.
