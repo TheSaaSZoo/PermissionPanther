@@ -9,35 +9,186 @@ import TabItem from '@theme/TabItem';
 
 See the [Getting Started](/docs/getting-started/quick-start) guide for setting up the client library.
 
-## SetRelation
+## `client.CheckPermission()`
 
-Set a relation. This is a no-op if the relation already exists.
+Checks whether a relation exists.
 
-<Tabs>
-<TabItem value="js" label="NodeJS/TypeScript">
+Optionally disbale inheritance checks which will restrict the check to a single explicit permission check (there must be an exact permission grant).
+
+Optionally pass a `denyPermission` to specify whether an explicit denial should be checked for as well. If found, the result will always return `valid: false`.
+
+Returns whether the permission was found, and after how many recursions. A `.recursion` of `0` means that they had explicit permission, and `-1` mean it was not found (maximum recursion reached).
+
+Example:
 
 ```js
-function helloWorld() {
-  console.log('Hello, world!');
-}
+await client.CheckPermission("user1", "access", "obj2")
+// { valid: true, recursion: 0 }
 ```
 
-</TabItem>
-<TabItem value="py" label="Python">
+## `client.SetPermission()`
 
-```py
-def hello_world():
-  print 'Hello, world!'
+Set a relation. This is a no-op if the relation already exists. Returns whether the relation was created.
+
+Example:
+
+```js
+await client.SetPermission("user1", "access", "obj2")
+// true
 ```
 
-</TabItem>
-<TabItem value="go" label="Go">
+## `client.RemovePermission()`
 
-```go
-func hellowlrld() {
+Removes a permission, returning whether the permission was successfully removed.
 
-}
+Example:
+
+```js
+await client.RemovePermission("user1", "access", "obj2")
 ```
 
-</TabItem>
-</Tabs>
+## `client.Inherit()`
+
+Creates an [Inheritance](/docs/getting-started/concepts#inheritance-and-recursion) relation when used as the `entity` in [client.SetPermission()](#clientsetpermission). Returns an `entity`.
+
+Example:
+
+```js
+await client.SetPermission(client.Inherit("read", "folder_1"),"read", "file_1_1")
+```
+
+This example translates to:
+
+> Any entity that has the permission `read` on object `folder_1` has the `read` permission on the object `file_1_1`.
+
+View the [Inheritance concepts section](/docs/getting-started/concepts#inheritance-and-recursion) for more.
+
+## `client.ListEntityRelations()`
+
+List the relations for a given `entity`, optionally specifying the `permission` to filter on, and an `offset` as the number of relations to start listing after. Returns an array of relations.
+
+Example:
+
+```js
+await client.ListEntityRelations("user1", {
+  permission: "access"
+})
+```
+
+This example translates to:
+
+> List all of the relations where `user1` has `access`.
+
+:::warning
+The interface for setting the `offset` will change in the future, as LIMIT/OFFSET based pagination is not scalable.
+:::
+
+## `client.ListObjectRelations()`
+
+List the relations for a given `object`, optionally specifying the `permission` to filter on, and an `offset` as the number of relations to start listing after. Returns an array of relations.
+
+Example:
+
+```js
+await client.ListObjectRelations("object1", {
+  permission: "access",
+  offset: 10
+})
+```
+
+This example translates to:
+
+> List all of the relations where an entity has `access` on `object1`, starting after the first 10 relations.
+
+:::warning
+The interface for setting the `offset` will change in the future, as LIMIT/OFFSET based pagination is not scalable.
+:::
+
+## `client.CreatePermissionGroup()`
+
+Creates a new [Permission Group](/docs/getting-started/concepts#permission-groups), optionally including initial permissions to add to the group. Returns whether the Permission Group was created.
+
+Example:
+
+```js
+await client.CreatePermissionGroup("editor", ["read", "write", "comment"])
+```
+
+## `client.DeletePermissionGroup()`
+
+Deletes a permission group, optionally `propagate` changes to members (entities) of the group.
+
+Example:
+
+```js
+await client.DeletePermissionGroup("editor", true)
+```
+
+:::warning
+The `propagate` parameter should be `false` if adding a permission to a group with many members, as any group that takes longer than 60 seconds to update will timeout and the transaction will be aborted.
+
+In the future an async update option will be included. For now this should be combined with [`client.ListEntitiesInPermissionGroup()`](#clientlistentitiesinpermissiongroup) to manually propagate permission at scale.
+:::
+
+
+## `client.AddPermissionToGroup()`
+
+Adds a permission to a Permission Group, returning whether the permission was added (if it did not already exist in the group). The `propagate` parameter determines whether the added permission will given to existing members of the permission group.
+
+Example:
+
+```js
+await client.AddPermissionToGroup("editor", "suggest", true)
+```
+
+:::warning
+The `propagate` parameter should be `false` if adding a permission to a group with many members, as any group that takes longer than 60 seconds to update will timeout and the transaction will be aborted.
+
+In the future an async update option will be included. For now this should be combined with [`client.ListEntitiesInPermissionGroup()`](#clientlistentitiesinpermissiongroup) to manually propagate permission at scale.
+:::
+
+## `client.RemovePermissionFromGroup()`
+
+Removes a permission from a Permission Group, returning whether the permission was removed (if existed in the group). The `propagate` parameter determines whether the added permission will removed from existing members of the permission group.
+
+Example:
+
+```js
+await client.RemovePermissionFromGroup("editor", "suggest", true)
+```
+
+:::warning
+The `propagate` parameter should be `false` if removing a permission from a group with many members, as any group that takes longer than 60 seconds to update will timeout and the transaction will be aborted.
+
+In the future an async update option will be included. For now this should be combined with [`client.ListEntitiesInPermissionGroup()`](#clientlistentitiesinpermissiongroup) to manually propagate permission at scale.
+:::
+
+## `client.ListEntitiesInPermissionGroup()`
+
+Lists the members (entities) of a permission group, optionally providing an `entityOffset` for pagination. Returns a maximum 50 results.
+
+Example:
+
+```js
+await client.ListEntitiesInPermissionGroup("editor")
+```
+
+## `client.PermissionGroup()`
+
+Returns a specially formatted `permission` to indicate that a Permission Group is being. When used with [client.SetPermission()](#clientsetpermission) you add the `entity` as a member of the Permission Group, giving them all permissions that are in the group. Returns a `permission`.
+
+Example:
+
+```js
+await client.SetPermission("user1", client.PermissionGroup("editor"), "folder_1")
+```
+
+This gives the entity `user1` all permissions in the permission group `editor` on the object `folder_1`.
+
+Likewise the permission group can be removed by combining with [client.RemovePermission()](#clientremovetpermission) like so:
+
+```js
+await client.RemovePermission("user1", client.PermissionGroup("editor"), "folder_1")
+```
+
+View the [Permission Groups concepts section](/docs/getting-started/concepts#permission-groups) for more.

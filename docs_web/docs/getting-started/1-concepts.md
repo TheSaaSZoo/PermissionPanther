@@ -102,6 +102,8 @@ This relation simply says:
 
 > Whoever is a `MEMBER` of `org_a`, can `VIEW` `repo_a`
 
+`client.Inherit()` is treated as an `entity`.
+
 Permission Panther knows by this special entity scheme that it needs to look at who is a `MEMBER` on `org_a` to determine if if the user has permission.
 
 Now, we can check if a given user has `VIEW` on a repository:
@@ -162,6 +164,16 @@ This simply creates a shortcut that says:
 Now, when we create the inheritance relation we can reference the Permission Group as the permission:
 
 ```js
+await client.SetPermission("user_1", client.PermissionGroup("MAINTAINER"), "repo_a")
+```
+
+This code says:
+
+> Give the entity `user_1` all of the permissions in the group `MAINTAINER` on `repo_a`.
+
+We can also combine Inheritance with Permission Groups:
+
+```js
 await client.SetPermission(client.Inherit("MEMBER", "org_a"), client.PermissionGroup("MAINTAINER"), "repo_a")
 ```
 
@@ -181,6 +193,12 @@ We can also check whether the user belongs to this permission group:
 ```js
 await client.CheckPermission("user_a", client.PermissionGroup("MAINTAINER"), "repo_a")
 // {valid: true}
+```
+
+Permission Group Membership is also tracked, so you are able to list all members of a permission group, limited to 50 resultsper page:
+
+```js
+await client.ListEntitiesInPermissionGroup("MAINTAINER")
 ```
 
 :::note
