@@ -19,6 +19,13 @@ Check out [our awesome blog post for more](https://docs.permissionpanther.com/bl
 - Was the most simple part of any codebase, and as easy to use as any other package
 - Scale with the apps it protects
 
+## Features
+
+- **Inheritance** - “Who ever has the `editor` permission of this folder, also has the `editor` permission for all files inside that folder”, or "Who ever is an `editor` can `read`, `write`, etc."
+- **Fine-grained scoping and future-proofing** - Since an `object` can be anything, we can reduce permissions down to what ever access level we want, or anything we want, without changing the way our code works.
+- **Always check for the same permission** - If you are checking if someone can view something, always check for the `view` permission. No more checking lots of potential roles and conditions that could change over time.
+- **Everything RBAC can do, and more** - With Permission Groups, you can define roles that inherit a set of permissions. Now you have all the features of RBAC, with so much more, without having to check multiple roles for a certain action.
+
 ## Environment Variables
 
 ### `CACHE_TTL`
