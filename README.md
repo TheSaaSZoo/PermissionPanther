@@ -15,6 +15,7 @@ Check out [our awesome blog post for more](https://docs.permissionpanther.com/bl
 
 - Set and check access in one line of code
 - Is accessible to every developer
+- Required no schemas or entity definitions
 - Was the most simple part of any codebase, and as easy to use as any other package
 - Scale with the apps it protects
 
