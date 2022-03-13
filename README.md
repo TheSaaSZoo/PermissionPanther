@@ -3,7 +3,9 @@ The permissions platform for developers who want to spend less time on permissio
 
 Permissions for killer apps.
 
-https://permissionpanther.com
+[Docs](https://docs.permissionpather.com)
+
+[Check out our managed offering!](https://permissionpanther.com)
 
 ## What is Permission Panther?
 
