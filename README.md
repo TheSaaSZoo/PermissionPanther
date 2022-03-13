@@ -1,9 +1,13 @@
-# PermissionPanther
+# Permission Panther
 The permissions platform for developers who want to spend less time on permissions.
 
 Permissions for killer apps.
 
 [Docs](https://docs.permissionpather.com?ref=gh)
+
+[Concepts](https://docs.permissionpather.com/docs/getting-started/concepts?ref=gh)
+
+[Quick Start](https://docs.permissionpather.com/docs/getting-started/quick-start?ref=gh)
 
 [Check out our managed offering with generous free usage!](https://permissionpanther.com?ref=gh)
 
