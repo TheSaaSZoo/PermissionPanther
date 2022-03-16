@@ -64,7 +64,7 @@ There was also Ory Keto, but it's in such early access, and still seemed overly 
 
 I didn't want to write schemas, entity definitions, or anything like that, I just wanted to know if this user could `VIEW` the resource it was requesting. That didn't seem like a lot to ask for.
 
-Why is this so hard? I know lots of other developers that to solve permissions and access control in their projects, what do they do? I decided to ask some fellow developers on how they implemented access control in their products.
+Why is this so hard? I know lots of other developers that had to solve permissions and access control in their projects, what do they do? I decided to ask some fellow developers on how they implemented access control in their products.
 
 The answer, lots of custom code. Some built extensive conditional statements like mine, some built their own ReBAC solutions specific to their needs, **but everyone spent a lot of time yak shaving to build their permissions systems with the same thought: "None of the existing solutions are any easier to learn or use than writing it myself."**
 
@@ -197,6 +197,8 @@ What if we wanted to enable all maintainers to create Codespaces while both havi
 
 ## To understand the needs for ReBAC, let’s look at an example we are all intimately familiar with: Google Drive.
 
+_If you understand ReBAC at this point, feel free to skip this section._
+
 Say you’ve got an English paper to write with a group of classmates. You create the Google Doc, and invite your classmates to work on it with you. Because this Google Doc was created by you, we initially create the relation `(you, #owner, your_google_doc)` to establish you as the owner. The `#owner` Permission Group gives you access to not only `read` and `write`, but to `delete`, `invite`, and `move` the file.
 
 Now we send out a few invites that look like (`{group member email}`, `#editor`, `your_google_doc`). This gives your group members the ability to edit that Google Doc. Now they can `read`, `write`, and `comment` through the `#editor` Permission Group.
@@ -213,17 +215,7 @@ Since you will be given a random peer review group for every assignment, you wil
 
 Yes, the admin panel for your Raspberry Pi temperature sensor can work just fine with `viewer` and `admin` privileges (the object you are giving permission for is implicitly the temperature sensor), but simple RBAC does not suffice for platforms like Google Drive. If you are an `#editor`, you have to be an editor of **something**. We need to have **relations** between our entities, permission, and objects.
 
-This is a super simple example, but ReBAC usage gets far more complex, but it can also get even more simple:
-
-Another simple example is private Instagram accounts. Anytime you accept a follow request, the following relation is created: `({follower_id}, follow, {your_id})`. In this case, both the `entity` and the `object` are users.
-
-When you make a post, you create the inherited relation `(~follow#{your_id}, view, {post_id})`. This set of relations says “anyone who follows me is allowed to view this post”.
-
-You can also use this relation mapping to list your followers, or who you follow:
-
-To list your followers, you would query for all relations that have `object = {your_id}` and `permission = 'follow'`.
-
-To find all people you follow, you would query for all relations that have `entity = {your_id}` and `permission = 'follow'`.
+This is a super simple example, but ReBAC usage gets far more complex, but it can also get more simple.
 
 **In summary, ReBAC includes important features over RBAC:**
 
