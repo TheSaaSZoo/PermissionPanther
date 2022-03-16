@@ -1,0 +1,53 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Quick Start
+
+## Install the Package
+
+<Tabs>
+<TabItem value="js" label="NodeJS/TypeScript">
+
+```sh
+npm i permissionpanther
+```
+
+</TabItem>
+</Tabs>
+
+## Initialize the Client Library
+
+<Tabs>
+<TabItem value="js" label="NodeJS/TypeScript">
+
+```js
+const {PermissionPantherClient} = require('permissionpanther')
+const client = new PermissionPanther('UXVI4...', 'vsfQE...')
+```
+
+</TabItem>
+</Tabs>
+
+## Test it Out!
+
+<Tabs>
+<TabItem value="js" label="NodeJS/TypeScript">
+
+```js
+await client.SetPermission("user_a", "READ", "my awesome file")
+
+const read = await client.CheckPermission("user_a", "READ", "my awesome file")
+console.log(read.valid)
+// true
+
+const del = await client.CheckPermission("evil user", "DELETE", "my awesome file")
+console.log(del.valid)
+// false
+```
+
+</TabItem>
+</Tabs>

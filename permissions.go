@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/danthegoodman1/PermissionPanther/crdb"
-	"github.com/danthegoodman1/PermissionPanther/errs"
-	"github.com/danthegoodman1/PermissionPanther/logger"
-	"github.com/danthegoodman1/PermissionPanther/pb"
-	"github.com/danthegoodman1/PermissionPanther/query"
+	"github.com/TheSaaSZoo/PermissionPanther/crdb"
+	"github.com/TheSaaSZoo/PermissionPanther/errs"
+	"github.com/TheSaaSZoo/PermissionPanther/logger"
+	"github.com/TheSaaSZoo/PermissionPanther/pb"
+	"github.com/TheSaaSZoo/PermissionPanther/query"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 )

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/danthegoodman1/PermissionPanther/logger"
+	"github.com/TheSaaSZoo/PermissionPanther/logger"
 )
 
 var (

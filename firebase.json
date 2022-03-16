@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "docs_web/build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
