@@ -9,6 +9,25 @@ import TabItem from '@theme/TabItem';
 
 See the [Getting Started](/docs/getting-started/quick-start) guide for setting up the client library.
 
+If you are intending on pointing to a self-managed instance, you will need to add some additional options to your client library initialization to point there like so:
+
+```js
+const {PermissionPantherClient} = require('permissionpanther')
+const client = new PermissionPanther('UXVI4...', 'vsfQE...', {
+  endpoint: "https://my.instance.com",
+})
+```
+
+You may also optionally turn TLS security off. THIS IS NOT RECCOMMENDED FOR PRODUCTION.
+
+```js
+const {PermissionPantherClient} = require('permissionpanther')
+const client = new PermissionPanther('UXVI4...', 'vsfQE...', {
+  endpoint: "http://my.instance.com",
+  insecure: true
+})
+```
+
 ## `client.CheckPermission()`
 
 Checks whether a relation exists.
