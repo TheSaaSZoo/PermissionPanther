@@ -11,7 +11,41 @@ If you want to setup Permission Panther to run on your own infrastructure, the s
 
 ## Setup CockroachDB
 
-You need to setup a CockroachDB instance, whether it be their Serverless offering or a self-managed cluster. [Refer to their guide on how to setup a self-hosted CRDB instance](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises.html)
+You need to setup a CockroachDB instance, whether it be their Serverless offering or a self-managed cluster. [Refer to their guide on how to setup a self-hosted CRDB instance](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises.html).
+
+:::note
+For testing you can run a container locally with the command
+
+```
+docker run -d -p 26257:26257 \
+  cockroachdb/cockroach:latest \
+  start-single-node --insecure
+```
+
+And use the DSN
+
+```
+postgresql://root@localhost:26257/defaultdb?sslmode=disable
+```
+:::
+
+## Apply Database Migration
+
+### Clone the Git Repo
+
+```
+git clone --depth 1 https://github.com/TheSaaSZoo/PermissionPanther
+```
+
+### Setup [`sql-migrate`](https://github.com/rubenv/sql-migrate)
+Install [`sql-migrate`](https://github.com/rubenv/sql-migrate) and set the `CRDB_DSN` environment variable as your database DSN.
+
+### Apply Migrations
+From the root directory of the cloned repo, run:
+
+```
+sql-migrate up
+```
 
 ## Docker
 
