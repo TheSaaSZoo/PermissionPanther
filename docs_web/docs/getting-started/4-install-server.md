@@ -13,7 +13,7 @@ If you want to setup Permission Panther to run on your own infrastructure, the s
 
 You need to setup a CockroachDB instance, whether it be their Serverless offering or a self-managed cluster. [Refer to their guide on how to setup a self-hosted CRDB instance](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises.html).
 
-:::note
+:::note Quick Tip
 For testing you can run a container locally with the command
 
 ```
