@@ -3,11 +3,11 @@ The permissions platform for developers who want to spend less time on permissio
 
 Permissions for killer apps.
 
-[Docs](https://docs.permissionpather.com?ref=gh)
+[Docs](https://docs.permissionpanther.com?ref=gh)
 
-[Concepts](https://docs.permissionpather.com/docs/getting-started/concepts?ref=gh)
+[Concepts](https://docs.permissionpanther.com/docs/getting-started/concepts?ref=gh)
 
-[Quick Start](https://docs.permissionpather.com/docs/getting-started/quick-start?ref=gh)
+[Quick Start](https://docs.permissionpanther.com/docs/getting-started/quick-start?ref=gh)
 
 [Check out our managed offering with generous free usage!](https://permissionpanther.com?ref=gh)
 
