@@ -54,9 +54,11 @@ if (await client.CheckPermission(user.ID, "VIEW", resource.ID).valid) {
 }
 ```
 
-After researching, it sounded like ReBAC was the solution here.
+To do a certain action, I wanted to only check if the user could perform THAT action, I didn't need to know anything else.
 
-I looked at existing open source solutions like SpiceDB, Cerbos, and Oso, but the efforts to learn and maintain such a system seemed no more fruitful than my long code.
+After researching, it was clear that ReBAC was the solution.
+
+Looking at existing open source solutions like SpiceDB, Cerbos, and Oso, the efforts to learn and maintain such a system seemed no more fruitful than my long code...
 
 I didn't want to learn someone else's schema and definition language just so I could reduce a few lines of code down to a few less. That seemed like an enormous waste of time.
 
