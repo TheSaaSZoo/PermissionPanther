@@ -78,7 +78,7 @@ I asked myself:
 >
 > What if there was a solution that solves the challenges existing solutions attempt to, but is accessible to every developer?
 >
-> What if there was a solution that scales with the app it protects, and has the flexibility to fit nearly any access control requirements?
+> What if there was a solution that scales with the app it protects, and has the flexibility to fit nearly any access control requirement?
 >
 > What if permissions was the most simple part of any code base, and as easy to use as any other package?
 
