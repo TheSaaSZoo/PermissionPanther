@@ -153,7 +153,7 @@ The object `my_repo#branch#main` scopes down to a specific branch in a specific 
 
 RBAC has no natural sense of permission inheritance. For example, if you want to combine `read` and `write` access to an `editor` and `owner` role, then your application needs to know the order of permissions to check (first check if a user has `read`, if not check whether they have `commentor`, if not check whether they have `editor`, if not check whether they have `owner`).
 
-Complex implementations of ReBAC include permission based inheritance as well, but this comes at the expense of complex schema crafting.
+Existing implementations of ReBAC include permission based inheritance as well, but this comes at the expense of complex schema crafting.
 
 A simpler approach is to expand a special permission into multiple, [this is how Permission Panther approaches this requirement, with "Permission Groups"](/docs/getting-started/concepts#permission-groups) so that we don't need complex schemas for simple expressions.
 
@@ -195,7 +195,7 @@ Let’s say that when GitHub decided to add their new Codespaces, they had previ
 
 With ReBAC, access controls for Codespaces are as simple as another relation tuple. Imagine you have a Codespace, and you want to invite one of your colleagues to code with you, but not give them access to the terminal. This can be expressed with the relation tuple `(colleague_user_id, code, codespace_id)`. By specifying the `code` permission, we only give them access to edit code. If we want to give them access to the terminal later, we can create another tuple where the permission is `terminal`.
 
-What if we wanted to enable all maintainers to create Codespaces while both having the granularity of the `create_codespace` permission, but without having to find all maintainers and update their permissions? A simple Permission Group of `maintainer` mean that all we have to do is add the `create_codespace` permission to the group.
+What if we wanted to enable all maintainers to create Codespaces while both having the granularity of the `create_codespace` permission, but without having to find all maintainers and update their permissions? A simple Permission Group would only require we simply add the `create_codespace` permission to the group.
 
 ## To understand the needs for ReBAC, let’s look at an example we are all intimately familiar with: Google Drive.
 
@@ -226,19 +226,19 @@ This is a super simple example, but ReBAC usage gets far more complex, but it ca
 
 ## The problem with existing ReBAC solutions: they’re overly complex
 
-There are a few solutions out there the solve the ReBAC problem: SpiceDB, Ory Keto, Cerbos, and Warrant being some of them. I hate all of them in their own special way.
+There are a few solutions out there the solve the ReBAC problem: SpiceDB, Ory Keto, Cerbos, and Warrant being some of them. I believe they all fall short in making ReBAC accessible to developers.
 
-*Note: This is an over exaggeration! I don’t hate these platforms, but I don’t think they solve ReBAC in a way that allows for mass-adoption. Ok, back to the over exaggeration!*
+With SpiceDB, you need a masters degree in computer science to understand their schema definition language.
 
-With SpiceDB, you need a masters in computer science to understand their schema definition.
+Ory Keto is in early access, looks to stay that way for a while, and is clearly not cared for like the rest of the Ory products.
 
-Ory Keto is in an alpha of an alpha (and looks to stay that way for a while).
+With Warrant, you still need to define a schema (albeit far simpler than SpiceDB)… and their pricing model is... insulting...
 
-With Warrant, you still need to define a schema (albeit far simpler than SpiceDB)… and don’t have any water in your mouth when you look at their pricing, or you might spit it all over your screen.
+With Cerbos you still need to define a complex schema, and are forced to host it yourself.
 
-With Cerbos you still also need to define a complex schema, and are forced to host it yourself!
+With Oso, again, we need to learn a new schema definition language... the pattern among these solutions is quite apparent.
 
-Existing solutions "solve" the problem, but in such a way that the solution is inaccessible for those who don't already understand ReBAC. They provide a solution to ReBAC experts who don't want to continuously re-write ReBAC solutions, but miss the mark on making it available to the greater developer audience, the digital nomad who needs a solution in the next 15 minutes, or the CS major freshman.
+Existing solutions "solve" the problem, but in such a way that is inaccessible for those who don't already understand ReBAC. They provide a solution to ReBAC experts who don't want to continuously re-write ReBAC solutions, but miss the mark on making it available to the greater developer audience, the digital nomad who needs a solution in the next 15 minutes, or the CS major freshman... Those of us that aren't currently ReBAC thought leaders.
 
 
 ## Introducing Permission Panther: The Permissions Platform For Developers Who Want To Spend Less Time On Permissions
