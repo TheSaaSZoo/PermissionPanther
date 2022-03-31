@@ -45,6 +45,9 @@ func StartHTTPServer(lis net.Listener) {
 	}
 	Server.Echo.Use(middleware.LoggerWithConfig(config))
 
+	// Health Check route
+	Server.Echo.GET("/hc", HealthCheck)
+
 	// Setup admin routes
 	Server.Echo.POST("/key", CreateAPIKey, ValidateAdminKey)
 	Server.Echo.DELETE("/key", DeleteAPIKey, ValidateAdminKey)
@@ -85,6 +88,10 @@ func ValidateAdminKey(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 	}
+}
+
+func HealthCheck(c echo.Context) error {
+	return c.NoContent(http.StatusOK)
 }
 
 func CreateAPIKey(c echo.Context) error {

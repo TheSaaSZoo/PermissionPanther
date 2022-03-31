@@ -64,6 +64,8 @@ docker run --name permissionpanther \
 
 Docker Compose works great for simple deployments:
 
+`docker-compose.yml`:
+
 ```yml
 version: '3.9'
 services:
@@ -88,33 +90,48 @@ services:
 
 Permission Panther runs stateless, so you can create a Kubernetes deployment that can easily scale horizontally to as many pods as needed.
 
-To get started, pull the example repo that contains all of the manifests:
+### Clone the repo
+
+To get started, pull the source code and change to the directory with the manifests:
 
 ```
-git clone blah...
+git clone https://github.com/TheSaaSZoo/PermissionPanther.git
 
-cd blah...
+cd k8s
 ```
 
-Then from these, you will need to create secrets for your `CRDB_DSN` and `ADMIN_KEY`
+### Create secret manifests
+
+Next, create Kubneretes secret manifests for the CRDB DSN and admin key:
 
 ```
 echo -n "postgresql://..." | kubectl create secret \
   generic crdb-dsn --dry-run=client \
-  --from-file=dsn=/dev/stdin -o yaml > crdb-dsn-secret.yml
+  --from-file=dsn=/dev/stdin -o yaml > crdb-dsn.yml
 ```
 
 ```
 echo -n <YOUR ADMIN KEY> | kubectl create secret \
   generic admin-key --dry-run=client \
-  --from-file=key=/dev/stdin -o yaml > admin-key-secret.yml
+  --from-file=key=/dev/stdin -o yaml > admin-key.yml
 ```
 
 Then, you can deploy the manifests:
 
 ```
-kubectl apply -f ./
+kubectl apply -f .
 ```
+
+With this configuration, Permission Panther is only accessible from within the cluster at:
+```
+permission-panther.default.svc.cluster.local:80
+```
+
+:::note Note
+This is a very basic Kubernetes deployment. A production-ready deployment should include a [horizontal pod autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) and should have the resources tuned for your specific resources.
+
+If you wish to expose the service externally, that will need to be configured as well depending on where your cluster is running.
+:::
 
 ## GCP Cloud Run
 

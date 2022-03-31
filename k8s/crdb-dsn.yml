@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: crdb-dsn
+  namespace: default
+  labels:
+    app: permission-panther
+type: Opaque
+data:
+  dsn: <b64 encoded DSN>

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  permission-panther
+  namespace: default
+  labels:
+    app:  permission-panther
+spec:
+  selector:
+    matchLabels:
+      app: permission-panther
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  permission-panther
+    spec:
+      containers:
+      - name:  permission-panther
+        image:  permission-panther:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /hc
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: CRDB_DSN
+          valueFrom:
+            secretKeyRef:
+              key: dsn
+              name: crdb-dsn
+        - name: ADMIN_KEY
+          valueFrom:
+            secretKeyRef:
+              key: key
+              name: admin-key
+        ports:
+          - containerPort:  8080
+            name:  TCP
+      restartPolicy: Always
