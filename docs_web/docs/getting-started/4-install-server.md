@@ -123,6 +123,10 @@ A secure string should be provided to serve as the admin key to the admin HTTP e
 
 ## Admin Endpoints
 
+### Auth
+
+To use the following admin endpoints, the header `ak: <ADMIN_KEY>` needs to be used, where `<ADMIN_KEY>` is the `ADMIN_KEY` environment variable set in your Permission Panther deployment.
+
 ### `POST /key`
 
 Create a new api key for a namespace.
