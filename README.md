@@ -1,5 +1,9 @@
+<p align="center">
+<img src="https://github.com/TheSaaSZoo/PermissionPanther/raw/main/docs_web/static/img/g1.png" border="0" alt="logo">
+</p>
 # Permission Panther
 The permissions platform for developers who want to spend less time on permissions.
+---
 
 Permissions for killer apps.
 
