@@ -6,8 +6,6 @@
 The permissions platform for developers who want to spend less time on permissions.
 ---
 
-Permissions for killer apps.
-
 [Docs](https://docs.permissionpanther.com?ref=gh)
 
 [Concepts](https://docs.permissionpanther.com/docs/getting-started/concepts?ref=gh)
