@@ -55,6 +55,7 @@ Docker is the quickest way to get Permission Panther running:
 docker run --name permissionpanther \
   --env CRDB_DSN "postgres://..." \
   --env ADMIN_KEY="example_key" \
+  -p 8080:8080 \
   -it --rm
   permissionpanther
 ```
@@ -127,7 +128,8 @@ A secure string should be provided to serve as the admin key to the admin HTTP e
 Create a new api key for a namespace.
 
 Query params:
-  - `ns`: The namespace for the api key
+  - `ns` (string): The namespace for the api key
+  - `mr` (int): The max recursions for the api key
 
 Returns:
 ```js
@@ -137,9 +139,26 @@ Returns:
 }
 ```
 
+Example Usage:
+```
+curl -X POST -H 'ak: <ADMIN_KEY>' \
+  http://localhost:8080/key?ns=<NAMESPACE>?mr=<MAX_RECURSIONS>
+```
+
+Replacing `<ADMIN_KEY>`, `<MAX_RECURSIONS>` and `<NAMESPACE>` with the appropriate values.
+
 ### `DELETE /key`
 
 Delete an existing key
 
 Query params:
-  - `key`: The api `keyID`
+  - `key` (string): The api `keyID`
+
+Example Usage:
+
+```
+curl -X DELETE -H 'ak: <ADMIN_KEY>' \
+  http://localhost:8080/key?key=<KEY_ID>
+```
+
+Replacing `<ADMIN_KEY>` and `<KEY_ID>` with the appropriate values.
