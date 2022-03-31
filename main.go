@@ -50,7 +50,7 @@ func main() {
 
 	m := cmux.New(lis)
 	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
-	httpL := m.Match(cmux.HTTP2()) // m.Match(cmux.HTTP1Fast())
+	httpL := m.Match(cmux.HTTP2(), cmux.HTTP1Fast()) // m.Match(cmux.HTTP1Fast())
 	go StartGRPCServer(grpcL)
 	go StartHTTPServer(httpL)
 

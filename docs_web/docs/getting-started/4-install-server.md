@@ -62,10 +62,26 @@ docker run --name permissionpanther \
 
 ## Docker Compose
 
-Docker Compose works great for simple long-term deployments:
+Docker Compose works great for simple deployments:
 
 ```yml
-
+version: '3.9'
+services:
+  permissionpanther:
+    build: .
+    environment:
+      - ADMIN_KEY=CHANGE_ME!!!
+      - CRDB_DSN=postgresql://root@crdb:26257/defaultdb?sslmode=disable
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on:
+      - crdb
+  crdb:
+    image: cockroachdb/cockroach:latest
+    command: start-single-node --insecure
+    ports:
+      - 26257:26257
 ```
 
 ## Kubernetes
