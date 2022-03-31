@@ -15,8 +15,12 @@ function HomepageHeader() {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
       <link href="https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        {/* <h1 className="hero__title">{siteConfig.title}</h1>
+        <p className="hero__subtitle">{siteConfig.tagline}</p> */}
+        <img style={{
+          maxHeight: '9rem',
+          marginBottom: '1rem'
+        }} src='https://github.com/TheSaaSZoo/PermissionPanther/raw/main/docs_web/static/img/g1.png' />
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
