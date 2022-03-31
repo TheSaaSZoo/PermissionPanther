@@ -8,7 +8,7 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Repeating yourself sucks. Use <a href="/docs/getting-started/concepts#permission-groups">Permission Groups</a> and <a href="/docs/getting-started/concepts#inheritance-and-recursion">Inheritance</a> to make integration a breeze.
+        Repeating yourself sucks. <a href="/docs/getting-started/concepts#permission-groups">Permission Groups</a> and <a href="/docs/getting-started/concepts#inheritance-and-recursion">Inheritance</a> make permission management a breeze.
       </>
     ),
   },
