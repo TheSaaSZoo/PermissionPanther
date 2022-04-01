@@ -128,7 +128,7 @@ permission-panther.default.svc.cluster.local:80
 ```
 
 :::note Note
-This is a very basic Kubernetes deployment. A production-ready deployment should include a [horizontal pod autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) and should have the resources tuned for your specific resources.
+This is a very basic Kubernetes deployment. A production-ready deployment should include a [horizontal pod autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) and should have the resources tuned for your specific needs.
 
 If you wish to expose the service externally, that will need to be configured as well depending on where your cluster is running.
 :::
