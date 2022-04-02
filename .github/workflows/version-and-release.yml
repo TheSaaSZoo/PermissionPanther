@@ -12,7 +12,7 @@ env:
 jobs:
   build-and-push:
     permissions:
-      contents: read
+      contents: write
       packages: write
     runs-on: ubuntu-latest
     steps:
@@ -31,7 +31,7 @@ jobs:
         WITH_V: true
         DEFAULT_BUMP: patch
 
-    - name: Run GoReleaser - make github release
+    - name: Run GoReleaser - Build and make github release
       uses: goreleaser/goreleaser-action@v2
       with:
         args: release --rm-dist
