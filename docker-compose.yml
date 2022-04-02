@@ -1,8 +1,7 @@
 version: '3.9'
 services:
   permissionpanther:
-    build: .
-    # image: thesaaszoo/permissionpanther:latest
+    image: ghcr.io/thesaaszoo/permissionpanther:latest
     environment:
       - ADMIN_KEY=TEST_ADMIN_KEY # CHANGE ME!!!!!!!!!!!
       - CRDB_DSN=postgresql://root@crdb:26257/defaultdb?sslmode=disable
