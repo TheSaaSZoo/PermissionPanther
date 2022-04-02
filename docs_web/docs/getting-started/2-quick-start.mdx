@@ -7,6 +7,23 @@ import TabItem from '@theme/TabItem';
 
 # Quick Start
 
+## Run `docker-compose.yml`
+
+```
+curl \
+  "https://raw.githubusercontent.com/TheSaaSZoo/PermissionPanther/main/docker-compose.yml" \
+  -o docker-compose.yml
+```
+
+## Create an api key
+
+```
+curl -X POST -H 'ak: TEST_ADMIN_KEY' \
+  "http://localhost:8080/key?ns=TEST_NAMESPACE&mr=6"
+```
+
+And grab the `keyID` and `keySecret` that comes back.
+
 ## Install the Package
 
 <Tabs>
@@ -26,7 +43,10 @@ npm i permissionpanther
 
 ```js
 const {PermissionPantherClient} = require('permissionpanther')
-const client = new PermissionPanther('UXVI4...', 'vsfQE...')
+const client = new PermissionPanther('<keyID>', '<keySecret>', {
+  endpoint: 'localhost:8080',
+  insecure: true
+})
 ```
 
 </TabItem>

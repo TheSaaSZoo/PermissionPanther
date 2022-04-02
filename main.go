@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
+
+	_ "embed"
 
 	"github.com/TheSaaSZoo/PermissionPanther/crdb"
 	"github.com/TheSaaSZoo/PermissionPanther/logger"
@@ -17,6 +21,9 @@ import (
 
 var (
 	MAX_RECURSIONS = 5
+
+	//go:embed schema.sql
+	SQL_FILE []byte
 )
 
 func main() {
@@ -31,6 +38,24 @@ func main() {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
+
+	// Apply schema files
+	func() {
+		// Do in func so we can defer
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		defer cancel()
+		conn, err := crdb.PGPool.Acquire(ctx)
+		if err != nil {
+			logger.Error("Failed to get CRDB pool connection for apply schema file: ", err.Error())
+			os.Exit(1)
+		}
+		cmd, err := conn.Exec(ctx, string(SQL_FILE))
+		if err != nil {
+			logger.Error("Error executing sql schema file: ", err.Error())
+			os.Exit(1)
+		}
+		logger.Debug(fmt.Sprintf("Rows affected during schema execution: %d", cmd.RowsAffected()))
+	}()
 
 	utils.CheckFlags()
 	if utils.CACHE_TTL != 0 {

@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/sirupsen/logrus"
 )
@@ -22,7 +23,11 @@ var (
 )
 
 func ConfigureLogger() {
-	Logger.SetLevel(logrus.DebugLevel)
+	if os.Getenv("DEBUG") == "1" {
+		Logger.SetLevel(logrus.DebugLevel)
+	} else {
+		Logger.SetLevel(logrus.InfoLevel)
+	}
 	Logger.SetFormatter(UTCFormatter{&logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
 			logrus.FieldKeyLevel: "severity",
