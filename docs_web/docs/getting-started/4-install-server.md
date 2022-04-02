@@ -9,6 +9,10 @@ If you don't want to manage the server and database yourself, [we are working on
 :::
 If you want to setup Permission Panther to run on your own infrastructure, the steps are simple.
 
+:::caution Warning
+You should always pin a version for production deployments, as major changes could be breaking.
+:::
+
 ## Setup CockroachDB
 
 You need to setup a CockroachDB instance, whether it be their Serverless offering or a self-managed cluster. [Refer to their guide on how to setup a self-hosted CRDB instance](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises.html).
@@ -31,6 +35,8 @@ postgresql://root@localhost:26257/defaultdb?sslmode=disable
 
 ## Apply Database Migration
 
+When running for the first time, Permission Panther will attempt to apply the latest table schemas for you. This will only apply if new tables are being created.
+
 ### Clone the Git Repo
 
 ```
@@ -41,6 +47,9 @@ git clone --depth 1 https://github.com/TheSaaSZoo/PermissionPanther
 Install [`sql-migrate`](https://github.com/rubenv/sql-migrate) and set the `CRDB_DSN` environment variable as your database DSN.
 
 ### Apply Migrations
+
+If you are jumping a major version, there could be an adjustment to the table schema. You will need to run the sql migration files on your database.
+
 From the root directory of the cloned repo, run:
 
 ```
@@ -52,7 +61,7 @@ sql-migrate up
 Docker is the quickest way to get Permission Panther running:
 
 ```
-docker run --name permissionpanther \
+docker run --name ghcr.io/thesaaszoo/permissionpanther:latest \
   --env CRDB_DSN "postgres://..." \
   --env ADMIN_KEY="example_key" \
   -p 8080:8080 \
@@ -70,10 +79,11 @@ Docker Compose works great for simple deployments:
 version: '3.9'
 services:
   permissionpanther:
-    build: .
+    image: ghcr.io/thesaaszoo/permissionpanther:latest
     environment:
-      - ADMIN_KEY=CHANGE_ME!!!
+      - ADMIN_KEY=TEST_ADMIN_KEY # CHANGE ME!!!!!!!!!!!
       - CRDB_DSN=postgresql://root@crdb:26257/defaultdb?sslmode=disable
+      - DEBUG=1
     ports:
       - 8080:8080
     restart: always
@@ -84,6 +94,7 @@ services:
     command: start-single-node --insecure
     ports:
       - 26257:26257
+
 ```
 
 ## Kubernetes

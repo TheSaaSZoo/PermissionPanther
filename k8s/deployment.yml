@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name:  permission-panther
-        image:  permission-panther:latest
+        image:  ghcr.io/thesaaszoo/permissionpanther:latest # you should pin this to a specific version
         resources:
           requests:
             cpu: 100m
