@@ -55,4 +55,3 @@ jobs:
         context: .
         push: true
         tags: ${{ env.REGISTRY }}/thesaaszoo/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/thesaaszoo/${{ env.IMAGE_NAME }}:${{ steps.previoustag.outputs.tag }}
-        labels: org.opencontainers.image.source = &quot;https://github.com/TheSaaSZoo/PermissionPanther&quot;
