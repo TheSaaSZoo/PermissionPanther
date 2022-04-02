@@ -54,4 +54,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ env.REGISTRY }}/TheSaaSZoo/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/TheSaaSZoo/${{ env.IMAGE_NAME }}:${{ steps.previoustag.outputs.tag }},
+        tags: ${{ env.REGISTRY }}/thesaaszoo/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/thesaaszoo/${{ env.IMAGE_NAME }}:${{ steps.previoustag.outputs.tag }},
