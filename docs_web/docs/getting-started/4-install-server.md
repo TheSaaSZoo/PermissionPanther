@@ -15,27 +15,13 @@ You should always pin a version for production deployments, as major changes cou
 
 ## Setup CockroachDB
 
-You need to setup a CockroachDB instance, whether it be their Serverless offering or a self-managed cluster. [Refer to their guide on how to setup a self-hosted CRDB instance](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises.html).
+Both the [Docker](#docker) and [Docker Compose](#docker-compose) methods run a local CockroachDB instance. For production deployments, you will want to set up something more long-term. You can check out their their Serverless offering, or run a self-managed cluster. [Refer to their guide on how to setup a self-hosted CRDB instance](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises.html).
 
-:::note Quick Tip
-For testing you can run a container locally with the command
+## Apply Database Migration (if upgrading)
 
-```
-docker run -d -p 26257:26257 \
-  cockroachdb/cockroach:latest \
-  start-single-node --insecure
-```
+**If this is the first time you are running Permission Panther, you can skip this step.**
 
-And use the DSN
-
-```
-postgresql://root@localhost:26257/defaultdb?sslmode=disable
-```
-:::
-
-## Apply Database Migration
-
-When running for the first time, Permission Panther will attempt to apply the latest table schemas for you. This will only apply if new tables are being created.
+When running for the first time, Permission Panther will attempt to apply the latest table schemas for you. This will only succeed if new tables are being created. Between major versions, table modifications may be made, which will not be backwards compatible. The included migration files will need to be run in order to upgrade the database schemas.
 
 ### Clone the Git Repo
 
@@ -56,46 +42,23 @@ From the root directory of the cloned repo, run:
 sql-migrate up
 ```
 
-## Docker
+## Container Image
 
-Docker is the quickest way to get Permission Panther running:
-
-```
-docker run --name ghcr.io/thesaaszoo/permissionpanther:latest \
-  --env CRDB_DSN "postgres://..." \
-  --env ADMIN_KEY="example_key" \
-  -p 8080:8080 \
-  -it --rm
-  permissionpanther
-```
+A container image is hosted at `ghcr.io/thesaaszoo/permissionpanther`. See [GitHub](https://github.com/TheSaaSZoo/PermissionPanther/pkgs/container/permissionpanther) for tagged versions and available releases.
 
 ## Docker Compose
 
-Docker Compose works great for simple deployments:
+Docker Compose works great for simple deployments. You can run both CockroachDB and Permission Panther with the following command:
 
-`docker-compose.yml`:
+```sh
+curl \
+  "https://raw.githubusercontent.com/TheSaaSZoo/PermissionPanther/main/docker-compose.yml" \
+  -o docker-compose.yml
 
-```yml
-version: '3.9'
-services:
-  permissionpanther:
-    image: ghcr.io/thesaaszoo/permissionpanther:latest
-    environment:
-      - ADMIN_KEY=TEST_ADMIN_KEY # CHANGE ME!!!!!!!!!!!
-      - CRDB_DSN=postgresql://root@crdb:26257/defaultdb?sslmode=disable
-      - DEBUG=1
-    ports:
-      - 8080:8080
-    restart: always
-    depends_on:
-      - crdb
-  crdb:
-    image: cockroachdb/cockroach:latest
-    command: start-single-node --insecure
-    ports:
-      - 26257:26257
-
+docker compose up -d
 ```
+
+Permission Panther will be available at `localhost:8080`.
 
 ## Kubernetes
 
