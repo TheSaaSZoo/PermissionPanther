@@ -1,5 +1,5 @@
   # Credit to @Hades32 for making most of this
-name: Bump version
+name: Build and Release
 on:
   push:
     branches:
@@ -19,6 +19,9 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: '0'
+    - uses: actions/setup-go@v3
+      with:
+        go-version: '>=1.18.0'
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.36.0
       env:
