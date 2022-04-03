@@ -9,6 +9,7 @@ import HomepageFeatures from '../components/HomepageFeatures';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
+  const sayAccessControl = true
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,11 +22,17 @@ function HomepageHeader() {
           maxHeight: '9rem',
           marginBottom: '1rem'
         }} src='https://github.com/TheSaaSZoo/PermissionPanther/raw/main/docs_web/static/img/g1.png' />
+        <h3 style={{
+          marginTop: '0.5rem',
+          marginBottom: '2rem'
+        }}>
+          The {sayAccessControl ? "access control": "permissions"} platform for developers who want to spend less time on {sayAccessControl ? "access control": "permissions"}.
+        </h3>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/getting-started/quick-start">
-            Master Permissions in 3 min ⏱️
+            Master {sayAccessControl ? "Access Control" : "Permissions"} In 3 min ⏱️
           </Link>
         </div>
       </div>
@@ -38,7 +45,7 @@ export default function Home() {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      description="Permissions for Killer Apps">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

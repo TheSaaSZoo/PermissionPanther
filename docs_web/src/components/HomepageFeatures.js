@@ -4,16 +4,16 @@ import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
   {
-    title: 'Permission Groups and Inheritance',
+    title: 'Access Control Simplified',
     Svg: require('../../static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Repeating yourself sucks. <a href="/docs/getting-started/concepts#permission-groups">Permission Groups</a> and <a href="/docs/getting-started/concepts#inheritance-and-recursion">Inheritance</a> make permission management a breeze.
+        Repeating yourself sucks. <a href="/docs/getting-started/concepts#permission-groups">Permission Groups</a> and <a href="/docs/getting-started/concepts#inheritance-and-recursion">Inheritance</a> make access management a breeze.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Spend More Time On Your App',
     Svg: require('../../static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
@@ -26,7 +26,7 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Permission Panther is Open Source, because everyone should know how their apps work.
+        Permission Panther is open source, because everyone should know how their apps work.
       </>
     ),
   },

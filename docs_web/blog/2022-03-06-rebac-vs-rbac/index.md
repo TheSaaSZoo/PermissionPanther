@@ -2,7 +2,7 @@
 slug: rbac-vs-rebac
 # title: First Blog Post
 authors: [dan]
-tags: [rbac, rebac]
+tags: [rbac, rebac, access control, authorization]
 ---
 
 # RBAC is Dead, Long Live ReBAC.
@@ -228,24 +228,26 @@ This is a super simple example, but ReBAC usage gets far more complex, but it ca
 
 There are a few solutions out there the solve the ReBAC problem: SpiceDB, Ory Keto, Cerbos, and Warrant being some of them. I believe they all fall short in making ReBAC accessible to developers.
 
-With SpiceDB, you need a masters degree in computer science to understand their schema definition language.
+With SpiceDB, you need a masters degree in computer science to understand their schema definition language. [Tell me if this is something you can drop in your app easily](https://docs.authzed.com/guides/schema).
 
-Ory Keto is in early access, looks to stay that way for a while, and is clearly not cared for like the rest of the Ory products.
+Ory Keto is in early access, looks to stay that way for a while, and is not cared for like the rest of the Ory products.
 
-With Warrant, you still need to define a schema (albeit far simpler than SpiceDB)… and their pricing model is... insulting...
+With Warrant, you still need to define both [object schemas](https://docs.warrant.dev/quickstart/creating-object-types) as well as [create users](https://docs.warrant.dev/quickstart/creating-users) (further complicating your registration flow), [and their pricing model is insulting.](https://warrant.dev/pricing) It would be cheaper to build a custom solution at that price.
 
-With Cerbos you still need to define a complex schema, and are forced to host it yourself.
+With Cerbos you still need to [define complex schemas](https://docs.cerbos.dev/cerbos/latest/policies/schemas.html), and are forced to host it yourself. They call it _"Painless access control for cloud-native applications"_, but [this looks pretty painful to learn to me](https://play.cerbos.dev/p/bvcxiZY0610b114aig5k1vsm6YPvO5X8).
 
-With Oso, again, we need to learn a new schema definition language... the pattern among these solutions is quite apparent.
+With Oso, again, we need to [learn a new schema definition language, "polar"](https://docs.osohq.com/getting-started/quickstart.html#3-update-the-policy)... the pattern among these solutions is quite apparent.
 
-Existing solutions "solve" the problem, but in such a way that is inaccessible for those who don't already understand ReBAC. They provide a solution to ReBAC experts who don't want to continuously re-write ReBAC solutions, but miss the mark on making it available to the greater developer audience, the digital nomad who needs a solution in the next 15 minutes, or the CS major freshman... Those of us that aren't currently ReBAC thought leaders.
+I appreciate the effort of these companies to solve access control. However these solutions "solve" the problem in such a way that is inaccessible for those who don't already understand ReBAC. They provide a solution to ReBAC experts who don't want to continuously re-write ReBAC solutions, but miss the mark on making it available all developers. In effect, the level of complexity to setup properly, and the required knowledge to use, result in gate-keeping access control solutions.
+
+So they solve the problem for fellow access control experts, not for everyone else.
 
 
 ## Introducing Permission Panther: The Permissions Platform For Developers Who Want To Spend Less Time On Permissions
 
 _You Never Saw This Coming..._
 
-I’m super excited to announce a love-letter to authroization of a project, Permission Panther - The Permissions Platform For Killer Apps.
+I’m super excited to announce a love-letter to authorization and access control of a project, Permission Panther - The Permissions Platform For Killer Apps.
 
 The goal of Permission Panther was super simple:
 
@@ -253,7 +255,7 @@ The goal of Permission Panther was super simple:
 2. ReBAC without schemas or entity definitions, while enabling inheritance for permission and objects
 3. The ability to list relations in both directions: What objects does an entity have permissions on? And what entities have permissions on this object?
 4. Open source, host it yourself with just a single binary/container, and a few environment variables!
-5. [A managed offering](https://permissionpanther.com) with pricing that any project can afford (that means really generous free usage)
+5. [A managed offering](https://permissionpanther.com) with pricing that any project can afford (that means really generous free usage, and really scalable pricing)
 
 **Some Feature Coming Soon:**
 

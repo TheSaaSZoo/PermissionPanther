@@ -6,6 +6,12 @@ sidebar_position: 1
 
 Permission Panther keeps permissions extremely simple, but there are a few thing you might want to familiarize yourself with before jumping in:
 
+## Access Control, Permissions, and Authorization
+
+These terms all refer to the common subject of determining **who** has **access/permission** to **what**.
+
+These terms are used interchangeably when discussing how once we've identified who someone is, whether they are allowed to do the action they are attempting to do such as download a file or create a pull request.
+
 ## ReBAC vs. RBAC
 
 **RBAC**, or Role-Based Access Control is a method of authorizing users by their role.
