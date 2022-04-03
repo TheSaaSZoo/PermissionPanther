@@ -1,0 +1,40 @@
+---
+sidebar_position: 5
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Security
+
+Permission Panther takes security very seriously, as access control is usually the gate to accessing any app.
+
+## API Keys
+
+The reason you must use a `keyID` and `keySecret` is due to the fact that the `keySecret` is stored securely hashed using argon2, just like one might securly store a password. We use the `keyID` to get the hashed secret, then hash the provided secret to check for validity.
+
+This means that having access to the hashed key secret stored in the database does not mean that someone can start using that API key.
+
+## Namespaces and Multi-Tenancy
+
+All API keys are namespaced, as you can see in the SQL schema files.
+
+This means that by design it is impossible for one API keys to view the data in another namespace. Permission Panther works very well as a multi-tenant platform as a result.
+
+## Managed Offering
+
+In our managed offering, we guarantee additional layers of security that you might have to otherwise setup yourself in a self-hosted environment.
+
+### Forced TLS over HTTP/2
+
+Our load balancers don't allow unencrypted traffic, meaning you can rest assured that it is impossible to communicate with our service over an insecure channel.
+
+### Encryption at rest and in transit
+
+Our database connections, and all internal network connections are fully encrypted.
+
+Furthermore, we use encryption at rest for our database. This is an enterprise feature of CockroachDB, so it is not something we can guarantee as standard. With slight modifications to the SQL schema (removing the CRDB specific bits) Postgres could also be used.
+
+### Authentication and Access Control handled by the best
+
+We use Google Identity Platform (also known as Firebase Auth) for login/registration, and Permission Panther for managing project access. Google handles making sure the user is who they say they are, and Permission Panther makes sure that they can access what they are trying to.

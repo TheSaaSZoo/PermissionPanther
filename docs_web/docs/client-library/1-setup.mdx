@@ -1,0 +1,40 @@
+---
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Setup
+
+## Install
+
+<Tabs>
+<TabItem value="js" label="NodeJS/TypeScript">
+
+```sh
+npm i permissionpanther
+```
+
+</TabItem>
+</Tabs>
+
+## Initialize the Client Library
+
+<Tabs>
+<TabItem value="js" label="NodeJS/TypeScript">
+
+```js
+const {PermissionPantherClient} = require('permissionpanther')
+const client = new PermissionPanther('<keyID>', '<keySecret>', {
+  endpoint: 'localhost:8080',
+  insecure: true
+})
+```
+
+</TabItem>
+</Tabs>
+
+## gRPC
+
+Permission Panther uses [gRPC](https://grpc.io/) to communicate between the client and server. Beyond having many benefits such as being more efficient than JSON, as well as utilizing HTTP/2, it provides the opportunity to easily use the [protobuf files](https://github.com/TheSaaSZoo/PermissionPanther/tree/main/pb) to make clients for unofficially supported langauges.
