@@ -243,11 +243,13 @@ I appreciate the effort of these companies to solve access control. However thes
 So they solve the problem for fellow access control experts, not for everyone else.
 
 
-## Introducing Permission Panther: The Permissions Platform For Developers Who Want To Spend Less Time On Permissions
+## Introducing Permission Panther!
 
 _You Never Saw This Coming..._
 
-I’m super excited to announce a love-letter to authorization and access control of a project, Permission Panther - The Permissions Platform For Killer Apps.
+I’m super excited to announce Permission Panther - The Permissions Platform For Killer Apps.
+
+I wanted to build a permissions solution for devs who wanted to spend less time on permissions, and more time on their apps.
 
 The goal of Permission Panther was super simple:
 
