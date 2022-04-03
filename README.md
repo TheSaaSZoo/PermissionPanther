@@ -86,7 +86,7 @@ See the [Concepts](https://docs.permissionpanther.com/docs/getting-started/conce
 
 ## Install and Host
 
-[See the self-hosting guide](https://docs.permissionpanther.com/docs/getting-started/install-server?ref=gh) to deploy.
+[See the self-hosting guide](https://docs.permissionpanther.com/docs/getting-started/install-server?ref=gh) to deploy. [Binaries](https://github.com/TheSaaSZoo/PermissionPanther/releases) and [container images](https://github.com/TheSaaSZoo/PermissionPanther/pkgs/container/permissionpanther) are readily available for both amd64 (x86) and arm64 platforms.
 
 You can also check out our [managed offering](https://permissionpanther.com?ref=gh) if you don't want to worry about the database, scaling, or updating.
 

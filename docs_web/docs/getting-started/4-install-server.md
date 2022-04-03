@@ -7,7 +7,7 @@ sidebar_position: 4
 :::tip
 If you don't want to manage the server and database yourself, [we are working on an amazing managed offering with a generous free tier](https://permissionpanther.com?ref=docs).
 :::
-If you want to setup Permission Panther to run on your own infrastructure, the steps are simple.
+If you want to setup Permission Panther to run on your own infrastructure, the steps are simple. [Binaries](https://github.com/TheSaaSZoo/PermissionPanther/releases) and [container images](https://github.com/TheSaaSZoo/PermissionPanther/pkgs/container/permissionpanther) are readily available for both amd64 (x86) and arm64 platforms.
 
 :::caution Warning
 You should always pin a version for production deployments, as major changes could be breaking.
