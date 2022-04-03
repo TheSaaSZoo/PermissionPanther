@@ -12,6 +12,8 @@ The permissions platform for developers who want to spend less time on permissio
 
 [Quick Start](https://docs.permissionpanther.com/docs/getting-started/quick-start?ref=gh)
 
+[Problems Permission Panther Solves](https://docs.permissionpanther.com/docs/problems-solved)
+
 [Check out our managed offering with generous free usage!](https://permissionpanther.com?ref=gh)
 
 ## What is Permission Panther?
