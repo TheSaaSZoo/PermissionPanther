@@ -13,7 +13,7 @@ If you are intending on pointing to a self-managed instance, you will need to ad
 
 ```js
 const {PermissionPantherClient} = require('permissionpanther')
-const client = new PermissionPanther('UXVI4...', 'vsfQE...', {
+const client = new PermissionPantherClient('UXVI4...', 'vsfQE...', {
   endpoint: "https://my.instance.com",
 })
 ```
@@ -22,7 +22,7 @@ You may also optionally turn TLS security off. THIS IS NOT RECCOMMENDED FOR PROD
 
 ```js
 const {PermissionPantherClient} = require('permissionpanther')
-const client = new PermissionPanther('UXVI4...', 'vsfQE...', {
+const client = new PermissionPantherClient('UXVI4...', 'vsfQE...', {
   endpoint: "http://my.instance.com",
   insecure: true
 })
