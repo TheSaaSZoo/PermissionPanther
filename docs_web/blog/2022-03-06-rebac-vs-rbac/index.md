@@ -228,7 +228,7 @@ This is a super simple example, but ReBAC usage gets far more complex, but it ca
 
 There are a few solutions out there the solve the ReBAC problem: SpiceDB, Ory Keto, Cerbos, and Warrant being some of them. I believe they all fall short in making ReBAC accessible to developers.
 
-With SpiceDB, you need a masters degree in computer science to understand their schema definition language. [Tell me if this is something you can drop in your app easily](https://docs.authzed.com/guides/schema).
+With SpiceDB, they claim to be a "A managed permissions database for everyone", but their complex novel schema and entity definitions feel like an obstacle to that claim. [Tell me if this is something you can drop in your app easily](https://docs.authzed.com/guides/schema).
 
 Ory Keto is in early access, looks to stay that way for a while, and is not cared for like the rest of the Ory products.
 
